@@ -29,6 +29,6 @@ namespace QuickRoute.Data.Models
         public string NumeroChasis { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
-        public byte[] Factura { get; set; }
+        public IFormFile Factura { get; set; }
     }
 }
