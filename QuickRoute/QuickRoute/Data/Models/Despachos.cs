@@ -25,5 +25,8 @@ namespace QuickRoute.Data.Models
         public string Titulo { get; set; }
 
         public IList<Impuestos> Impuestos { get; set; } = new List<Impuestos>();
+        public IList<Traslados> Traslados { get; set; } = new List<Traslados>();
+        public string Id { get; set; }
+        public ApplicationUser Usuario { get; set; }
     }
 }
