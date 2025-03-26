@@ -8,6 +8,7 @@ namespace QuickRoute.Data.Models
         public int CarroId { get; set; }
 
         [Required(ErrorMessage ="Este campo es requerido")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "La marca solo puede contener letras y espacios")]
         public string Marca { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
@@ -20,7 +21,7 @@ namespace QuickRoute.Data.Models
         public string Color { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
-        [Range(0, double.MaxValue, ErrorMessage ="Ingrese un precio valido")]
+        [Range(1, double.MaxValue, ErrorMessage ="Ingrese un precio valido")]
         public double Precio { get; set; }
 
         [Required(ErrorMessage = "El número de chasis es obligatorio.")]
