@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickRoute.Data.Models
 {
@@ -17,7 +18,9 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         [Range(1, double.MaxValue, ErrorMessage = "Ingrese un precio valido")]
         public double Monto { get; set; }
-        public string Id { get; set; } 
+        public string Id { get; set; }
+
+        [ForeignKey("Id")]
         public ApplicationUser Usuario { get; set; }
 
     }
