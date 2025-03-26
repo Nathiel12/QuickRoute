@@ -24,5 +24,7 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         [Range(1, double.MaxValue, ErrorMessage = "Ingrese un precio valido")]
         public double ValorTransportacion { get; set; }
+        public string Id { get; set; }
+        public ApplicationUser Usuario { get; set; }
     }
 }
