@@ -44,7 +44,7 @@ namespace QuickRoute.Services
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Carros.FirstOrDefaultAsync(c => c.CarroId == CarroId);
         }
-
+        //Agregar validacion en el futuro si el carro esta en proceso de traslado no se puede eliminar
         public async Task<bool> Eliminar(int CarroId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
