@@ -1,0 +1,108 @@
+﻿@page "/Contactos/Create"
+@inject ContactosService contactosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Contacto" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	@* Label para notificaciones *@
+	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Registro de Contactos</h5>
+			</div>
+
+			<div class="card-body">
+
+				@* TecnicoId *@
+				<div class="mb-3">
+					<label class="form-label"><strong>ContactoId</strong></label>
+					<InputNumber class="form-control" @bind-Value="Contacto.ContactoId" readonly></InputNumber>
+				</div>
+
+				@* Nombre *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Nombres</strong></label>
+					<InputText class="form-control" @bind-Value="Contacto.Nombre"></InputText>
+					<ValidationMessage For="(() => Contacto.Nombre)" />
+				</div>
+
+				@* Telefono *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Telefono</strong></label>
+					<InputText class="form-control" @bind-Value="Contacto.Telefono"></InputText>
+					<ValidationMessage For="(() => Contacto.Telefono)" />
+				</div>
+				@* Email *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Email</strong></label>
+					<InputText class="form-control" @bind-Value="Contacto.Email"></InputText>
+					<ValidationMessage For="(() => Contacto.Email)" />
+				</div>
+
+			</div>
+
+			@* Footer *@
+			<div class="card-footer text-center mt-2">
+				<a href="/Contactos/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+				<button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
+				<button type="reset" class="btn btn-outline-primary bi bi-plus" @onclick="Nuevo">Nuevo</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+	private Contactos Contacto { get; set; } = new Contactos();
+	private string errorMensaje { get; set; } = string.Empty;
+
+	public void Nuevo()
+	{
+		this.Contacto = new Contactos();
+	}
+
+	private async Task<bool> Validar()
+	{
+		errorMensaje = string.Empty;
+
+		if (await contactosService.ExisteNombre(Contacto.Nombre))
+		{
+			errorMensaje = "El nombre ya existe en el registro";
+			return false;
+		}else if(await contactosService.ExisteTelefono(Contacto.Telefono))
+		{
+			errorMensaje = "El telefono ya existe en el registro";
+			return false;
+		}else if(await contactosService.ExisteEmail(Contacto.Email))
+		{
+			errorMensaje = "El email ya existe en el registro";
+			return false;
+		}
+		return true;
+	}
+
+	public async Task Guardar()
+	{
+		errorMensaje = string.Empty;
+
+		if (!await Validar())
+		{
+			return;
+		}
+		var guardo = await contactosService.Guardar(this.Contacto);
+		if (guardo != null)
+		{
+			navigationManager.NavigateTo("/Contactos/Index");
+		}
+		else
+		{
+			errorMensaje = "Error al guardar el Registro";
+		}
+
+	}
+}
