@@ -1,0 +1,55 @@
+﻿@*Nathiel Taveras*@
+@page "/Casos/Delete/{CasoId:int}"
+@inject CasosService casosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Eliminar</PageTitle>
+
+@*Labels para notificaciones*@
+<label style="color:red;" hidden="@string.IsNullOrEmpty(Confirmacion)">@Confirmacion</label>
+<label style="color:darkred">@Pregunta</label>
+
+<div class="container">
+	<div class="card shadow-lg">
+		<div class="card-header text-center">
+			<h5 class="card-title">Eliminar Caso</h5>
+		</div>
+		@*Datos y botones*@
+		<div class="card-body">
+			<p><strong>CasoId:</strong>@Caso.CasoId</p>
+			<p><strong>Contacto Asignado:</strong>@Caso.Contacto.Nombre</p>
+			<p><strong>Fecha:</strong>@Caso.Fecha.ToString("dd/MM/yyyy")</p>
+			<p><strong>Asunto:</strong>@Caso.Asunto</p>
+
+			<div class="card-footer text-center mt-2">
+				<a href="/Casos/Index" class="btn btn-outline-secondary"><span class="bi bi-arrow-left"></span>Cancelar</a>
+				<button class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public int CasoId { get; set; }
+
+	private Casos Caso { get; set; } = new Casos();
+	private string Confirmacion { get; set; } = string.Empty;
+	private string Pregunta { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Caso = await casosService.Buscar(CasoId);
+		Pregunta = "¿Esta seguro de querer eliminar el Registro?";
+	}
+
+	public async Task Eliminar()
+	{
+		await casosService.Eliminar(Caso.CasoId);
+
+		Confirmacion = "Registro Eliminado Correctamente";
+
+	}
+}
