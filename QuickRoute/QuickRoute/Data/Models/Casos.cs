@@ -8,7 +8,7 @@ public class Casos
     [Key] 
     public int CasoId { get; set; }
 
-    public int ClienteId { get; set; }
+    public int ContactoId { get; set; }
     
     [Required(ErrorMessage = "Por favor, elija un contacto aduanero")]
     public Contactos Contacto { get; set; }
@@ -25,4 +25,5 @@ public class Casos
     [Required(ErrorMessage = "Este campo es requerido")] 
     [StringLength(250, ErrorMessage = "La descripción no puede exceder los 250 caracteres")] 
     public string Descripcion { get; set; }
+
 }
