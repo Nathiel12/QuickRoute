@@ -1,0 +1,144 @@
+@page "/Traslados/Index"
+@using QuickRoute.Data.Services
+@inject TrasladosService trasladosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Registro de Traslados</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Registro de Traslados</h5>
+            <a href="/Traslados/Create" class="btn btn-primary">
+                <span class="bi bi-plus-square mt-3"></span> Crear
+            </a>
+        </div>
+
+        <div class="card-body">
+            <!-- Filtros -->
+            <div class="row">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Búsqueda</strong></label>
+                </div>
+            </div>
+            <div class="row align-items-center mb-3">
+                <!-- Selector de filtro -->
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" disabled selected>Elija una opción</option>
+                        <option value="TrasladoId">TrasladoId</option>
+                        <option value="Aprobado">Aprobado</option>
+                        <option value="Monto">Monto</option>
+                    </InputSelect>
+                </div>
+
+                <!-- Input de búsqueda -->
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                <!-- Botón de restablecer -->
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise" @onclick="Restablecer">
+                    </button>
+                </div>
+            </div>
+            <!-- Fin filtros -->
+
+            <!-- Tabla de Traslados -->
+            <table class="table table-hover">
+                <thead class="table-striped text-black">
+                    <tr>
+                        <th>TrasladoId</th>
+                        <th>Aprobado</th>
+                        <th>Monto</th>
+                        <th>Carro</th>
+                        <th>Usuario</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var traslado in ListaTraslados)
+                    {
+                        <tr>
+                            <td>@traslado.TrasladoId</td>
+                            <td>@(traslado.Aprobado.HasValue ? (traslado.Aprobado.Value ? "Si" : "No") : "Sin definir")</td>
+                            <td>@traslado.Monto.ToString("N2")</td>
+                            <td>
+                                @if (traslado.Carros is not null)
+                                {
+                                    @traslado.Id  @* O incluso alguna propiedad como Marca o Modelo *@
+                                }
+                            </td>
+                            <td>
+                                @if (traslado.Usuario is not null)
+                                {
+                                    @traslado.Usuario.UserName  @* O el Email, según convenga *@
+                                }
+                            </td>
+                            <td>
+                                <a href="/Traslados/Edit/@traslado.TrasladoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                            <td>
+                                <a href="/Traslados/Delete/@traslado.TrasladoId" class="btn btn-outline-danger bi bi-trash"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <!-- Fin tabla -->
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<Traslados> ListaTraslados { get; set; } = new List<Traslados>();
+
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaTraslados = await trasladosService.Listar(t => t.TrasladoId > 0);
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "TrasladoId")
+        {
+            if (int.TryParse(ValorFiltro, out var trasladoId))
+            {
+                ListaTraslados = await trasladosService.Listar(t => t.TrasladoId == trasladoId);
+            }
+        }
+        else if (Filtro == "Aprobado")
+        {
+            if (bool.TryParse(ValorFiltro, out var aprobado))
+            {
+                ListaTraslados = await trasladosService.Listar(t => t.Aprobado == aprobado);
+            }
+        }
+        else if (Filtro == "Monto")
+        {
+            if (double.TryParse(ValorFiltro, out var monto))
+            {
+                ListaTraslados = await trasladosService.Listar(t => t.Monto == monto);
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task Restablecer()
+    {
+        ListaTraslados = await trasladosService.Listar(t => t.TrasladoId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+}
