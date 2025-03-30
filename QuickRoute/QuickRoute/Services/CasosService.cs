@@ -4,7 +4,7 @@ using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-public class TicketsService(IDbContextFactory<ApplicationDbContext> DbFactory)
+public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory)
 {
     public async Task<bool> Guardar(Casos caso)
     {
