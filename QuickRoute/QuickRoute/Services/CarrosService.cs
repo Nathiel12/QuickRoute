@@ -42,19 +42,48 @@ namespace QuickRoute.Services
         public async Task<Carros?> Buscar(int CarroId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.FirstOrDefaultAsync(c => c.CarroId == CarroId);
+            return await contexto.Carros.Include(t=> t.Traslado).FirstOrDefaultAsync(c => c.CarroId == CarroId);
         }
+
         //Agregar validacion en el futuro si el carro esta en proceso de traslado no se puede eliminar
         public async Task<bool> Eliminar(int CarroId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.AsNoTracking().Where(c => c.CarroId == CarroId).ExecuteDeleteAsync() > 0;
+
+            var carro = await contexto.Carros
+                .Include(t => t.Traslado)
+                .FirstOrDefaultAsync(p => p.CarroId == CarroId);
+
+            if (carro == null)
+                return false;
+
+            contexto.Traslados.RemoveRange(carro.Traslado);
+
+            contexto.Carros.Remove(carro);
+
+            var cantidad = await contexto.SaveChangesAsync();
+
+            return cantidad > 0;
         }
 
         public async Task<List<Carros>> Listar(Expression<Func<Carros, bool>> criterio)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Carros.Where(criterio).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<bool> EliminarDetalle(int detalleId)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            var detalle = await contexto.Traslados.FindAsync(detalleId);
+
+            if (detalle != null)
+            {
+                contexto.Traslados.Remove(detalle);
+                await contexto.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
     }
 }
