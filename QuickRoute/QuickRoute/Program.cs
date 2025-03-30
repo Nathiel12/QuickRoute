@@ -5,6 +5,7 @@ using QuickRoute.Client.Pages;
 using QuickRoute.Components;
 using QuickRoute.Components.Account;
 using QuickRoute.Data;
+using QuickRoute.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<CarrosService>();
+builder.Services.AddScoped<CasosService>();
+builder.Services.AddScoped<ContactosService>();
+builder.Services.AddScoped<DeclaracionesService>();
+builder.Services.AddScoped<DespachosService>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
