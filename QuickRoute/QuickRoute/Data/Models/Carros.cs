@@ -11,6 +11,8 @@ namespace QuickRoute.Data.Models
         [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "La marca solo puede contener letras y espacios")]
         public string Marca { get; set; }
 
+        public DateTime FechaRegistro { get; set; } = DateTime.Now;
+
         [Required(ErrorMessage = "Este campo es requerido")]
         public string Modelo { get; set; }
 
@@ -31,5 +33,8 @@ namespace QuickRoute.Data.Models
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public byte[] Factura { get; set; }
+
+        public int TrasladoId { get; set; }
+        public Traslados Traslado { get; set; }
     }
 }
