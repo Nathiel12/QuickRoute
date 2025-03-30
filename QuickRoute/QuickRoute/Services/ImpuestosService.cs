@@ -1,6 +1,9 @@
-﻿namespace QuickRoute.Services
+﻿using Microsoft.EntityFrameworkCore;
+using QuickRoute.Data;
+
+namespace QuickRoute.Services
 {
-    public class ImpuestosService
+    public class ImpuestosService(IDbContextFactory<ApplicationDbContext> DbFactory)
     {
     }
 }
