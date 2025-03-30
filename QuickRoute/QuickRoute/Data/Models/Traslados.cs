@@ -11,9 +11,7 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public bool? Aprobado { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public Carros Carro { get; set; }
-        public int CarroId { get; set; }
+        public ICollection<Carros> Carros { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
         [Range(1, double.MaxValue, ErrorMessage = "Ingrese un precio valido")]
