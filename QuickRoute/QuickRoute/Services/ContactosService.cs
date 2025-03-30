@@ -66,9 +66,21 @@ public class ContactosService(IDbContextFactory<ApplicationDbContext> DbFactory)
         return await contexto.Contactos.Where(criterio).AsNoTracking().ToListAsync();
     }
 
+    public async Task<bool> ExisteEmail(string Email)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+        return await contexto.Contactos.AnyAsync(c => c.Email.ToLower() == Email.ToLower());
+    }
+
     public async Task<bool> ExisteNombre(string Nombre)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
         return await contexto.Contactos.AnyAsync(c => c.Nombre.ToLower() == Nombre.ToLower());
+    }
+
+    public async Task<bool> ExisteTelefono(string Telefono)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+        return await contexto.Contactos.AnyAsync(c => c.Telefono == Telefono);
     }
 }
