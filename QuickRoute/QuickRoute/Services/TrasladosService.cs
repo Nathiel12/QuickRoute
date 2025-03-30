@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
 using QuickRoute.Data.Models;
 using Microsoft.EntityFrameworkCore;
-
-
 namespace QuickRoute.Data.Services
 {
     public class TrasladosService(IDbContextFactory<ApplicationDbContext> DbFactory)
@@ -27,7 +25,7 @@ namespace QuickRoute.Data.Services
             await using var contexto = await DbFactory.CreateDbContextAsync();
             contexto.Traslados.Add(traslado);
 
-            var carro = await contexto.Carros.FindAsync(traslado.CarroId);
+            var carro = await contexto.Carros.FindAsync(traslado.Id);
             if (carro != null)
             {
                 carro.Precio += traslado.Monto;
@@ -47,13 +45,13 @@ namespace QuickRoute.Data.Services
             if (trasladoExistente == null)
                 return false;
 
-            var carroOriginal = await contexto.Carros.FindAsync(trasladoExistente.CarroId);
+            var carroOriginal = await contexto.Carros.FindAsync(trasladoExistente.Id);
             if (carroOriginal != null)
             {
                 carroOriginal.Precio -= trasladoExistente.Monto;
             }
 
-            var carroNuevo = await contexto.Carros.FindAsync(trasladoActualizado.CarroId);
+            var carroNuevo = await contexto.Carros.FindAsync(trasladoActualizado.Id);
             if (carroNuevo != null)
             {
                 carroNuevo.Precio += trasladoActualizado.Monto;
@@ -68,7 +66,7 @@ namespace QuickRoute.Data.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Traslados
-                .Include(t => t.Carro)
+                .Include(t => t.Carros)
                 .Include(t => t.Usuario)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(t => t.TrasladoId == id);
@@ -81,7 +79,7 @@ namespace QuickRoute.Data.Services
             if (traslado == null)
                 return false;
 
-            var carro = await contexto.Carros.FindAsync(traslado.CarroId);
+            var carro = await contexto.Carros.FindAsync(traslado.Id);
             if (carro != null)
             {
                 carro.Precio -= traslado.Monto;
@@ -94,7 +92,7 @@ namespace QuickRoute.Data.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Traslados
-                .Include(t => t.Carro)
+                .Include(t => t.Carros)
                 .Include(t => t.Usuario)
                 .Where(criterio)
                 .AsNoTracking()
