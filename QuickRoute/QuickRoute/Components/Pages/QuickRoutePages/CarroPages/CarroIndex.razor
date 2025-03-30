@@ -1,0 +1,177 @@
+﻿@*Nathiel Taveras*@
+@page "/Carros/Index"
+@inject CarrosService carroService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Registro de Carros</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header space-between">
+            <h5 class="card-title">Registro de Carros</h5>
+            <a href="/Carros/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+
+            @*labels*@
+            <div class="row">
+
+                @*Filtrar por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+
+                @*ValorFiltro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        <option value="CarroId">CarroId</option>
+                        <option value="Marca">Marca</option>
+                        <option value="Color">Color</option>
+                        <option value="FechaRegistro">Fecha Registro</option>
+                    </InputSelect>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                @*Restablecer*@
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
+                            @onclick="Restablecer">
+                    </button>
+                </div>
+
+                @*FiltroFecha*@
+                <div class="row mt-3">
+
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            @* Tabla *@
+            <table class="table table-hover">
+                <thead class="table  table-striped text-black">
+                    <tr>
+                        <th>CarroId</th>
+                        <th>Fecha de Registro</th>
+                        <th>Fecha de Fabricacion</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Color</th>
+                        <th>Precio</th>
+                        <th>Numero de Chasis</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var carro in ListaCarros)
+                    {
+                        <tr>
+                            <td> @carro.CarroId</td>
+                            <td> @carro.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                            <td> @carro.FechaFabricacion.ToString("dd/MM/yyyy")</td>
+                            <td> @carro.Marca</td>
+                            <td> @carro.Modelo</td>
+                            <td> @carro.Color</td>
+                            <td> @carro.Precio.ToString("N2")</td>
+                            <td> @carro.NumeroChasis</td>
+
+                            <td>
+                                <a href="/Carros/Edit/@carro.CarroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                            <td>
+                                <a href="/Carros/Delete/@carro.CarroId" class="btn btn-outline-danger bi bi-trash"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public List<Carros> ListaCarros { get; set; } = new List<Carros>();
+
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+
+    public DateTime? Hasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaCarros = await carroService.Listar(c => c.CarroId > 0);
+        Desde = null;
+        Hasta = null;
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "CarroId")
+        {
+            if (int.TryParse(ValorFiltro, out var carroId))
+            {
+                ListaCarros = await carroService
+                    .Listar(c => c.CarroId == carroId);
+            }
+
+        }
+        else if (ValorFiltro.Trim() != "" && Filtro == "Marca")
+        {
+            ListaCarros = await carroService
+                .Listar(c => c.Marca.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if (ValorFiltro.Trim() != "" && Filtro == "Color")
+        {
+            ListaCarros = await carroService
+                .Listar(c => c.Color.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if (Filtro == "FechaRegistro")
+        {
+            ListaCarros = await carroService
+                .Listar(c => c.FechaRegistro >= Desde && c.FechaRegistro <= Hasta);
+        }
+
+
+        StateHasChanged();
+
+    }
+    private async Task Restablecer()
+    {
+        ListaCarros = await carroService.Listar(c => c.CarroId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+}
