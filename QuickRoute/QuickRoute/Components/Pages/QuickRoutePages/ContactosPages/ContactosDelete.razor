@@ -1,0 +1,55 @@
+﻿@*Nathiel Taveras*@
+@page "/Contactos/Delete/{ContactoId:int}"
+@inject ContactosService contactosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Eliminar</PageTitle>
+
+@*Labels para notificaciones*@
+<label style="color:red;" hidden="@string.IsNullOrEmpty(Confirmacion)">@Confirmacion</label>
+<label style="color:darkred">@Pregunta</label>
+
+<div class="container">
+	<div class="card shadow-lg">
+		<div class="card-header text-center">
+			<h5 class="card-title">Eliminar Carro</h5>
+		</div>
+		@*Datos y botones*@
+		<div class="card-body">
+			<p><strong>ContactoId:</strong>@Contacto.ContactoId</p>
+			<p><strong>Nombre:</strong>@Contacto.Nombre</p>
+			<p><strong>Email:</strong>@Contacto.Email</p>
+			<p><strong>Telefono:</strong>@Contacto.Telefono</p>
+
+			<div class="card-footer text-center mt-2">
+				<a href="/Contactos/Index" class="btn btn-outline-secondary"><span class="bi bi-arrow-left"></span>Cancelar</a>
+				<button class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public int ContactoId { get; set; }
+
+	private Contactos Contacto { get; set; } = new Contactos();
+	private string Confirmacion { get; set; } = string.Empty;
+	private string Pregunta { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Contacto = await contactosService.Buscar(ContactoId);
+		Pregunta = "¿Esta seguro de querer eliminar el Registro?";
+	}
+
+	public async Task Eliminar()
+	{
+		await contactosService.Eliminar(Contacto.ContactoId);
+		
+		Confirmacion = "Registro Eliminado Correctamente";
+		
+	}
+}
