@@ -15,6 +15,6 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public string Nombre { get; set; }
         [Required(ErrorMessage = "Este campo es requerido")]
-        public int Caso { get; set; }
+        public int CasoId { get; set; }
     }
 }
