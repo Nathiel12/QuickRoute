@@ -1,0 +1,171 @@
+﻿@*Nathiel Taveras*@
+@page "/Carros/Edit/{CarroId:int}"
+@inject CarrosService carroService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Carro" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	@* Label para notificaciones *@
+	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Registro de Carros</h5>
+			</div>
+
+			<div class="card-body">
+
+				@* CarroId *@
+				<div class="mb-3">
+					<label class="form-label"><strong>CarroId</strong></label>
+					<InputNumber class="form-control" @bind-Value="Carro.CarroId" readonly></InputNumber>
+				</div>
+
+				@* Prioridad *@
+				<div class="mb-3">
+
+					<div class="mb-3">
+						<label class="form-label"><strong>Marca</strong></label>
+						<InputText class="form-control" @bind-Value="Carro.Marca"></InputText>
+						<ValidationMessage For="(() => Carro.Marca)" />
+					</div>
+				</div>
+
+				@* Modelo *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Modelo</strong></label>
+					<InputText class="form-control" @bind-Value="Carro.Modelo"></InputText>
+					<ValidationMessage For="(() => Carro.Modelo)" />
+				</div>
+
+				@* Fecha Fabricacion *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Fecha de Fabricacion</strong></label>
+					<InputDate class="form-control" @bind-Value="Carro.FechaFabricacion"></InputDate>
+					<ValidationMessage For="(() => Carro.FechaFabricacion)" />
+				</div>
+
+				@* Color *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Color</strong></label>
+					<InputText class="form-control" @bind-Value="Carro.Color"></InputText>
+					<ValidationMessage For="(() => Carro.Color)" />
+				</div>
+
+				@* Precio *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Precio</strong></label>
+					<InputNumber class="form-control" @bind-Value="Carro.Precio"></InputNumber>
+					<ValidationMessage For="(() => Carro.Precio)" />
+
+				</div>
+
+				@* Numero de Chasis *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Numero de Chasis</strong></label>
+					<InputText class="form-control" @bind-Value="Carro.NumeroChasis"></InputText>
+					<ValidationMessage For="(() => Carro.NumeroChasis)" />
+				</div>
+
+				@* Factura *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Factura:</strong></label>
+					<InputFile OnChange="HandleFileSelection" />
+				</div>
+
+			</div>
+
+
+			@* Footer *@
+			<div class="card-footer text-center mt-2">
+				<a href="/Carros/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+				<button type="submit" class="btn btn-outline-success bi bi-floppy">Modificar</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+
+@code {
+	[Parameter]
+	public int CarroId { get; set; }
+
+	public Carros Carro { get; set; } = new Carros();
+	public string errorMensaje { get; set; } = string.Empty;
+	private IBrowserFile? archivoSeleccionado;
+
+	protected override async Task OnInitializedAsync(){
+		Carro = await carroService.Buscar(CarroId);
+	}
+
+	public async Task Guardar()
+	{
+		errorMensaje = string.Empty;
+
+		if (archivoSeleccionado != null)
+		{
+			await GuardarArchivoEnBD();
+		}
+
+		var guardo = await carroService.Guardar(this.Carro);
+		if (guardo != null)
+		{
+			navigationManager.NavigateTo("/Carros/Index");
+		}
+		else
+		{
+			errorMensaje = "Error al guardar el Registro";
+		}
+
+
+	}
+
+	private async Task HandleFileSelection(InputFileChangeEventArgs e)
+	{
+		var archivo = e.File;
+
+		if (archivo == null)
+		{
+			errorMensaje = "No se seleccionó ningún archivo.";
+			return;
+		}
+
+
+		using var stream = archivo.OpenReadStream();
+		byte[] encabezado = new byte[4];
+		await stream.ReadAsync(encabezado, 0, 4);
+
+
+		if (!(encabezado[0] == 0x25 && encabezado[1] == 0x50 &&
+					encabezado[2] == 0x44 && encabezado[3] == 0x46))
+		{
+			errorMensaje = "El archivo seleccionado no es un PDF válido.";
+			archivoSeleccionado = null;
+			return;
+		}
+
+		archivoSeleccionado = archivo;
+		errorMensaje = "";
+	}
+
+	private async Task GuardarArchivoEnBD()
+	{
+		if (archivoSeleccionado == null)
+		{
+			errorMensaje = "No hay archivo seleccionado para guardar.";
+			return;
+		}
+
+		using var stream = new MemoryStream();
+		await archivoSeleccionado.OpenReadStream().CopyToAsync(stream);
+		byte[] datosArchivo = stream.ToArray();
+
+		Carro.Factura = datosArchivo;
+	}
+
+}
