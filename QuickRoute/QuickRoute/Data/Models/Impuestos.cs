@@ -19,7 +19,7 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")] // No se almacena en la BD, se calcula dinámicamente
         public double Valor { get; set; }
 
-        public int SolicitudId { get; set; }
+        public int? SolicitudId { get; set; }
         [ForeignKey("SolicitudId")]
         public Despachos Despacho { get; set; }
     }
