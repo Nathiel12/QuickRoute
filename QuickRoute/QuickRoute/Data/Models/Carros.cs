@@ -34,6 +34,8 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public byte[] Factura { get; set; }
 
+        public int SolicitudId { get; set; }
+        public Despachos Despacho { get;set; }
         public int TrasladoId { get; set; }
         public Traslados Traslado { get; set; }
     }
