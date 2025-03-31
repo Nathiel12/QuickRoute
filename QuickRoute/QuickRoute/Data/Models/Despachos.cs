@@ -24,8 +24,12 @@ namespace QuickRoute.Data.Models
         [StringLength(100, ErrorMessage = "El título no puede superar los 100 caracteres")]
         public string Titulo { get; set; }
 
+        public int CarroId { get; set; }
+        public Carros Carro { get; set; }
+
         public IList<Impuestos> Impuestos { get; set; } = new List<Impuestos>();
-        public IList<Traslados> Traslados { get; set; } = new List<Traslados>();
+        public int DeclaracionId { get; set; }
+        public Declaraciones Declaracion { get; set; }
         public string Id { get; set; }
         public ApplicationUser Usuario { get; set; }
     }
