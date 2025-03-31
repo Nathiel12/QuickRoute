@@ -15,6 +15,7 @@ namespace QuickRoute.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Impuestos>().HasData(
                 new Impuestos { ImpuestoId = 1, Nombre = "Tasa por Servicio Aduanero", Monto = 0 },
                 new Impuestos { ImpuestoId = 2, Nombre = "Arancelarios", Monto = 0 },
