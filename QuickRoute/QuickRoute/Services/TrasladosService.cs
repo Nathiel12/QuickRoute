@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
 using QuickRoute.Data.Models;
+using QuickRoute.Data;
 using Microsoft.EntityFrameworkCore;
-namespace QuickRoute.Data.Services
+
+namespace QuickRoute.Services
 {
     public class TrasladosService(IDbContextFactory<ApplicationDbContext> DbFactory)
 
