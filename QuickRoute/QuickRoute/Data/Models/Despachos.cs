@@ -27,7 +27,7 @@ namespace QuickRoute.Data.Models
         public int CarroId { get; set; }
         public Carros Carro { get; set; }
 
-        public IList<Impuestos> Impuestos { get; set; } = new List<Impuestos>();
+        public ICollection<Impuestos> Impuestos { get; set; } = new List<Impuestos>();
         public int DeclaracionId { get; set; }
         public Declaraciones Declaracion { get; set; }
         public string Id { get; set; }
