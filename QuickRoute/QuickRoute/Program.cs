@@ -23,6 +23,7 @@ builder.Services.AddScoped<CasosService>();
 builder.Services.AddScoped<ContactosService>();
 builder.Services.AddScoped<DeclaracionesService>();
 builder.Services.AddScoped<DespachosService>();
+builder.Services.AddScoped<TrasladosService>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
