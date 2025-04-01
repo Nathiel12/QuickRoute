@@ -2,7 +2,7 @@
     <label class="col-form-label input-group-text">Seleccione:</label>
 
     <InputSelect class="form-control form-select" @bind-Value="ImpuestoId" @onchange="CalcularMonto">
-        <option disabled value="">-- Seleccione un impuesto --</option>
+        <option disabled value="0">-- Seleccione un impuesto --</option>
         @foreach (var impuesto in ListaImpuestos)
         {
             <option value="@impuesto.ImpuestoId">@impuesto.Nombre</option>
@@ -28,40 +28,40 @@
     [Parameter]
     public List<Impuestos> ListaImpuestos { get; set; } = new List<Impuestos>();
 
-   
+
     [Parameter]
     public int ImpuestoId { get; set; }
     [Parameter]
     public Despachos Despacho { get; set; }
-
-    private double MontoBase { get; set; }
-    private double Valor { get; set; }
+    [Parameter]
+    public double Valor { get; set; }
+    [Parameter]
+    public double MontoBase { get; set; } 
     private string ErrorMessage { get; set; } = "";
 
-    
+
     private void CalcularMonto()
     {
         if (ImpuestoId == 0)
         {
             ErrorMessage = "Debe seleccionar un impuesto válido.";
             MontoBase = 0;
+            StateHasChanged();
             return;
         }
 
-        
+
         var impuestoSeleccionado = ListaImpuestos.FirstOrDefault(i => i.ImpuestoId == ImpuestoId);
         if (impuestoSeleccionado == null)
         {
             ErrorMessage = "Impuesto no encontrado.";
             MontoBase = 0;
+            StateHasChanged();
             return;
         }
 
-       
-        MontoBase = Despacho.Carro.Precio;  
-
-       
         CalcularValor(impuestoSeleccionado);
+        StateHasChanged();
     }
 
     private void CalcularValor(Impuestos impuesto)
@@ -111,20 +111,25 @@
                 Valor = MontoBase;
                 break;
         }
+
     }
 
     private async Task AgregarImpuesto()
     {
-        if (ImpuestoId == 0 || MontoBase <= 0)
+        if (ImpuestoId == 0)
         {
             ErrorMessage = "Debe seleccionar un impuesto válido.";
             return;
         }
+        
+        
 
         ErrorMessage = "";
 
         // Llamamos al callback para pasar el impuesto agregado
         var impuesto = ListaImpuestos.FirstOrDefault(i => i.ImpuestoId == ImpuestoId);
+        CalcularValor(impuesto);
+        StateHasChanged();
         if (impuesto != null)
         {
             await OnImpuestoAgregado.InvokeAsync((impuesto.Nombre, MontoBase, Valor));
