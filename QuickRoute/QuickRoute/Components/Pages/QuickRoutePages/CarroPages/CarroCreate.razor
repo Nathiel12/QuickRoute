@@ -77,12 +77,6 @@
 					<ValidationMessage For="(() => Carro.NumeroChasis)" />
 				</div>
 
-				@* Factura *@
-				<div class="mb-3">
-					<label class="form-label"><strong>Factura:</strong></label>
-					<InputFile OnChange="HandleFileSelection"/>
-				</div>
-
 			</div>
 
 
@@ -100,18 +94,13 @@
 @code {
 	public Carros Carro { get; set; } = new Carros();
 	public string errorMensaje { get; set; } = string.Empty;
-	private IBrowserFile? archivoSeleccionado;
 
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
 
-		if (archivoSeleccionado != null)
-		{
-			await GuardarArchivoEnBD();
-		}
 
-		var guardo = await carroService.Guardar(this.Carro);
+		var guardo = await carroService.Guardar(Carro);
 		if (guardo != null)
 		{
 			navigationManager.NavigateTo("/Carros/Index");
@@ -122,49 +111,6 @@
 		}
 		
 
-	}
-
-	private async Task HandleFileSelection(InputFileChangeEventArgs e)
-	{
-		var archivo = e.File;
-
-		if (archivo == null)
-		{
-			errorMensaje = "No se seleccionó ningún archivo.";
-			return;
-		}
-
-		
-		using var stream = archivo.OpenReadStream();
-		byte[] encabezado = new byte[4];
-		await stream.ReadAsync(encabezado, 0, 4);
-
-	
-		if (!(encabezado[0] == 0x25 && encabezado[1] == 0x50 &&
-					encabezado[2] == 0x44 && encabezado[3] == 0x46))
-		{
-			errorMensaje = "El archivo seleccionado no es un PDF válido.";
-			archivoSeleccionado = null;
-			return;
-		}
-
-		archivoSeleccionado = archivo;
-		errorMensaje = ""; 
-	}
-
-	private async Task GuardarArchivoEnBD()
-	{
-		if (archivoSeleccionado == null)
-		{
-			errorMensaje = "No hay archivo seleccionado para guardar.";
-			return;
-		}
-
-		using var stream = new MemoryStream();
-		await archivoSeleccionado.OpenReadStream().CopyToAsync(stream);
-		byte[] datosArchivo = stream.ToArray();
-
-		Carro.Factura = datosArchivo;
 	}
 
 	private void Nuevo(){
