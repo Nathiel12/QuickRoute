@@ -1,6 +1,8 @@
 ﻿@page "/Despachos/Create"
 @inject DespachosService despachoService
+@inject ImpuestosService impuestosService
 @inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
 @*HTML*@
@@ -53,7 +55,7 @@
 
 				<div class="border border-success p-3 mt-3">
 					<h5>Impuestos</h5>
-					<ImpuestoPicker OnImpuestoAgregado="HandleImpuestoAgregado" ImpuestoId="Impuesto.ImpuestoId" ListaImpuestos="ListaImpuestos" Despacho="Despacho" />
+					<ImpuestoPicker OnImpuestoAgregado="HandleImpuestoAgregado" ImpuestoId="Impuesto.ImpuestoId" ListaImpuestos="ListaImpuestos" Despacho="Despacho" Valor="Impuesto.Valor" MontoBase="Despacho.Carro.Precio" />
 					<hr />
 					<table class="table table-light">
 						<thead class="table table-striped">
@@ -68,10 +70,10 @@
 							{
 								<tr>
 									<td>@detalle.Nombre</td>
-									<td>@detalle.Monto</td>
+									<td>@detalle.Valor</td>
 									<td>
 										<button type="button" class="btn btn-outline-danger bi bi-trash"
-												@onclick="() => RemoverDetalle(detalle)"></button>
+										@onclick="() => RemoverDetalle(detalle)"></button>
 									</td>
 								</tr>
 							}
@@ -95,8 +97,15 @@
 @code {
 	private Despachos Despacho { get; set; } = new Despachos();
 	private Impuestos Impuesto { get; set; } = new Impuestos();
-	private List<Impuestos> ListaImpuestos { get; set; } = new List<Impuestos>();
+	private List<Impuestos> ListaImpuestos { get; set; } = [];
 	private string errorMensaje { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync(){
+		ListaImpuestos = await impuestosService
+			.Listar(i => true);
+	}
+
+
 
 	public void Nuevo()
 	{
