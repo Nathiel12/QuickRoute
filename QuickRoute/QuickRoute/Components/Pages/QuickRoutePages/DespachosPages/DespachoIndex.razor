@@ -1,0 +1,155 @@
+﻿@*Nathiel Taveras*@
+@page "/Despachos/Index"
+@inject DespachosService despachosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Registro de Solicitudes</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header space-between">
+            <h5 class="card-title">Registro de Solicitudes de Despacho</h5>
+            <a href="/Despachos/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+
+            @*labels*@
+            <div class="row">
+
+                @*Filtrar por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+
+                @*ValorFiltro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        <option value="SolicitudId">SolicitudId</option>
+                        <option value="FechaSolicitud">Fecha de Solicitud</option>
+                    </InputSelect>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                @*Restablecer*@
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
+                            @onclick="Restablecer">
+                    </button>
+                </div>
+
+                @*FiltroFecha*@
+                <div class="row mt-3">
+
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        @* Tabla *@
+        <table class="table table-hover">
+            <thead class="table  table-striped text-black">
+                <tr>
+                    <th>SolicitudId</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Empresa</th>
+                    <th>Localizacion</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var solicitudes in ListaSolicitudes)
+                {
+                    <tr>
+                        <td> @solicitudes.SolicitudId</td>
+                        <td> @solicitudes.FechaSolicitud.ToString("dd/MM/yyyy")</td>
+                        <td> @solicitudes.NombreEmpresa</td>
+                        <td> @solicitudes.Localizacion</td>
+
+                        <td>
+                            <a href="/Despachos/Edit/@solicitudes.SolicitudId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        </td>
+                        <td>
+                            <a href="/Despachos/Delete/@solicitudes.SolicitudId" class="btn btn-outline-danger bi bi-trash"></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+
+    public List<Despachos> ListaSolicitudes { get; set; } = new List<Despachos>();
+
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+
+    public DateTime? Hasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaSolicitudes = await despachosService.Listar(s => s.SolicitudId > 0);
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "SolicitudId")
+        {
+            if (int.TryParse(ValorFiltro, out var solicitudId))
+            {
+                ListaSolicitudes = await despachosService
+                    .Listar(s => s.SolicitudId == solicitudId);
+            }
+
+        }
+        if (Filtro == "FechaSolicitud")
+            ListaSolicitudes = await despachosService
+            .Listar(f => f.FechaSolicitud >= Desde && f.FechaSolicitud <= Hasta);
+
+        StateHasChanged();
+
+    }
+    private async Task Restablecer()
+    {
+        ListaSolicitudes = await despachosService.Listar(s => s.SolicitudId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+}
