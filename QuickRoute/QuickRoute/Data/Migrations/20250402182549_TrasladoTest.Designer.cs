@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250402182549_TrasladoTest")]
+    partial class TrasladoTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -511,37 +514,14 @@ namespace QuickRoute.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<double>("Monto")
+                        .HasColumnType("float");
+
                     b.HasKey("TrasladoId");
 
                     b.HasIndex("Id");
 
                     b.ToTable("Traslados");
-                });
-
-            modelBuilder.Entity("QuickRoute.Data.Models.TrasladosDetalle", b =>
-                {
-                    b.Property<int>("DetalleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetalleId"));
-
-                    b.Property<int>("CarroId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Monto")
-                        .HasColumnType("float");
-
-                    b.Property<int>("TrasladoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("DetalleId");
-
-                    b.HasIndex("CarroId");
-
-                    b.HasIndex("TrasladoId");
-
-                    b.ToTable("TrasladosDetalles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -598,7 +578,7 @@ namespace QuickRoute.Migrations
             modelBuilder.Entity("QuickRoute.Data.Models.Carros", b =>
                 {
                     b.HasOne("QuickRoute.Data.Models.Traslados", "Traslado")
-                        .WithMany()
+                        .WithMany("Carros")
                         .HasForeignKey("TrasladoId");
 
                     b.Navigation("Traslado");
@@ -675,25 +655,6 @@ namespace QuickRoute.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("QuickRoute.Data.Models.TrasladosDetalle", b =>
-                {
-                    b.HasOne("QuickRoute.Data.Models.Carros", "Carro")
-                        .WithMany()
-                        .HasForeignKey("CarroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QuickRoute.Data.Models.Traslados", "Traslado")
-                        .WithMany("TrasladosDetalles")
-                        .HasForeignKey("TrasladoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Carro");
-
-                    b.Navigation("Traslado");
-                });
-
             modelBuilder.Entity("QuickRoute.Data.ApplicationUser", b =>
                 {
                     b.Navigation("Declaraciones");
@@ -722,7 +683,7 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.Models.Traslados", b =>
                 {
-                    b.Navigation("TrasladosDetalles");
+                    b.Navigation("Carros");
                 });
 #pragma warning restore 612, 618
         }
