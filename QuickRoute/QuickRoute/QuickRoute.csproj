@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DAL\**" />
+    <Content Remove="DAL\**" />
+    <EmbeddedResource Remove="DAL\**" />
+    <None Remove="DAL\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\QuickRoute.Client\QuickRoute.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.1" />
@@ -17,10 +24,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DAL\" />
   </ItemGroup>
 
 </Project>
