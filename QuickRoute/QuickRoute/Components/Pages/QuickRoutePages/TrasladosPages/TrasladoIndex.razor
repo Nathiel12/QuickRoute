@@ -1,5 +1,6 @@
 @page "/Traslados/Index"
 @inject TrasladosService trasladosService
+@attribute [Authorize]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -27,7 +28,6 @@
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" disabled selected>Elija una opción</option>
                         <option value="TrasladoId">TrasladoId</option>
-                        <option value="Aprobado">Aprobado</option>
                     </InputSelect>
                 </div>
 
@@ -51,7 +51,7 @@
                 <thead class="table-striped text-black">
                     <tr>
                         <th>TrasladoId</th>
-                        <th>Aprobado</th>
+                        
                         <th>Total Monto</th>
                         <th>Carros</th>
                         <th>Usuario</th>
@@ -64,7 +64,7 @@
                     {
                         <tr>
                             <td>@traslado.TrasladoId</td>
-                            <td>@(traslado.Aprobado.HasValue ? (traslado.Aprobado.Value ? "Si" : "No") : "Sin definir")</td>
+                            
                             <td>@traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</td>
                             <td>
                                 @if (traslado.TrasladosDetalles.Any())
@@ -80,7 +80,7 @@
                             <td>
                                 @if (traslado.Usuario is not null)
                                 {
-                                    @traslado.Usuario.UserName
+                                    @traslado.Usuario.Email
                                 }
                             </td>
                             <td>
@@ -120,13 +120,6 @@
             if (int.TryParse(ValorFiltro, out var trasladoId))
             {
                 ListaTraslados = await trasladosService.Listar(t => t.TrasladoId == trasladoId);
-            }
-        }
-        else if (Filtro == "Aprobado")
-        {
-            if (bool.TryParse(ValorFiltro, out var aprobado))
-            {
-                ListaTraslados = await trasladosService.Listar(t => t.Aprobado == aprobado);
             }
         }
         StateHasChanged();
