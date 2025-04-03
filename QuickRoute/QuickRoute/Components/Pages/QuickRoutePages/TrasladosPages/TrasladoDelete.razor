@@ -1,5 +1,6 @@
 @page "/Traslados/Delete/{TrasladoId:int}"
 @inject TrasladosService trasladosService
+@attribute [Authorize]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -22,7 +23,6 @@
                     <ul class="px-3 pt-4 pb-5 list-unstyled">
                         <li><strong>TrasladoId: </strong>@Traslado.TrasladoId</li>
                         <li><strong>Monto Total: </strong>@Traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</li>
-                        <li><strong>¿Aprobado?: </strong>@(Traslado.Aprobado == true ? "Sí" : "No")</li>
                         <li>
                             <strong>Carros:</strong>
                             <ul>
