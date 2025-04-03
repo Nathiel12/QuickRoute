@@ -1,5 +1,6 @@
 @page "/Traslados/View/{TrasladoId:int?}"
 @inject TrasladosService trasladosService
+@attribute [Authorize]
 @inject CarrosService carrosService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
@@ -20,10 +21,6 @@
                     <div class="col">
                         <label class="form-label">ID</label>
                         <InputNumber class="form-control" @bind-Value="Traslado.TrasladoId" disabled />
-                    </div>
-                    <div class="col">
-                        <label class="form-label">¿Aprobado?</label>
-                        <InputCheckbox class="form-check-input" @bind-Value="AprobadoValue" />
                     </div>
                 </div>
 
@@ -111,11 +108,6 @@
     [Parameter]
     public int? TrasladoId { get; set; }
     
-    private bool AprobadoValue
-    {
-        get => Traslado.Aprobado ?? false;
-        set => Traslado.Aprobado = value;
-    }
 
     public Traslados Traslado { get; set; } = new Traslados();
     public List<Carros> listaCarros { get; set; } = new List<Carros>();
