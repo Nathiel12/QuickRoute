@@ -32,6 +32,17 @@ namespace QuickRoute.Data
                     .WithMany()
                     .HasForeignKey(d => d.CarroId);
             });
+            modelBuilder.Entity<Carros>()
+            .HasOne(c => c.Traslado)          
+            .WithMany(t => t.Carros)         
+            .HasForeignKey(c => c.TrasladoId) 
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ApplicationUser>()
+            .HasMany(u => u.Carros)           // Un usuario tiene muchos carros
+            .WithOne(c => c.Usuario)           // Un carro pertenece a un usuario
+            .HasForeignKey(c => c.Id)
+            .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Impuestos>().HasData(
                 new Impuestos { ImpuestoId = 1, Nombre = "Tasa por Servicio Aduanero", Monto = 0 },
