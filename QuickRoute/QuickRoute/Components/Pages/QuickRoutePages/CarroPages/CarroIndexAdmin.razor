@@ -1,5 +1,4 @@
 ﻿@page "/Admin/Carros/Index"
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 @inject CarrosService carroService
 @inject NavigationManager navigationManager
