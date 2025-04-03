@@ -30,10 +30,13 @@ namespace QuickRoute.Data.Models
         [StringLength(17, MinimumLength = 17, ErrorMessage = "El número de chasis debe tener exactamente 17 caracteres.")]
         [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "El número de chasis contiene caracteres inválidos. (No debe contener I u O")]
         public string NumeroChasis { get; set; }
-
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public bool Aprobado { get; set; } = false;
         public int SolicitudId { get; set; }
         public Despachos Despacho { get;set; }
         public int? TrasladoId { get; set; }
         public Traslados? Traslado { get; set; }
+        public string Id { get; set; }
+        public ApplicationUser Usuario { get; set; }
     }
 }
