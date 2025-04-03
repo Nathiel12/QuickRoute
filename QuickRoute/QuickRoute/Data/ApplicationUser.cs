@@ -9,7 +9,7 @@ namespace QuickRoute.Data
         public ICollection<Traslados> Traslados { get; set; }
         public ICollection<Despachos> Despachos { get; set; }
         public ICollection<Declaraciones> Declaraciones { get; set; }
-        public ICollection<Carros> Carros { get; set; }
+        public ICollection<Carros?> Carros { get; set; }
     }
 
 }
