@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickRoute.Data.Models
 {
@@ -37,6 +38,7 @@ namespace QuickRoute.Data.Models
         public int? TrasladoId { get; set; }
         public Traslados? Traslado { get; set; }
         public string Id { get; set; }
+        [ForeignKey("Id")]
         public ApplicationUser Usuario { get; set; }
     }
 }
