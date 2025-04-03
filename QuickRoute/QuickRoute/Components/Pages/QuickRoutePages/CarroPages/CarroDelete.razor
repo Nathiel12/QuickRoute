@@ -1,6 +1,7 @@
 ﻿@*Nathiel Taveras*@
 @page "/Carros/Delete/{CarroId:int}"
 @inject CarrosService carroService
+@attribute [Authorize]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -49,14 +50,21 @@
 
 	public async Task Eliminar()
 	{
-		var eliminado = await carroService.Eliminar(Carro.CarroId);
-		if (eliminado != null)
-		{
-			Confirmacion = "Registro Eliminado Correctamente";
+		var verificar = await carroService.TieneTrasladosActivos(CarroId);
+		if(verificar){
+			Confirmacion = "No se puede eliminar el registro (El carro esta en proceso de traslado)";
+			return;
+		}else{
+			var eliminado = await carroService.Eliminar(Carro.CarroId);
+			if (eliminado != null)
+			{
+				Confirmacion = "Registro Eliminado Correctamente";
+			}
+			else
+			{
+				Confirmacion = "Error al eliminar el Registro";
+			}
 		}
-		else
-		{
-			Confirmacion = "Error al eliminar el Registro";
-		}
+		
 	}
 }
