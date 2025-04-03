@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403015609_UserCar2")]
+    partial class UserCar2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -514,6 +517,9 @@ namespace QuickRoute.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrasladoId"));
 
+                    b.Property<bool>("Aprobado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
@@ -606,13 +612,12 @@ namespace QuickRoute.Migrations
                     b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
                         .WithMany("Carros")
                         .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("QuickRoute.Data.Models.Traslados", "Traslado")
-                        .WithMany("Carros")
-                        .HasForeignKey("TrasladoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("TrasladoId");
 
                     b.Navigation("Traslado");
 
@@ -739,8 +744,6 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.Models.Traslados", b =>
                 {
-                    b.Navigation("Carros");
-
                     b.Navigation("TrasladosDetalles");
                 });
 #pragma warning restore 612, 618
