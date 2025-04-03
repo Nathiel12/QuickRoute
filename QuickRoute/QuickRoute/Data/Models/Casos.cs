@@ -13,8 +13,8 @@ public class Casos
     [Required(ErrorMessage = "Por favor, elija un contacto aduanero")]
     public Contactos Contacto { get; set; }
     
-    [Required(ErrorMessage = "Por favor, elija un traslado")]
-    public Traslados Traslado { get; set; }
+    [Required(ErrorMessage = "Por favor, Diga cual es el traslado deseado")]
+    public int TrasladoId { get; set; }
     
     public DateTime Fecha { get; set; } = DateTime.Today;
     
