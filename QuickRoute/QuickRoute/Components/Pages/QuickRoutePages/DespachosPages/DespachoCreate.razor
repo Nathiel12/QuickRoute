@@ -1,7 +1,9 @@
 ﻿@page "/Despachos/Create"
 @inject DespachosService despachoService
 @inject ImpuestosService impuestosService
+@inject UserServices userService
 @inject NavigationManager navigationManager
+@using System.Security.Claims;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
@@ -105,8 +107,6 @@
 			.Listar(i => true);
 	}
 
-
-
 	public void Nuevo()
 	{
 		this.Despacho = new Despachos();
@@ -148,4 +148,5 @@
 	{
 		Despacho.Impuestos.Remove(detalle);
 	}
+	
 }
