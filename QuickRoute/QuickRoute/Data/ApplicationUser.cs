@@ -7,9 +7,12 @@ namespace QuickRoute.Data
     public class ApplicationUser : IdentityUser
     {
         public ICollection<Traslados> Traslados { get; set; }
+<<<<<<< HEAD
         public ICollection<Despachos> Despachos { get; set; }
         public ICollection<Declaraciones> Declaraciones { get; set; }
         public ICollection<Carros?> Carros { get; set; }
+=======
+>>>>>>> b94356f9e1ad664e1da4fce755a941b590e8ae27
     }
 
 }

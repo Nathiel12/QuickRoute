@@ -6,12 +6,10 @@ namespace QuickRoute.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
+        public virtual DbSet<Sugerencias> Sugerencias { get; set; }
         public virtual DbSet<Carros> Carros { get; set; }
         public virtual DbSet<Casos> Casos { get; set; }
         public virtual DbSet<Contactos> Contactos { get; set; }
-        public virtual DbSet<Declaraciones> Declaraciones { get; set; }
-        public virtual DbSet<Despachos> Despachos { get; set; }
-        public virtual DbSet<Impuestos> Impuestos { get; set; }
         public virtual DbSet<Traslados> Traslados { get; set; }
         public virtual DbSet<TrasladosDetalle> TrasladosDetalles { get; set; }
 
@@ -32,6 +30,7 @@ namespace QuickRoute.Data
                     .WithMany()
                     .HasForeignKey(d => d.CarroId);
             });
+<<<<<<< HEAD
             modelBuilder.Entity<Carros>()
             .HasOne(c => c.Traslado)          
             .WithMany(t => t.Carros)         
@@ -52,6 +51,8 @@ namespace QuickRoute.Data
                 new Impuestos { ImpuestoId = 5, Nombre = "Recargos por Declaracion Tardia", Monto = 0 },
                 new Impuestos { ImpuestoId = 6, Nombre = "Declaracion Unica Aduanera", Monto = 0 }
             );
+=======
+>>>>>>> b94356f9e1ad664e1da4fce755a941b590e8ae27
         }
     }
 }

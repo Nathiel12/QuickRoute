@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250404000254_Sugerencias")]
+    partial class Sugerencias
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,9 +231,6 @@ namespace QuickRoute.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarroId"));
 
-                    b.Property<bool>("Aprobado")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -240,10 +240,6 @@ namespace QuickRoute.Migrations
 
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Marca")
                         .IsRequired()
@@ -265,8 +261,6 @@ namespace QuickRoute.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("CarroId");
-
-                    b.HasIndex("Id");
 
                     b.HasIndex("TrasladoId");
 
@@ -369,6 +363,9 @@ namespace QuickRoute.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrasladoId"));
 
+                    b.Property<bool>("Aprobado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
@@ -458,20 +455,11 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.Models.Carros", b =>
                 {
-                    b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
-                        .WithMany("Carros")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("QuickRoute.Data.Models.Traslados", "Traslado")
-                        .WithMany("Carros")
-                        .HasForeignKey("TrasladoId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("TrasladoId");
 
                     b.Navigation("Traslado");
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Casos", b =>
@@ -515,22 +503,11 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.ApplicationUser", b =>
                 {
-<<<<<<< HEAD
-                    b.Navigation("Carros");
-
-                    b.Navigation("Declaraciones");
-
-                    b.Navigation("Despachos");
-
-=======
->>>>>>> b94356f9e1ad664e1da4fce755a941b590e8ae27
                     b.Navigation("Traslados");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Traslados", b =>
                 {
-                    b.Navigation("Carros");
-
                     b.Navigation("TrasladosDetalles");
                 });
 #pragma warning restore 612, 618
