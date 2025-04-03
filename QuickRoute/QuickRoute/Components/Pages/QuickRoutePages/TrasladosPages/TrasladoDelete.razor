@@ -21,8 +21,17 @@
                     <h4 class="bg-light card-header fw-bold text-center">Datos del Traslado</h4>
                     <ul class="px-3 pt-4 pb-5 list-unstyled">
                         <li><strong>TrasladoId: </strong>@Traslado.TrasladoId</li>
-                        <li><strong>Monto Total: </strong>@Traslado.Monto.ToString("N2")</li>
+                        <li><strong>Monto Total: </strong>@Traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</li>
                         <li><strong>¿Aprobado?: </strong>@(Traslado.Aprobado == true ? "Sí" : "No")</li>
+                        <li>
+                            <strong>Carros:</strong>
+                            <ul>
+                                @foreach (var detalle in Traslado.TrasladosDetalles)
+                                {
+                                    <li>@(detalle.Carro?.Marca ?? "N/A") - @detalle.Monto.ToString("N2")</li>
+                                }
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -48,7 +57,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Traslado = await trasladosService.Buscar(TrasladoId);
+        Traslado = await trasladosService.Buscar(TrasladoId) ?? new Traslados();
     }
 
     public async Task Eliminar()

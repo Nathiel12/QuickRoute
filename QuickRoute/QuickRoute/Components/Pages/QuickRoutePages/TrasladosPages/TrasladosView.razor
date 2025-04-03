@@ -21,20 +21,75 @@
                         <label class="form-label">ID</label>
                         <InputNumber class="form-control" @bind-Value="Traslado.TrasladoId" disabled />
                     </div>
-                   <label class="form-label">¿Aprobado?</label>
-                   <InputCheckbox class="form-check-input" @bind-Value="AprobadoValue" />
+                    <div class="col">
+                        <label class="form-label">¿Aprobado?</label>
+                        <InputCheckbox class="form-check-input" @bind-Value="AprobadoValue" />
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <h5>Detalle del Carro</h5>
-                    <CarroPicker Carros="listaCarros"
-                                 CarroId="@selectedCarroId"
-                                 Monto="@Traslado.Monto"
-                                 OnCarroSelected="HandleCarroSelected" />
+                <div class="border border-success p-3 mt-3">
+                    <h3>Detalle del Carro</h3>
+                    <div class="row align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label">Carro</label>
+                            <InputSelect class="form-select form-select-sm" @bind-Value="DetalleSeleccionado.CarroId">
+                                <option disabled value="0">Seleccione Carro</option>
+                                @foreach (var carro in listaCarros)
+                                {
+                                    <option value="@carro.CarroId">@($"{carro.Marca} {carro.Modelo}")</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="col-auto ms-2">
+                            <label class="form-label">Monto</label>
+                            <InputNumber class="form-control form-control-sm" @bind-Value="DetalleSeleccionado.Monto" min="0"/>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-primary" @onclick="AgregarDetalle">
+                                <span class="bi bi-plus"></span><strong>Agregar</strong>
+                            </button>
+                        </div>
+                    </div>
+                    <table class="table mt-3">
+                        <thead>
+                            <tr>
+                                <th>Carro</th>
+                                <th>Monto</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in Traslado.TrasladosDetalles)
+                            {
+                                <tr>
+                                    <td>
+                                        @(detalle.Carro != null
+                                            ? $"{detalle.Carro.Marca} {detalle.Carro.Modelo}"
+                                            : listaCarros.FirstOrDefault(c => c.CarroId == detalle.CarroId)?.Marca)
+                                    </td>
+                                    <td>@detalle.Monto.ToString("N2")</td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-dark" @onclick="() => EliminarDetalle(detalle)">
+                                            <span class="bi bi-trash"></span> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column">
+                            <label class="mb-1">Cantidad:</label>
+                            <div class="border p-2">@Traslado.TrasladosDetalles.Count</div>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <label class="mb-1">Total:</label>
+                            <div class="border p-2 text-end">@Traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</div>
+                        </div>
+                    </div>
                 </div>
-
             </div>
-
             <div class="card-footer text-center">
                 <div class="btn-group" role="group">
                     <a href="/Traslados/Index" class="btn btn-outline-primary">
@@ -61,14 +116,10 @@
         get => Traslado.Aprobado ?? false;
         set => Traslado.Aprobado = value;
     }
-    
 
-    public Traslados Traslado { get; set; } = new Traslados() { Carros = new List<Carros>() };
-
+    public Traslados Traslado { get; set; } = new Traslados();
     public List<Carros> listaCarros { get; set; } = new List<Carros>();
-
-
-    private int selectedCarroId;
+    public TrasladosDetalle DetalleSeleccionado { get; set; } = new TrasladosDetalle();
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,40 +131,31 @@
             if (trasladoEncontrado is not null)
             {
                 Traslado = trasladoEncontrado;
-                if (Traslado.Carros != null && Traslado.Carros.Any())
-                {
-                    selectedCarroId = Traslado.Carros.First().CarroId;
-                }
             }
             else
             {
-                // If not found, navigate back to the index.
                 navigationManager.NavigateTo("/Traslados/Index");
             }
         }
-        else
+    }
+
+    private void AgregarDetalle()
+    {
+        if (DetalleSeleccionado.CarroId > 0 && DetalleSeleccionado.Monto > 0)
         {
-            // For a new Traslado, set a default value if needed.
-            Traslado.Aprobado = false;
+            var detalleNuevo = new TrasladosDetalle
+            {
+                CarroId = DetalleSeleccionado.CarroId,
+                Monto = DetalleSeleccionado.Monto
+            };
+            Traslado.TrasladosDetalles.Add(detalleNuevo);
+            DetalleSeleccionado = new TrasladosDetalle();
         }
     }
-    
-    private async Task HandleCarroSelected((Carros Carro, double Monto) data)
-    {
-        Traslado.Monto = data.Monto;
-        
-        if (Traslado.Carros == null)
-        {
-            Traslado.Carros = new List<Carros>();
-        }
-        else
-        {
-            // Clear any previously selected Carro.
-            Traslado.Carros.Clear();
-        }
-        Traslado.Carros.Add(data.Carro);
 
-        selectedCarroId = data.Carro.CarroId;
+    private void EliminarDetalle(TrasladosDetalle detalle)
+    {
+        Traslado.TrasladosDetalles.Remove(detalle);
     }
 
     private async Task Guardar()

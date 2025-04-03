@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250402194956_TrasladoTest1")]
+    partial class TrasladoTest1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,9 +231,6 @@ namespace QuickRoute.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarroId"));
 
-                    b.Property<bool>("Aprobado")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -240,10 +240,6 @@ namespace QuickRoute.Migrations
 
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Marca")
                         .IsRequired()
@@ -267,14 +263,9 @@ namespace QuickRoute.Migrations
                     b.Property<int?>("TrasladoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("CarroId");
 
                     b.HasIndex("TrasladoId");
-
-                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Carros");
                 });
@@ -613,13 +604,7 @@ namespace QuickRoute.Migrations
                         .WithMany()
                         .HasForeignKey("TrasladoId");
 
-                    b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
-                        .WithMany("Carros")
-                        .HasForeignKey("UsuarioId");
-
                     b.Navigation("Traslado");
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Casos", b =>
@@ -714,8 +699,6 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.ApplicationUser", b =>
                 {
-                    b.Navigation("Carros");
-
                     b.Navigation("Declaraciones");
 
                     b.Navigation("Despachos");

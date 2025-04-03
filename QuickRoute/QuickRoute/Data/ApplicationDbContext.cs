@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using QuickRoute.Data.Models;
+
 namespace QuickRoute.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
@@ -12,10 +13,26 @@ namespace QuickRoute.Data
         public virtual DbSet<Despachos> Despachos { get; set; }
         public virtual DbSet<Impuestos> Impuestos { get; set; }
         public virtual DbSet<Traslados> Traslados { get; set; }
+        public virtual DbSet<TrasladosDetalle> TrasladosDetalles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+  
+            modelBuilder.Entity<TrasladosDetalle>(entity =>
+            {
+                entity.HasKey(e => e.DetalleId);
+
+                entity.HasOne(d => d.Traslado)
+                    .WithMany(t => t.TrasladosDetalles)
+                    .HasForeignKey(d => d.TrasladoId);
+
+                entity.HasOne(d => d.Carro)
+                    .WithMany()
+                    .HasForeignKey(d => d.CarroId);
+            });
+
             modelBuilder.Entity<Impuestos>().HasData(
                 new Impuestos { ImpuestoId = 1, Nombre = "Tasa por Servicio Aduanero", Monto = 0 },
                 new Impuestos { ImpuestoId = 2, Nombre = "Arancelarios", Monto = 0 },
@@ -25,6 +42,5 @@ namespace QuickRoute.Data
                 new Impuestos { ImpuestoId = 6, Nombre = "Declaracion Unica Aduanera", Monto = 0 }
             );
         }
-
     }
 }

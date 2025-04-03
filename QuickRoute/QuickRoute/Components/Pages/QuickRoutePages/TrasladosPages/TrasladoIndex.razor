@@ -14,7 +14,6 @@
         </div>
 
         <div class="card-body">
-            <!-- Filtros -->
             <div class="row">
                 <div class="col-3">
                     <label class="col-form-label"><strong>Filtrar por</strong></label>
@@ -24,17 +23,15 @@
                 </div>
             </div>
             <div class="row align-items-center mb-3">
-                <!-- Selector de filtro -->
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" disabled selected>Elija una opción</option>
                         <option value="TrasladoId">TrasladoId</option>
                         <option value="Aprobado">Aprobado</option>
-                        <option value="Monto">Monto</option>
                     </InputSelect>
                 </div>
 
-                <!-- Input de búsqueda -->
+    
                 <div class="col-4">
                     <div class="input-group">
                         <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
@@ -42,13 +39,12 @@
                     </div>
                 </div>
 
-                <!-- Botón de restablecer -->
                 <div class="col-3">
                     <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise" @onclick="Restablecer">
                     </button>
                 </div>
             </div>
-            <!-- Fin filtros -->
+
 
             <!-- Tabla de Traslados -->
             <table class="table table-hover">
@@ -56,8 +52,8 @@
                     <tr>
                         <th>TrasladoId</th>
                         <th>Aprobado</th>
-                        <th>Monto</th>
-                        <th>Carro</th>
+                        <th>Total Monto</th>
+                        <th>Carros</th>
                         <th>Usuario</th>
                         <th>Editar</th>
                         <th>Eliminar</th>
@@ -69,30 +65,34 @@
                         <tr>
                             <td>@traslado.TrasladoId</td>
                             <td>@(traslado.Aprobado.HasValue ? (traslado.Aprobado.Value ? "Si" : "No") : "Sin definir")</td>
-                            <td>@traslado.Monto.ToString("N2")</td>
+                            <td>@traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</td>
                             <td>
-                                @if (traslado.Carros is not null)
+                                @if (traslado.TrasladosDetalles.Any())
                                 {
-                                    @traslado.Id  @* O incluso alguna propiedad como Marca o Modelo *@
+                                    <ul>
+                                        @foreach (var detalle in traslado.TrasladosDetalles)
+                                        {
+                                            <li>@(detalle.Carro?.Marca ?? "N/A") - @detalle.Monto.ToString("N2")</li>
+                                        }
+                                    </ul>
                                 }
                             </td>
                             <td>
                                 @if (traslado.Usuario is not null)
                                 {
-                                    @traslado.Usuario.UserName  @* O el Email, según convenga *@
+                                    @traslado.Usuario.UserName
                                 }
                             </td>
                             <td>
-                                <a href="/Traslados/Edit/@traslado.TrasladoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                                <a href="/Traslados/View/@traslado.TrasladoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                             </td>
                             <td>
-                                <a href="/Traslados/Delete/@traslado.TrasladoId" class="btn btn-outline-danger bi bi-trash"></a>
+                                <button class="btn btn-outline-danger bi bi-trash" @onclick="() => EliminarTraslado(traslado.TrasladoId)"></button>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-            <!-- Fin tabla -->
         </div>
     </div>
 </div>
@@ -104,6 +104,11 @@
     public string ValorFiltro { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
+    {
+        await CargarTraslados();
+    }
+
+    private async Task CargarTraslados()
     {
         ListaTraslados = await trasladosService.Listar(t => t.TrasladoId > 0);
     }
@@ -124,20 +129,21 @@
                 ListaTraslados = await trasladosService.Listar(t => t.Aprobado == aprobado);
             }
         }
-        else if (Filtro == "Monto")
-        {
-            if (double.TryParse(ValorFiltro, out var monto))
-            {
-                ListaTraslados = await trasladosService.Listar(t => t.Monto == monto);
-            }
-        }
         StateHasChanged();
     }
 
     private async Task Restablecer()
     {
-        ListaTraslados = await trasladosService.Listar(t => t.TrasladoId > 0);
+        await CargarTraslados();
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
+    }
+
+    private async Task EliminarTraslado(int trasladoId)
+    {
+        if (await trasladosService.Eliminar(trasladoId))
+        {
+            await CargarTraslados();
+        }
     }
 }

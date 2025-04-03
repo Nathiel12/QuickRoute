@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 namespace QuickRoute.Services
 {
     public class TrasladosService(IDbContextFactory<ApplicationDbContext> DbFactory)
-
     {
         public async Task<bool> Existe(int id)
         {
@@ -27,10 +26,13 @@ namespace QuickRoute.Services
             await using var contexto = await DbFactory.CreateDbContextAsync();
             contexto.Traslados.Add(traslado);
 
-            var carro = await contexto.Carros.FindAsync(traslado.Id);
-            if (carro != null)
+            foreach (var detalle in traslado.TrasladosDetalles)
             {
-                carro.Precio += traslado.Monto;
+                var carro = await contexto.Carros.FindAsync(detalle.CarroId);
+                if (carro != null)
+                {
+                    carro.Precio += detalle.Monto;
+                }
             }
 
             return await contexto.SaveChangesAsync() > 0;
@@ -41,25 +43,45 @@ namespace QuickRoute.Services
             await using var contexto = await DbFactory.CreateDbContextAsync();
 
             var trasladoExistente = await contexto.Traslados
-                .AsNoTracking()
+                .Include(t => t.TrasladosDetalles)
                 .FirstOrDefaultAsync(t => t.TrasladoId == trasladoActualizado.TrasladoId);
 
             if (trasladoExistente == null)
                 return false;
 
-            var carroOriginal = await contexto.Carros.FindAsync(trasladoExistente.Id);
-            if (carroOriginal != null)
+            foreach (var detalleNew in trasladoActualizado.TrasladosDetalles)
             {
-                carroOriginal.Precio -= trasladoExistente.Monto;
+                var detalleOG = trasladoExistente.TrasladosDetalles.FirstOrDefault(d => d.DetalleId == detalleNew.DetalleId);
+                if (detalleOG != null)
+                {
+                    var carro = await contexto.Carros.FindAsync(detalleNew.CarroId);
+                    if (carro != null)
+                        carro.Precio += (detalleNew.Monto - detalleOG.Monto);
+
+                    contexto.Entry(detalleOG).CurrentValues.SetValues(detalleNew);
+                }
+                else
+                {
+                    trasladoExistente.TrasladosDetalles.Add(detalleNew);
+                    var carro = await contexto.Carros.FindAsync(detalleNew.CarroId);
+                    if (carro != null)
+                        carro.Precio += detalleNew.Monto;
+                }
             }
 
-            var carroNuevo = await contexto.Carros.FindAsync(trasladoActualizado.Id);
-            if (carroNuevo != null)
+            foreach (var detalleOG in trasladoExistente.TrasladosDetalles.ToList())
             {
-                carroNuevo.Precio += trasladoActualizado.Monto;
+                bool existe = trasladoActualizado.TrasladosDetalles.Any(d => d.DetalleId == detalleOG.DetalleId);
+                if (!existe)
+                {
+                    var carro = await contexto.Carros.FindAsync(detalleOG.CarroId);
+                    if (carro != null)
+                        carro.Precio -= detalleOG.Monto;
+                    trasladoExistente.TrasladosDetalles.Remove(detalleOG);
+                }
             }
 
-            contexto.Entry(trasladoActualizado).State = EntityState.Modified;
+            contexto.Entry(trasladoExistente).CurrentValues.SetValues(trasladoActualizado);
 
             return await contexto.SaveChangesAsync() > 0;
         }
@@ -68,33 +90,41 @@ namespace QuickRoute.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Traslados
-                .Include(t => t.Carros)
+                .Where(t => t.TrasladoId == id)
+                .Include(t => t.TrasladosDetalles)
+                .ThenInclude(d => d.Carro)
                 .Include(t => t.Usuario)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(t => t.TrasladoId == id);
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> Eliminar(int id)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            var traslado = await contexto.Traslados.FirstOrDefaultAsync(t => t.TrasladoId == id);
+            var traslado = await contexto.Traslados
+                .Include(t => t.TrasladosDetalles)
+                .FirstOrDefaultAsync(t => t.TrasladoId == id);
+
             if (traslado == null)
                 return false;
 
-            var carro = await contexto.Carros.FindAsync(traslado.Id);
-            if (carro != null)
+            foreach (var detalle in traslado.TrasladosDetalles)
             {
-                carro.Precio -= traslado.Monto;
+                var carro = await contexto.Carros.FindAsync(detalle.CarroId);
+                if (carro != null)
+                    carro.Precio -= detalle.Monto;
             }
 
             contexto.Traslados.Remove(traslado);
             return await contexto.SaveChangesAsync() > 0;
         }
+
         public async Task<List<Traslados>> Listar(Expression<Func<Traslados, bool>> criterio)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Traslados
-                .Include(t => t.Carros)
+                .Include(t => t.TrasladosDetalles)
+                .ThenInclude(d => d.Carro)
                 .Include(t => t.Usuario)
                 .Where(criterio)
                 .AsNoTracking()
