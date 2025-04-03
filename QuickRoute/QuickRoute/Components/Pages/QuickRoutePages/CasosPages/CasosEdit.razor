@@ -1,6 +1,7 @@
 ﻿@*Nathiel Taveras*@
 @page "/Casos/Edit/{CasoId:int}"
 @inject CasosService casosService
+@attribute [Authorize]
 @inject ContactosService contactosService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
