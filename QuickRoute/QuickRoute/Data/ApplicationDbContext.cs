@@ -6,6 +6,7 @@ namespace QuickRoute.Data
 {
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
     {
+        public virtual DbSet<Sugerencias> Sugerencias { get; set; }
         public virtual DbSet<Carros> Carros { get; set; }
         public virtual DbSet<Casos> Casos { get; set; }
         public virtual DbSet<Contactos> Contactos { get; set; }
