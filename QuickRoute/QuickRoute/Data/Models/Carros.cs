@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickRoute.Data.Models
 {
@@ -30,8 +31,18 @@ namespace QuickRoute.Data.Models
         [StringLength(17, MinimumLength = 17, ErrorMessage = "El número de chasis debe tener exactamente 17 caracteres.")]
         [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "El número de chasis contiene caracteres inválidos. (No debe contener I u O")]
         public string NumeroChasis { get; set; }
+<<<<<<< HEAD
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public bool Aprobado { get; set; } = false;
+        public int SolicitudId { get; set; }
+        public Despachos Despacho { get;set; }
+=======
 
+>>>>>>> b94356f9e1ad664e1da4fce755a941b590e8ae27
         public int? TrasladoId { get; set; }
         public Traslados? Traslado { get; set; }
+        public string Id { get; set; }
+        [ForeignKey("Id")]
+        public ApplicationUser Usuario { get; set; }
     }
 }

@@ -1,6 +1,5 @@
-﻿@*Nathiel Taveras*@
-@page "/Carros/Index"
-@attribute [Authorize]
+﻿@page "/Admin/Carros/Index"
+@attribute [Authorize(Roles = "Admin")]
 @inject CarrosService carroService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
@@ -11,7 +10,6 @@
     <div class="card shadow-lg">
         <div class="card-header space-between">
             <h5 class="card-title">Registro de Carros</h5>
-            <a href="/Carros/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
         </div>
 
         <div class="card-body">
@@ -37,8 +35,8 @@
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opcion</option>
                         <option value="CarroId">CarroId</option>
-                        <option value="Marca">Marca</option>
-                        <option value="Color">Color</option>
+                        <option value="Aprobado">Aprobados</option>
+                        <option value="Pendiente">Pendiente</option>
                         <option value="FechaRegistro">Fecha Registro</option>
                     </InputSelect>
                 </div>
@@ -84,14 +82,13 @@
                     <tr>
                         <th>CarroId</th>
                         <th>Fecha de Registro</th>
-                        <th>Fecha de Fabricacion</th>
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Color</th>
-                        <th>Precio</th>
-                        <th>Numero de Chasis</th>
-                        <th>Editar</th>
-                        <th>Eliminar</th>
+                        <th>Estado</th>
+                        <th>Usuario</th>
+                        <th>Aprobar</th>
+                        <th>Rechazar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,18 +97,26 @@
                         <tr>
                             <td> @carro.CarroId</td>
                             <td> @carro.FechaRegistro.ToString("dd/MM/yyyy")</td>
-                            <td> @carro.FechaFabricacion.ToString("dd/MM/yyyy")</td>
                             <td> @carro.Marca</td>
                             <td> @carro.Modelo</td>
                             <td> @carro.Color</td>
-                            <td> @carro.Precio.ToString("N2")</td>
-                            <td> @carro.NumeroChasis</td>
+                            <td>
+                                @if (carro.Aprobado)
+                                {
+                                    <span class="badge bg-success">Aprobado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Pendiente</span>
+                                }
+                            </td>
+                            <td> @carro.Usuario.Email</td>
 
                             <td>
-                                <a href="/Carros/Edit/@carro.CarroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                                <button class="btn btn-outline-success bi bi-check-circle"@onclick="() => AprobarCarro(carro.CarroId)"></button>
                             </td>
                             <td>
-                                <a href="/Carros/Delete/@carro.CarroId" class="btn btn-outline-danger bi bi-trash"></a>
+                                <button class="btn btn-outline-danger bi bi-x-circle" @onclick="() => EliminarCarro(carro.CarroId)"></button>
                             </td>
                         </tr>
                     }
@@ -133,7 +138,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaCarros = await carroService.Listar(c => c.CarroId > 0);
+        ListaCarros = await carroService.ListarSegunPermisos(incluirNoAprobados: true);
         Desde = null;
         Hasta = null;
     }
@@ -149,15 +154,15 @@
             }
 
         }
-        else if (ValorFiltro.Trim() != "" && Filtro == "Marca")
+        else if (ValorFiltro.Trim() != "" && Filtro == "Aprobado")
         {
             ListaCarros = await carroService
-                .Listar(c => c.Marca.ToLower().Contains(ValorFiltro.ToLower()));
+                .Listar(c => c.Aprobado);
         }
-        else if (ValorFiltro.Trim() != "" && Filtro == "Color")
+        else if (ValorFiltro.Trim() != "" && Filtro == "Pendiente")
         {
             ListaCarros = await carroService
-                .Listar(c => c.Color.ToLower().Contains(ValorFiltro.ToLower()));
+                .Listar(c => !c.Aprobado);
         }
         else if (Filtro == "FechaRegistro")
         {
@@ -171,8 +176,25 @@
     }
     private async Task Restablecer()
     {
-        ListaCarros = await carroService.Listar(c => c.CarroId > 0);
+        ListaCarros = await carroService.ListarSegunPermisos(incluirNoAprobados: true);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
+    }
+    private async Task AprobarCarro(int carroId)
+    {
+        var resultado = await carroService.AprobarCarro(carroId);
+        if (resultado)
+        {
+            await Restablecer(); // Recargar los datos
+        }
+    }
+    private async Task EliminarCarro(int carroId)
+    {
+        // Aquí puedes agregar confirmación antes de eliminar
+        var resultado = await carroService.Eliminar(carroId);
+        if (resultado)
+        {
+            await Restablecer(); // Recargar los datos
+        }
     }
 }

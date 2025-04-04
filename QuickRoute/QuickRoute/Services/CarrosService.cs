@@ -1,22 +1,33 @@
 ﻿using System.Linq.Expressions;
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using QuickRoute.Data;
 using QuickRoute.Data.Models;
 
 namespace QuickRoute.Services
 {
-    public class CarrosService(IDbContextFactory<ApplicationDbContext> DbFactory)
+    public class CarrosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHttpContextAccessor httpContextAccessor)
     {
         public async Task<bool> Guardar(Carros carro)
         {
+            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!await Existe(carro.CarroId))
             {
+                carro.Id = userId;
                 return await Insertar(carro);
             }
             else
             {
                 return await Modificar(carro);
             }
+        }
+        private string GetCurrentUserId()
+        {
+            return httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        }
+        private bool IsAdmin()
+        {
+            return httpContextAccessor.HttpContext?.User?.IsInRole("Admin") ?? false;
         }
 
         public async Task<bool> Existe(int CarroId)
@@ -50,20 +61,13 @@ namespace QuickRoute.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
 
-            var carro = await contexto.Carros
-                .Include(t => t.Traslado)
-                .FirstOrDefaultAsync(p => p.CarroId == CarroId);
+            var eliminados = await contexto.Carros
+            .Where(c => c.CarroId == CarroId)
+            .ExecuteDeleteAsync();
 
-            if (carro == null)
-                return false;
+            return eliminados > 0;
 
-            contexto.Traslados.RemoveRange(carro.Traslado);
-
-            contexto.Carros.Remove(carro);
-
-            var cantidad = await contexto.SaveChangesAsync();
-
-            return cantidad > 0;
+            
         }
 
         public async Task<List<Carros>> Listar(Expression<Func<Carros, bool>> criterio)
@@ -84,6 +88,47 @@ namespace QuickRoute.Services
                 return true;
             }
             return false;
+        }
+        public async Task<bool> AprobarCarro(int carroId)
+        {
+            if (!IsAdmin()) throw new UnauthorizedAccessException("Solo administradores pueden aprobar carros");
+
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            var carro = await contexto.Carros.FindAsync(carroId);
+
+            if (carro == null) return false;
+
+            carro.Aprobado = true;
+            contexto.Update(carro);
+            return await contexto.SaveChangesAsync() > 0;
+        }
+        public async Task<List<Carros>> ListarSegunPermisos(bool incluirNoAprobados = false)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            var query = contexto.Carros
+            .Include(c => c.Usuario)  
+            .AsQueryable();
+
+            if (!IsAdmin())
+            {
+                var userId = GetCurrentUserId();
+                query = query.Where(c => c.Id == userId);
+
+                if (!incluirNoAprobados)
+                {
+                    query = query.Where(c => c.Aprobado);
+                }
+            }
+
+            return await query.AsNoTracking().ToListAsync();
+        }
+        public async Task<bool> TieneTrasladosActivos(int carroId)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+
+            return await contexto.Traslados
+            .Include(t => t.Carros) 
+            .AnyAsync(t => t.Carros.Any(c => c.CarroId == carroId));
         }
     }
 }

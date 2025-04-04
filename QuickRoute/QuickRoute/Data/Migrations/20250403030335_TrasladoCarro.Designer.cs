@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250403030335_TrasladoCarro")]
+    partial class TrasladoCarro
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -261,6 +264,9 @@ namespace QuickRoute.Migrations
                     b.Property<double>("Precio")
                         .HasColumnType("float");
 
+                    b.Property<int>("SolicitudId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("TrasladoId")
                         .HasColumnType("int");
 
@@ -297,9 +303,14 @@ namespace QuickRoute.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("TrasladoId")
+                        .HasColumnType("int");
+
                     b.HasKey("CasoId");
 
                     b.HasIndex("ContactoId");
+
+                    b.HasIndex("TrasladoId");
 
                     b.ToTable("Casos");
                 });
@@ -332,33 +343,170 @@ namespace QuickRoute.Migrations
                     b.ToTable("Contactos");
                 });
 
-            modelBuilder.Entity("QuickRoute.Data.Models.Sugerencias", b =>
+            modelBuilder.Entity("QuickRoute.Data.Models.Declaraciones", b =>
                 {
-                    b.Property<int>("SugerenciaId")
+                    b.Property<int>("DeclaracionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SugerenciaId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeclaracionId"));
 
-                    b.Property<string>("Asunto")
+                    b.Property<string>("Direccion")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Descripcion")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTime>("FechaEntrega")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("satisfaccion")
+                    b.Property<string>("Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SolicitudId")
                         .HasColumnType("int");
 
-                    b.HasKey("SugerenciaId");
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.ToTable("Sugerencias");
+                    b.Property<double>("ValorMercancia")
+                        .HasColumnType("float");
+
+                    b.Property<double>("ValorTransportacion")
+                        .HasColumnType("float");
+
+                    b.HasKey("DeclaracionId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Declaraciones");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Despachos", b =>
+                {
+                    b.Property<int>("SolicitudId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SolicitudId"));
+
+                    b.Property<int>("CarroId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeclaracionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FechaSolicitud")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Localizacion")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("NombreEmpresa")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("SolicitudId");
+
+                    b.HasIndex("CarroId")
+                        .IsUnique();
+
+                    b.HasIndex("DeclaracionId")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Despachos");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Impuestos", b =>
+                {
+                    b.Property<int>("ImpuestoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ImpuestoId"));
+
+                    b.Property<double>("Monto")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("SolicitudId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Valor")
+                        .HasColumnType("float");
+
+                    b.HasKey("ImpuestoId");
+
+                    b.HasIndex("SolicitudId");
+
+                    b.ToTable("Impuestos");
+
+                    b.HasData(
+                        new
+                        {
+                            ImpuestoId = 1,
+                            Monto = 0.0,
+                            Nombre = "Tasa por Servicio Aduanero",
+                            Valor = 0.0
+                        },
+                        new
+                        {
+                            ImpuestoId = 2,
+                            Monto = 0.0,
+                            Nombre = "Arancelarios",
+                            Valor = 0.0
+                        },
+                        new
+                        {
+                            ImpuestoId = 3,
+                            Monto = 0.0,
+                            Nombre = "ITBIS",
+                            Valor = 0.0
+                        },
+                        new
+                        {
+                            ImpuestoId = 4,
+                            Monto = 0.0,
+                            Nombre = "Declaracion del Valor",
+                            Valor = 0.0
+                        },
+                        new
+                        {
+                            ImpuestoId = 5,
+                            Monto = 0.0,
+                            Nombre = "Recargos por Declaracion Tardia",
+                            Valor = 0.0
+                        },
+                        new
+                        {
+                            ImpuestoId = 6,
+                            Monto = 0.0,
+                            Nombre = "Declaracion Unica Aduanera",
+                            Valor = 0.0
+                        });
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Traslados", b =>
@@ -461,7 +609,7 @@ namespace QuickRoute.Migrations
                     b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
                         .WithMany("Carros")
                         .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("QuickRoute.Data.Models.Traslados", "Traslado")
@@ -482,7 +630,58 @@ namespace QuickRoute.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("QuickRoute.Data.Models.Traslados", "Traslado")
+                        .WithMany()
+                        .HasForeignKey("TrasladoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Contacto");
+
+                    b.Navigation("Traslado");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Declaraciones", b =>
+                {
+                    b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
+                        .WithMany("Declaraciones")
+                        .HasForeignKey("UsuarioId");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Despachos", b =>
+                {
+                    b.HasOne("QuickRoute.Data.Models.Carros", "Carro")
+                        .WithOne("Despacho")
+                        .HasForeignKey("QuickRoute.Data.Models.Despachos", "CarroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("QuickRoute.Data.Models.Declaraciones", "Declaracion")
+                        .WithOne("Despacho")
+                        .HasForeignKey("QuickRoute.Data.Models.Despachos", "DeclaracionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
+                        .WithMany("Despachos")
+                        .HasForeignKey("UsuarioId");
+
+                    b.Navigation("Carro");
+
+                    b.Navigation("Declaracion");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Impuestos", b =>
+                {
+                    b.HasOne("QuickRoute.Data.Models.Despachos", "Despacho")
+                        .WithMany("Impuestos")
+                        .HasForeignKey("SolicitudId");
+
+                    b.Navigation("Despacho");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Traslados", b =>
@@ -515,16 +714,30 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.ApplicationUser", b =>
                 {
-<<<<<<< HEAD
                     b.Navigation("Carros");
 
                     b.Navigation("Declaraciones");
 
                     b.Navigation("Despachos");
 
-=======
->>>>>>> b94356f9e1ad664e1da4fce755a941b590e8ae27
                     b.Navigation("Traslados");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Carros", b =>
+                {
+                    b.Navigation("Despacho")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Declaraciones", b =>
+                {
+                    b.Navigation("Despacho")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Despachos", b =>
+                {
+                    b.Navigation("Impuestos");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Traslados", b =>

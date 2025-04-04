@@ -1,6 +1,7 @@
 ﻿@*Nathiel Taveras*@
 @page "/Contactos/Delete/{ContactoId:int}"
 @inject ContactosService contactosService
+@attribute [Authorize]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
