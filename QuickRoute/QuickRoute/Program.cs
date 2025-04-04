@@ -22,7 +22,7 @@ builder.Services.AddScoped<CarrosService>();
 builder.Services.AddScoped<CasosService>();
 builder.Services.AddScoped<ContactosService>();
 builder.Services.AddScoped<TrasladosService>();
-builder.Services.AddScpoed<SugerenciasService>();
+builder.Services.AddScoped<SugerenciasService>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
