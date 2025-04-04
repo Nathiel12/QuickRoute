@@ -1,0 +1,62 @@
+@page "/Sugerencias/Delete/{SugerenciaId:int}"
+@inject SugerenciasService sugerenciasService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Eliminar</PageTitle>
+
+@*Labels para notificaciones*@
+<label style="color:red;" hidden="@string.IsNullOrEmpty(Confirmacion)">@Confirmacion</label>
+<label style="color:darkred">@Pregunta</label>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h5 class="card-title">Eliminar Sugerencia</h5>
+        </div>
+        @*Datos y botones*@
+        <div class="card-body">
+            <p><strong>SugerenciaId:</strong> @Sugerencia.SugerenciaId</p>
+            <p><strong>Fecha:</strong> @Sugerencia.Fecha.ToString("dd/MM/yyyy")</p>
+            <p><strong>Asunto:</strong> @Sugerencia.Asunto</p>
+            <p><strong>Nivel de Satisfacción:</strong> @Sugerencia.satisfaccion</p>
+
+            <div class="card-footer text-center mt-2">
+                <a href="/Sugerencias/Index" class="btn btn-outline-secondary"><span class="bi bi-arrow-left"></span>Cancelar</a>
+                <button class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int SugerenciaId { get; set; }
+
+    private Sugerencias Sugerencia { get; set; } = new Sugerencias();
+    private string Confirmacion { get; set; } = string.Empty;
+    private string Pregunta { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sugerencia = await sugerenciasService.Buscar(SugerenciaId);
+        Pregunta = "¿Está seguro de querer eliminar esta Sugerencia?";
+    }
+
+    public async Task Eliminar()
+    {
+        bool eliminado = await sugerenciasService.Eliminar(Sugerencia.SugerenciaId);
+        
+        if (eliminado)
+        {
+            Confirmacion = "Sugerencia eliminada exitosamente.";
+            await Task.Delay(2000);
+            navigationManager.NavigateTo("/Sugerencias/Index");
+        }
+        else
+        {
+            Confirmacion = "Error al eliminar la sugerencia.";
+        }
+    }
+}
