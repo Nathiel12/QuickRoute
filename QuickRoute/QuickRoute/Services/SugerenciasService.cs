@@ -1,61 +1,69 @@
-using QuickRoute.Data.Models;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using QuickRoute.Data.Models;
+using QuickRoute.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace QuickRoute.Services;
-
-public class SugerenciasService(IDbContextFactory<Contexto> DbFactory)
+namespace QuickRoute.Services
 {
-	public async Task<bool> Guardar(Sugerencias sugerencia)
+	public class SugerenciasService(IDbContextFactory<ApplicationDbContext> DbFactory)
 	{
-		if (!await Existe(sugerencia.SugerenciaId))
+		public async Task<bool> Existe(int id)
 		{
-			return await Insertar(sugerencia);
+			await using var contexto = await DbFactory.CreateDbContextAsync();
+			return await contexto.Sugerencias.AnyAsync(s => s.SugerenciaId == id);
 		}
-		else
+
+		public async Task<bool> Guardar(Sugerencias sugerencia)
 		{
-			return await Modificar(sugerencia);
+			if (!await Existe(sugerencia.SugerenciaId))
+				return await Insertar(sugerencia);
+			else
+				return await Modificar(sugerencia);
 		}
-	}
 
-	private async Task<bool> Existe(int sugerenciaId)
-	{
-		await using var contexto = await DbFactory.CreateDbContextAsync();
-		return await contexto.Sugerencias.AnyAsync(s => s.SugerenciaId == sugerenciaId);
-	}
+		public async Task<bool> Insertar(Sugerencias sugerencia)
+		{
+			await using var contexto = await DbFactory.CreateDbContextAsync();
+			contexto.Sugerencias.Add(sugerencia);
+			return await contexto.SaveChangesAsync() > 0;
+		}
 
-	private async Task<bool> Insertar(Sugerencias sugerencia)
-	{
-		await using var contexto = await DbFactory.CreateDbContextAsync();
-		contexto.Sugerencias.Add(sugerencia);
-		return await contexto.SaveChangesAsync() > 0;
-	}
+		public async Task<bool> Modificar(Sugerencias sugerencia)
+		{
+			await using var contexto = await DbFactory.CreateDbContextAsync();
+			contexto.Update(sugerencia);
+			return await contexto.SaveChangesAsync() > 0;
+		}
 
-	private async Task<bool> Modificar(Sugerencias sugerencia)
-	{
-		await using var contexto = await DbFactory.CreateDbContextAsync();
-		contexto.Update(sugerencia);
-		return await contexto.SaveChangesAsync() > 0;
-	}
+		public async Task<Sugerencias?> Buscar(int id)
+		{
+			await using var contexto = await DbFactory.CreateDbContextAsync();
+			return await contexto.Sugerencias
+				.Where(s => s.SugerenciaId == id)
+				.AsNoTracking()
+				.FirstOrDefaultAsync();
+		}
 
-	public async Task<Sugerencias?> Buscar(int sugerenciaId)
-	{
-		await using var contexto = await DbFactory.CreateDbContextAsync();
-		return await contexto.Sugerencias.FirstOrDefaultAsync(s => s.SugerenciaId == sugerenciaId);
-	}
+		public async Task<bool> Eliminar(int id)
+		{
+			await using var contexto = await DbFactory.CreateDbContextAsync();
+			var sugerencia = await contexto.Sugerencias
+				.FirstOrDefaultAsync(s => s.SugerenciaId == id);
 
-	public async Task<(bool Success, string Message)> Eliminar(int sugerenciaId)
-	{
-		await using var contexto = await DbFactory.CreateDbContextAsync();
+			if (sugerencia == null)
+				return false;
 
-		bool deleted =
-			await contexto.Sugerencias.AsNoTracking().Where(s => s.SugerenciaId == sugerenciaId).ExecuteDeleteAsync() > 0;
-		return (deleted, deleted ? "Sugerencia eliminada exitosamente." : "Error al eliminar la sugerencia.");
-	}
+			contexto.Sugerencias.Remove(sugerencia);
+			return await contexto.SaveChangesAsync() > 0;
+		}
 
-	public async Task<List<Sugerencias>> Listar(Expression<Func<Sugerencias, bool>> criterio)
-	{
-		await using var contexto = await DbFactory.CreateDbContextAsync();
-		return await contexto.Sugerencias.Where(criterio).AsNoTracking().ToListAsync();
+		public async Task<List<Sugerencias>> Listar(Expression<Func<Sugerencias, bool>> criterio)
+		{
+			await using var contexto = await DbFactory.CreateDbContextAsync();
+			return await contexto.Sugerencias
+				.Where(criterio)
+				.AsNoTracking()
+				.ToListAsync();
+		}
 	}
 }
