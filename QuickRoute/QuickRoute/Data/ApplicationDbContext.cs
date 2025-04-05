@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using QuickRoute.Data.Models;
 
@@ -12,6 +12,9 @@ namespace QuickRoute.Data
         public virtual DbSet<Contactos> Contactos { get; set; }
         public virtual DbSet<Traslados> Traslados { get; set; }
         public virtual DbSet<TrasladosDetalle> TrasladosDetalles { get; set; }
+        public virtual DbSet<Votaciones> Votaciones { get; set; }
+        public virtual DbSet<VotacionesDetalles> VotacionesDetalles { get; set; }
+        public virtual DbSet<TipoVehiculos> TipoVehiculos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,7 +33,7 @@ namespace QuickRoute.Data
                     .WithMany()
                     .HasForeignKey(d => d.CarroId);
             });
-<<<<<<< HEAD
+
             modelBuilder.Entity<Carros>()
             .HasOne(c => c.Traslado)          
             .WithMany(t => t.Carros)         
@@ -43,16 +46,40 @@ namespace QuickRoute.Data
             .HasForeignKey(c => c.Id)
             .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Impuestos>().HasData(
-                new Impuestos { ImpuestoId = 1, Nombre = "Tasa por Servicio Aduanero", Monto = 0 },
-                new Impuestos { ImpuestoId = 2, Nombre = "Arancelarios", Monto = 0 },
-                new Impuestos { ImpuestoId = 3, Nombre = "ITBIS", Monto = 0 },
-                new Impuestos { ImpuestoId = 4, Nombre = "Declaracion del Valor", Monto = 0 },
-                new Impuestos { ImpuestoId = 5, Nombre = "Recargos por Declaracion Tardia", Monto = 0 },
-                new Impuestos { ImpuestoId = 6, Nombre = "Declaracion Unica Aduanera", Monto = 0 }
-            );
-=======
->>>>>>> b94356f9e1ad664e1da4fce755a941b590e8ae27
+            modelBuilder.Entity<TipoVehiculos>().HasData(
+            new List<TipoVehiculos>()
+            {
+                new()
+                {
+                    TipoVehiculoId = 1,
+                    VehiculoNombre = "Moticicleta",
+                    PuntuacionVoto = 0,
+                },
+                new()
+                {
+                    TipoVehiculoId = 2,
+                    VehiculoNombre = "Camión",
+                    PuntuacionVoto = 0,
+                },
+                new()
+                {
+                    TipoVehiculoId = 3,
+                    VehiculoNombre = "Excavadora",
+                    PuntuacionVoto = 0,
+                },
+                new()
+                {
+                    TipoVehiculoId = 4,
+                    VehiculoNombre = "Autobús",
+                    PuntuacionVoto = 0,
+                },
+                new()
+                {
+                    TipoVehiculoId = 5,
+                    VehiculoNombre = "Camión de Remolque",
+                    PuntuacionVoto = 0,
+                }
+            });
         }
     }
 }
