@@ -96,9 +96,29 @@
 		Carro = await carroService.Buscar(CarroId);
 	}
 
+	private async Task<bool> Validar()
+	{
+		errorMensaje = string.Empty;
+
+
+		if (await carroService.ExisteChasis(Carro.NumeroChasis) &&
+			Carro.NumeroChasis != (await carroService.Buscar(CarroId)).NumeroChasis)
+		{
+			errorMensaje = "Ya existe un registro con este Numero de chasis.";
+			return false;
+		}
+
+		return true;
+	}
+
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
+
+		if (!await Validar())
+		{
+			return;
+		}
 
 		var guardo = await carroService.Guardar(this.Carro);
 		if (guardo != null)
