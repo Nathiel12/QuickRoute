@@ -61,13 +61,18 @@ namespace QuickRoute.Services
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
 
-            var eliminados = await contexto.Carros
-            .Where(c => c.CarroId == CarroId)
-            .ExecuteDeleteAsync();
+            var carro = await contexto.Carros
+                .FirstOrDefaultAsync(c => c.CarroId == CarroId);
 
-            return eliminados > 0;
+            if (carro == null || carro.Aprobado)
+            {
+                return false;
+            }
 
-            
+            contexto.Carros.Remove(carro);
+            return await contexto.SaveChangesAsync() > 0;
+
+
         }
 
         public async Task<List<Carros>> Listar(Expression<Func<Carros, bool>> criterio)
