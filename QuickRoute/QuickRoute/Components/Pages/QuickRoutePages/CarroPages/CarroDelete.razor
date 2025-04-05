@@ -54,7 +54,9 @@
 		if(!verificar){
 			Confirmacion = "No se puede eliminar el registro (El carro esta en proceso de traslado)";
 			return;
-		}else{
+		}
+		else
+		{
 			var eliminado = await carroService.Eliminar(Carro.CarroId);
 			if (eliminado != null)
 			{
