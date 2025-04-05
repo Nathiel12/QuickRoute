@@ -185,16 +185,16 @@
         var resultado = await carroService.AprobarCarro(carroId);
         if (resultado)
         {
-            await Restablecer(); // Recargar los datos
+            await Restablecer(); 
         }
     }
     private async Task EliminarCarro(int carroId)
     {
-        // Aquí puedes agregar confirmación antes de eliminar
+        
         var resultado = await carroService.Eliminar(carroId);
         if (resultado)
         {
-            await Restablecer(); // Recargar los datos
+            await Restablecer(); 
         }
     }
 }
