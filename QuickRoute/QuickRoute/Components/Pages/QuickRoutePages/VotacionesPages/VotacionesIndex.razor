@@ -21,41 +21,49 @@
             }
         </div>
 
-        @* Tabla *@
-        <table class="table table-hover">
-            <thead class="table  table-striped text-black">
-                <tr>
-                    <th>VehiculoId</th>
-                    <th>Nombre</th>
-                    <th>Total</th>
-                    <th>Promedio</th>
-                    @if(isAdmin){
-                        <th>Eliminar</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var vehiculo in Vehiculos){
+        <div class="card-body">
+            @* Tabla *@
+            <table class="table table-hover">
+                <thead class="table  table-striped text-black">
                     <tr>
-
-                        <td>@vehiculo.TipoVehiculoId</td>
-                        <td>@vehiculo.VehiculoNombre</td>
-                        <td>@vehiculo.PuntuacionTotal.ToString("N2")</td>
-                        <td>@vehiculo.PuntuacionPromedio.ToString("N2")</td>
+                        <th>VehiculoId</th>
+                        <th>Nombre</th>
+                        <th>Total</th>
+                        <th>Promedio</th>
                         @if (isAdmin)
                         {
-                            <td>
-                                <button class="btn btn-danger btn-sm bi bi-trash"
-                                @onclick="() => EliminarVotos(vehiculo.TipoVehiculoId)">
-                                </button>
-                            </td>
+                            <th>Eliminar</th>
                         }
-
                     </tr>
-                }
+                </thead>
+                <tbody>
+                    @foreach (var vehiculo in Vehiculos)
+                    {
+                        <tr>
 
-            </tbody>
-        </table>
+                            <td>@vehiculo.TipoVehiculoId</td>
+                            <td>@vehiculo.VehiculoNombre</td>
+                            <td>@vehiculo.PuntuacionTotal.ToString("N2")</td>
+                            <td>@vehiculo.PuntuacionPromedio.ToString("N2")</td>
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    <button class="btn btn-danger btn-sm bi bi-trash"
+                                            @onclick="() => EliminarVotos(vehiculo.TipoVehiculoId)">
+                                    </button>
+                                </td>
+                            }
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card-footer mt-2">
+            <label><strong>Total:@Vehiculos.Sum(v => v.PuntuacionTotal)</strong></label>
+        </div>
     </div>
 </div>
 
@@ -85,7 +93,4 @@
             StateHasChanged();
         }
     }
-
-    
-
 }
