@@ -24,6 +24,7 @@ builder.Services.AddScoped<ContactosService>();
 builder.Services.AddScoped<TrasladosService>();
 builder.Services.AddScoped<VotacionesService>();
 builder.Services.AddScoped<TipoVehiculosService>();
+builder.Services.AddScoped<SugerenciasService>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
