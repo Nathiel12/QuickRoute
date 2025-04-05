@@ -115,7 +115,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        listaCarros = await carrosService.Listar(c => c.CarroId > 0);
+        listaCarros = await carrosService.Listar(c => c.Aprobado);
 
         if (TrasladoId.HasValue && TrasladoId.Value != 0)
         {
