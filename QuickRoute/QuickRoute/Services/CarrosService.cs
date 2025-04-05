@@ -91,7 +91,7 @@ namespace QuickRoute.Services
         }
         public async Task<bool> AprobarCarro(int carroId)
         {
-            if (!IsAdmin()) throw new UnauthorizedAccessException("Solo administradores pueden aprobar carros");
+            if (!IsAdmin()) return false;
 
             await using var contexto = await DbFactory.CreateDbContextAsync();
             var carro = await contexto.Carros.FindAsync(carroId);
@@ -129,6 +129,11 @@ namespace QuickRoute.Services
             return await contexto.Traslados
             .Include(t => t.Carros) 
             .AnyAsync(t => t.Carros.Any(c => c.CarroId == carroId));
+        }
+        public async Task<bool> ExisteChasis(string chasis)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Carros.AnyAsync(c => c.NumeroChasis.ToLower() == chasis.ToLower());
         }
     }
 }
