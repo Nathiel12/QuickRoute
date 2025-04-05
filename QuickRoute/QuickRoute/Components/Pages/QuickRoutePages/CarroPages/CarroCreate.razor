@@ -99,15 +99,19 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
-
-		var guardo = await carroService.Guardar(Carro);
-		if (guardo != null)
-		{
-			navigationManager.NavigateTo("/Carros/Index");
-		}
-		else
-		{
-			errorMensaje = "Error al guardar el Registro";
+		var Existe = await carroService.ExisteChasis(Carro.NumeroChasis);
+		if(Existe){
+			errorMensaje = "Ya existe este Numero de Chasis en el Registro";
+		}else{
+			var guardo = await carroService.Guardar(Carro);
+			if (guardo != null)
+			{
+				navigationManager.NavigateTo("/Carros/Index");
+			}
+			else
+			{
+				errorMensaje = "Error al guardar el Registro";
+			}
 		}
 		
 	}
