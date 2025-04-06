@@ -12,6 +12,14 @@ namespace QuickRoute.Data.Models
 
         public string Id { get; set; }
 
+        [RegularExpression(@"^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+$", ErrorMessage = "Los nombrse solo pueden contener letras y espacios")]
+        [StringLength(maximumLength: 50, ErrorMessage = "Los nombres no pueden exceder los 50 caracteres")]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        public string Nombres { get; set; }
+
+        [StringLength(maximumLength: 60, ErrorMessage = "La dirección no debe exceder los 60 caracteres")]
+        public string Direccion { get; set; }
+
         [ForeignKey("Id")]
         public ApplicationUser Usuario { get; set; }
         public ICollection<Carros> Carros { get; set; }
