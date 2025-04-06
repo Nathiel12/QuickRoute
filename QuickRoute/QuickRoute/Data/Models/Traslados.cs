@@ -17,6 +17,7 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         public string Nombres { get; set; }
 
+        [Required(ErrorMessage = "Este campo es requerido")]
         [StringLength(maximumLength: 60, ErrorMessage = "La dirección no debe exceder los 60 caracteres")]
         public string Direccion { get; set; }
 

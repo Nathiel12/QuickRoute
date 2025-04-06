@@ -1,56 +1,107 @@
-﻿@*Nathiel Taveras*@
-@page "/Casos/Delete/{CasoId:int}"
+﻿@page "/Casos/Delete/{CasoId:int}"
 @inject CasosService casosService
 @attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
-@* HTML *@
 <PageTitle>Eliminar</PageTitle>
 
-@*Labels para notificaciones*@
-<label style="color:red;" hidden="@string.IsNullOrEmpty(Confirmacion)">@Confirmacion</label>
-<label style="color:darkred">@Pregunta</label>
+@* Notificaciones *@
+@if (!string.IsNullOrEmpty(Confirmacion))
+{
+    <div class="alert alert-success">@Confirmacion</div>
+}
+@if (!string.IsNullOrEmpty(ErrorMensaje))
+{
+    <div class="alert alert-danger">@ErrorMensaje</div>
+}
 
 <div class="container">
-	<div class="card shadow-lg">
-		<div class="card-header text-center">
-			<h5 class="card-title">Eliminar Caso</h5>
-		</div>
-		@*Datos y botones*@
-		<div class="card-body">
-			<p><strong>CasoId:</strong>@Caso.CasoId</p>
-			<p><strong>Contacto Asignado:</strong>@Caso.Contacto.Nombre</p>
-			<p><strong>Fecha:</strong>@Caso.Fecha.ToString("dd/MM/yyyy")</p>
-			<p><strong>Asunto:</strong>@Caso.Asunto</p>
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h5 class="card-title">Eliminar Caso</h5>
+        </div>
+        
+        @if (Caso != null)
+        {
+            <div class="card-body">
+                <p><strong>CasoId:</strong> @Caso.CasoId</p>
+                <p><strong>Contacto Asignado:</strong> @(Caso.Contacto?.Nombre ?? "N/A")</p>
+                <p><strong>Fecha:</strong> @Caso.Fecha.ToString("dd/MM/yyyy")</p>
+                <p><strong>Asunto:</strong> @Caso.Asunto</p>
+                <p><strong>Descripción:</strong> @Caso.Descripcion</p>
 
-			<div class="card-footer text-center mt-2">
-				<a href="/Casos/Index" class="btn btn-outline-secondary"><span class="bi bi-arrow-left"></span>Cancelar</a>
-				<button class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
-			</div>
-		</div>
-	</div>
+                <div class="card-footer text-center mt-2">
+                    <a href="/Casos/Index" class="btn btn-outline-secondary">
+                        <span class="bi bi-arrow-left"></span> Cancelar
+                    </a>
+                    <button class="btn btn-outline-danger" @onclick="Eliminar">
+                        <span class="bi bi-trash"></span> Eliminar
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card-body">
+                <p class="text-danger">Caso no encontrado</p>
+                <div class="card-footer text-center mt-2">
+                    <a href="/Casos/Index" class="btn btn-outline-secondary">
+                        <span class="bi bi-arrow-left"></span> Volver
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
-	[Parameter]
-	public int CasoId { get; set; }
+    [Parameter]
+    public int CasoId { get; set; }
 
-	private Casos Caso { get; set; } = new Casos();
-	private string Confirmacion { get; set; } = string.Empty;
-	private string Pregunta { get; set; } = string.Empty;
+    private Casos? Caso { get; set; }
+    private string Confirmacion { get; set; } = string.Empty;
+    private string ErrorMensaje { get; set; } = string.Empty;
+    private string Pregunta { get; set; } = "¿Está seguro de querer eliminar este registro?";
 
-	protected override async Task OnInitializedAsync()
-	{
-		Caso = await casosService.Buscar(CasoId);
-		Pregunta = "¿Esta seguro de querer eliminar el Registro?";
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Caso = await casosService.Buscar(CasoId);
+            if (Caso == null)
+            {
+                ErrorMensaje = "No se encontró el caso especificado";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMensaje = $"Error al cargar el caso: {ex.Message}";
+        }
+    }
 
-	public async Task Eliminar()
-	{
-		await casosService.Eliminar(Caso.CasoId);
-
-		Confirmacion = "Registro Eliminado Correctamente";
-
-	}
+    private async Task Eliminar()
+    {
+        try
+        {
+            if (Caso != null)
+            {
+                var eliminado = await casosService.Eliminar(Caso.CasoId);
+                
+                if (eliminado)
+                {
+                    Confirmacion = "Registro eliminado correctamente";
+                    navigationManager.NavigateTo("/Casos/Index");
+                }
+                else
+                {
+                    ErrorMensaje = "No se pudo eliminar el registro";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMensaje = $"Error al eliminar: {ex.Message}";
+        }
+    }
 }
