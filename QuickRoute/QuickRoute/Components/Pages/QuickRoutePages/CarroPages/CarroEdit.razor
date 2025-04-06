@@ -65,11 +65,11 @@
 
 				</div>
 
-				@* Numero de Chasis *@
+				@* Numero de Título *@
 				<div class="mb-3">
-					<label class="form-label"><strong>Numero de Chasis</strong></label>
-					<InputText class="form-control" @bind-Value="Carro.NumeroChasis"></InputText>
-					<ValidationMessage For="(() => Carro.NumeroChasis)" />
+					<label class="form-label"><strong>Numero de Título</strong></label>
+					<InputText class="form-control" @bind-Value="Carro.NumeroTitulo"></InputText>
+					<ValidationMessage For="(() => Carro.NumeroTitulo)" />
 				</div>
 
 			</div>
@@ -101,10 +101,10 @@
 		errorMensaje = string.Empty;
 
 
-		if (await carroService.ExisteChasis(Carro.NumeroChasis) &&
-			Carro.NumeroChasis != (await carroService.Buscar(CarroId)).NumeroChasis)
+		if (await carroService.ExisteTitulo(Carro.NumeroTitulo) &&
+			Carro.NumeroTitulo != (await carroService.Buscar(CarroId)).NumeroTitulo)
 		{
-			errorMensaje = "Ya existe un registro con este Numero de chasis.";
+			errorMensaje = "Ya existe un registro con este Numero de Titulo.";
 			return false;
 		}
 
