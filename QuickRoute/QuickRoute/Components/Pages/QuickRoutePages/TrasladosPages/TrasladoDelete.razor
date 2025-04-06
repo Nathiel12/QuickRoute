@@ -18,10 +18,12 @@
                 <div class="card-header bg-light">
                     <h6 class="text-danger fs-4">¿Estás seguro de que quieres eliminar este traslado?</h6>
                 </div>
-                <div class="card shadow-lg my-3 col-md-6">
+                <div class="card shadow-lg my-3 col-md-8">
                     <h4 class="bg-light card-header fw-bold text-center">Datos del Traslado</h4>
                     <ul class="px-3 pt-4 pb-5 list-unstyled">
-                        <li><strong>TrasladoId: </strong>@Traslado.TrasladoId</li>
+                        <li><strong>ID: </strong>@Traslado.TrasladoId</li>
+                        <li><strong>Nombres: </strong>@Traslado.Nombres</li>
+                        <li><strong>Dirección: </strong>@Traslado.Direccion</li>
                         <li><strong>Monto Total: </strong>@Traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</li>
                         <li>
                             <strong>Carros:</strong>

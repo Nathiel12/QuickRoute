@@ -27,10 +27,10 @@ namespace QuickRoute.Data.Models
         [Range(1, double.MaxValue, ErrorMessage ="Ingrese un precio valido")]
         public double Precio { get; set; }
 
-        [Required(ErrorMessage = "El número de chasis es obligatorio.")]
-        [StringLength(17, MinimumLength = 17, ErrorMessage = "El número de chasis debe tener exactamente 17 caracteres.")]
-        [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "El número de chasis contiene caracteres inválidos. (No debe contener I u O")]
-        public string NumeroChasis { get; set; }
+        [Required(ErrorMessage = "El número de título es obligatorio.")]
+        [StringLength(17, MinimumLength = 17, ErrorMessage = "El número de título debe tener exactamente 17 caracteres.")]
+        [RegularExpression(@"^[A-HJ-NPR-Z0-9]{17}$", ErrorMessage = "El número de título contiene caracteres inválidos. (No debe contener I u O")]
+        public string NumeroTitulo { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public bool Aprobado { get; set; } = false;

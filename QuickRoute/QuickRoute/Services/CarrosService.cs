@@ -135,10 +135,10 @@ namespace QuickRoute.Services
             .Include(t => t.Carros) 
             .AnyAsync(t => t.Carros.Any(c => c.CarroId == carroId));
         }
-        public async Task<bool> ExisteChasis(string chasis)
+        public async Task<bool> ExisteTitulo(string chasis)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.AnyAsync(c => c.NumeroChasis.ToLower() == chasis.ToLower());
+            return await contexto.Carros.AnyAsync(c => c.NumeroTitulo.ToLower() == chasis.ToLower());
         }
     }
 }

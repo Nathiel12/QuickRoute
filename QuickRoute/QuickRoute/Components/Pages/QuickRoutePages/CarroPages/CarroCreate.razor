@@ -71,11 +71,11 @@
 
 				</div>
 
-				@* Numero de Chasis *@
+				@* Numero de Título *@
 				<div class="mb-3">
-					<label class="form-label"><strong>Numero de Chasis</strong></label>
-					<InputText class="form-control" @bind-Value="Carro.NumeroChasis"></InputText>
-					<ValidationMessage For="(() => Carro.NumeroChasis)" />
+					<label class="form-label"><strong>Numero de Título</strong></label>
+					<InputText class="form-control" @bind-Value="Carro.NumeroTitulo"></InputText>
+					<ValidationMessage For="(() => Carro.NumeroTitulo)" />
 				</div>
 
 			</div>
@@ -99,9 +99,9 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
-		var Existe = await carroService.ExisteChasis(Carro.NumeroChasis);
+		var Existe = await carroService.ExisteTitulo(Carro.NumeroTitulo);
 		if(Existe){
-			errorMensaje = "Ya existe este Numero de Chasis en el Registro";
+			errorMensaje = "Ya existe este Numero de Título en el Registro";
 		}else{
 			var guardo = await carroService.Guardar(Carro);
 			if (guardo != null)

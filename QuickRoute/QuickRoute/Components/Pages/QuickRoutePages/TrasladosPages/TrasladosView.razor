@@ -18,9 +18,19 @@
             </div>
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col">
+                    <div class="col-md-2">
                         <label class="form-label">ID</label>
                         <InputNumber class="form-control" @bind-Value="Traslado.TrasladoId" disabled />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Nombres</label>
+                        <InputText class="form-control" @bind-Value="Traslado.Nombres" />
+                        <ValidationMessage For="@(() => Traslado.Nombres)" />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Dirección</label>
+                        <InputText class="form-control" @bind-Value="Traslado.Direccion" />
+                        <ValidationMessage For="@(() => Traslado.Direccion)" />
                     </div>
                 </div>
 
@@ -90,7 +100,7 @@
             <div class="card-footer text-center">
                 <div class="btn-group" role="group">
                     <a href="/Traslados/Index" class="btn btn-outline-primary">
-                        Nuevo <span class="bi bi-file-earmark-fill"></span>
+                        Volver <span class="bi bi-file-earmark-fill"></span>
                     </a>
                     <button type="submit" class="btn btn-outline-success">
                         Guardar <span class="bi bi-file-earmark-text-fill"></span>
@@ -108,7 +118,6 @@
     [Parameter]
     public int? TrasladoId { get; set; }
     
-
     public Traslados Traslado { get; set; } = new Traslados();
     public List<Carros> listaCarros { get; set; } = new List<Carros>();
     public TrasladosDetalle DetalleSeleccionado { get; set; } = new TrasladosDetalle();
