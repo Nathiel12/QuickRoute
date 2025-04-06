@@ -155,7 +155,11 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         var usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+        
+        if (!TrasladoId.HasValue || TrasladoId.Value == 0)
+        {
+            Traslado.Id = usuarioId;
+        }
         if (user.IsInRole("Admin"))
         {
             listaCarros = await carrosService.Listar(c => c.Aprobado); 
@@ -252,6 +256,13 @@
 
     private async Task Guardar()
     {
+        if (string.IsNullOrEmpty(Traslado.Id))
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            Traslado.Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
         if (await trasladosService.Guardar(Traslado))
         {
             navigationManager.NavigateTo("/Traslados/Index");
