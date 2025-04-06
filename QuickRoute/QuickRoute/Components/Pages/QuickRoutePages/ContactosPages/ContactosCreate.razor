@@ -1,6 +1,6 @@
 ﻿@page "/Contactos/Create"
 @inject ContactosService contactosService
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
