@@ -39,41 +39,66 @@
                     <div class="row align-items-end">
                         <div class="col-auto">
                             <label class="form-label">Carro</label>
-                            <InputSelect class="form-select form-select-sm" @bind-Value="DetalleSeleccionado.CarroId">
+                            <InputSelect class="form-select form-select-sm" 
+                                       @bind-Value="DetalleSeleccionado.CarroId"
+                                       @onchange="LimpiarCalculos">
                                 <option disabled value="0">Seleccione Carro</option>
                                 @foreach (var carro in listaCarros)
                                 {
-                                    <option value="@carro.CarroId">@($"{carro.Marca} {carro.Modelo}")</option>
+                                    <option value="@carro.CarroId">@($"{carro.Marca} {carro.Modelo} - ${carro.Precio.ToString("N2")}")</option>
                                 }
                             </InputSelect>
                         </div>
                         <div class="col-auto ms-2">
-                            <label class="form-label">Monto</label>
-                            <InputNumber class="form-control form-control-sm" @bind-Value="DetalleSeleccionado.Monto" min="0"/>
+                            <label class="form-label">Precio Carro</label>
+                            <InputNumber class="form-control form-control-sm" 
+                                       @bind-Value="PrecioIngresado" 
+                                       min="0" />
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-primary" @onclick="AgregarDetalle">
+                            <button type="button" 
+                                  class="btn btn-secondary mt-3" 
+                                  @onclick="CalcularMonto"
+                                  title="Calcular 60% del precio">
+                                Calcular
+                            </button>
+                        </div>
+                        <div class="col-auto ms-2">
+                            <label class="form-label">Monto (60%)</label>
+                            <InputNumber class="form-control form-control-sm" 
+                                       @bind-Value="DetalleSeleccionado.Monto" 
+                                       disabled />
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" 
+                                  class="btn btn-primary mt-3" 
+                                  @onclick="AgregarDetalle">
                                 <span class="bi bi-plus"></span><strong>Agregar</strong>
                             </button>
                         </div>
                     </div>
+                    
+                    @if (!string.IsNullOrEmpty(ErrorCalculo))
+                    {
+                        <div class="text-danger mt-2">@ErrorCalculo</div>
+                    }
+
                     <table class="table mt-3">
                         <thead>
                             <tr>
                                 <th>Carro</th>
-                                <th>Monto</th>
+                                <th>Precio Original</th>
+                                <th>Monto (60%)</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var detalle in Traslado.TrasladosDetalles)
                             {
+                                var carro = listaCarros.FirstOrDefault(c => c.CarroId == detalle.CarroId);
                                 <tr>
-                                    <td>
-                                        @(detalle.Carro != null
-                                            ? $"{detalle.Carro.Marca} {detalle.Carro.Modelo}"
-                                            : listaCarros.FirstOrDefault(c => c.CarroId == detalle.CarroId)?.Marca)
-                                    </td>
+                                    <td>@carro?.Marca @carro?.Modelo</td>
+                                    <td>@carro?.Precio.ToString("N2")</td>
                                     <td>@detalle.Monto.ToString("N2")</td>
                                     <td>
                                         <button type="button" class="btn btn-outline-dark" @onclick="() => EliminarDetalle(detalle)">
@@ -121,6 +146,8 @@
     public Traslados Traslado { get; set; } = new Traslados();
     public List<Carros> listaCarros { get; set; } = new List<Carros>();
     public TrasladosDetalle DetalleSeleccionado { get; set; } = new TrasladosDetalle();
+    private string ErrorCalculo { get; set; } = string.Empty;
+    private double PrecioIngresado { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -140,18 +167,70 @@
         }
     }
 
+    private void LimpiarCalculos()
+    {
+        PrecioIngresado = 0;
+        DetalleSeleccionado.Monto = 0;
+        ErrorCalculo = string.Empty;
+    }
+
+    private void CalcularMonto()
+    {
+        ErrorCalculo = string.Empty;
+        
+        if (DetalleSeleccionado.CarroId == 0)
+        {
+            ErrorCalculo = "Seleccione un carro primero";
+            return;
+        }
+
+        var carroSeleccionado = listaCarros.FirstOrDefault(c => c.CarroId == DetalleSeleccionado.CarroId);
+        
+        if (carroSeleccionado == null)
+        {
+            ErrorCalculo = "Carro no encontrado";
+            return;
+        }
+
+        if (PrecioIngresado != carroSeleccionado.Precio)
+        {
+            ErrorCalculo = $"El precio debe ser exactamente {carroSeleccionado.Precio.ToString("N2")}";
+            return;
+        }
+
+        DetalleSeleccionado.Monto = PrecioIngresado * 0.6;
+    }
+
     private void AgregarDetalle()
     {
-        if (DetalleSeleccionado.CarroId > 0 && DetalleSeleccionado.Monto > 0)
+        ErrorCalculo = string.Empty;
+        
+        if (DetalleSeleccionado.CarroId == 0)
         {
-            var detalleNuevo = new TrasladosDetalle
-            {
-                CarroId = DetalleSeleccionado.CarroId,
-                Monto = DetalleSeleccionado.Monto
-            };
-            Traslado.TrasladosDetalles.Add(detalleNuevo);
-            DetalleSeleccionado = new TrasladosDetalle();
+            ErrorCalculo = "Seleccione un carro";
+            return;
         }
+
+        if (DetalleSeleccionado.Monto <= 0)
+        {
+            ErrorCalculo = "Calcule el monto primero";
+            return;
+        }
+
+        var carroExistente = Traslado.TrasladosDetalles.Any(d => d.CarroId == DetalleSeleccionado.CarroId);
+        
+        if (carroExistente)
+        {
+            ErrorCalculo = "Este carro ya fue agregado";
+            return;
+        }
+
+        Traslado.TrasladosDetalles.Add(new TrasladosDetalle {
+            CarroId = DetalleSeleccionado.CarroId,
+            Monto = DetalleSeleccionado.Monto
+        });
+
+        LimpiarCalculos();
     }
 
     private void EliminarDetalle(TrasladosDetalle detalle)
