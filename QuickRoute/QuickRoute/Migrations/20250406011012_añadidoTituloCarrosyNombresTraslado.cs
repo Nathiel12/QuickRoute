@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace QuickRoute.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class añadidoTituloCarrosyNombresTraslado : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -80,6 +82,21 @@ namespace QuickRoute.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sugerencias", x => x.SugerenciaId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TipoVehiculos",
+                columns: table => new
+                {
+                    TipoVehiculoId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VehiculoNombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PuntuacionTotal = table.Column<int>(type: "int", nullable: false),
+                    PuntuacionPromedio = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoVehiculos", x => x.TipoVehiculoId);
                 });
 
             migrationBuilder.CreateTable(
@@ -194,13 +211,34 @@ namespace QuickRoute.Migrations
                 {
                     TrasladoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Nombres = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Direccion = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Traslados", x => x.TrasladoId);
                     table.ForeignKey(
                         name: "FK_Traslados_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Votaciones",
+                columns: table => new
+                {
+                    VotacionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FechaEncuesta = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Votaciones", x => x.VotacionId);
+                    table.ForeignKey(
+                        name: "FK_Votaciones_AspNetUsers_Id",
                         column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -240,7 +278,7 @@ namespace QuickRoute.Migrations
                     FechaFabricacion = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Precio = table.Column<double>(type: "float", nullable: false),
-                    NumeroChasis = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: false),
+                    NumeroTitulo = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: false),
                     Aprobado = table.Column<bool>(type: "bit", nullable: false),
                     TrasladoId = table.Column<int>(type: "int", nullable: true),
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false)
@@ -260,6 +298,33 @@ namespace QuickRoute.Migrations
                         principalTable: "Traslados",
                         principalColumn: "TrasladoId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VotacionesDetalles",
+                columns: table => new
+                {
+                    VotacionDetalleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TipoVehiculoId = table.Column<int>(type: "int", nullable: false),
+                    VotacionId = table.Column<int>(type: "int", nullable: false),
+                    Puntuacion = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VotacionesDetalles", x => x.VotacionDetalleId);
+                    table.ForeignKey(
+                        name: "FK_VotacionesDetalles_TipoVehiculos_TipoVehiculoId",
+                        column: x => x.TipoVehiculoId,
+                        principalTable: "TipoVehiculos",
+                        principalColumn: "TipoVehiculoId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_VotacionesDetalles_Votaciones_VotacionId",
+                        column: x => x.VotacionId,
+                        principalTable: "Votaciones",
+                        principalColumn: "VotacionId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -287,6 +352,18 @@ namespace QuickRoute.Migrations
                         principalTable: "Traslados",
                         principalColumn: "TrasladoId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "TipoVehiculos",
+                columns: new[] { "TipoVehiculoId", "PuntuacionPromedio", "PuntuacionTotal", "VehiculoNombre" },
+                values: new object[,]
+                {
+                    { 1, 0.0, 0, "Moticicleta" },
+                    { 2, 0.0, 0, "Camión" },
+                    { 3, 0.0, 0, "Excavadora" },
+                    { 4, 0.0, 0, "Autobús" },
+                    { 5, 0.0, 0, "Camión de Remolque" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -357,6 +434,21 @@ namespace QuickRoute.Migrations
                 name: "IX_TrasladosDetalles_TrasladoId",
                 table: "TrasladosDetalles",
                 column: "TrasladoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Votaciones_Id",
+                table: "Votaciones",
+                column: "Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VotacionesDetalles_TipoVehiculoId",
+                table: "VotacionesDetalles",
+                column: "TipoVehiculoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VotacionesDetalles_VotacionId",
+                table: "VotacionesDetalles",
+                column: "VotacionId");
         }
 
         /// <inheritdoc />
@@ -387,6 +479,9 @@ namespace QuickRoute.Migrations
                 name: "TrasladosDetalles");
 
             migrationBuilder.DropTable(
+                name: "VotacionesDetalles");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -394,6 +489,12 @@ namespace QuickRoute.Migrations
 
             migrationBuilder.DropTable(
                 name: "Carros");
+
+            migrationBuilder.DropTable(
+                name: "TipoVehiculos");
+
+            migrationBuilder.DropTable(
+                name: "Votaciones");
 
             migrationBuilder.DropTable(
                 name: "Traslados");

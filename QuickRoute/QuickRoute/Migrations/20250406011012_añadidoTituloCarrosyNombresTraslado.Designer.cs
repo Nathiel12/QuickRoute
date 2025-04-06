@@ -12,8 +12,8 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250404062346_ActualizarPropiedades")]
-    partial class ActualizarPropiedades
+    [Migration("20250406011012_añadidoTituloCarrosyNombresTraslado")]
+    partial class añadidoTituloCarrosyNombresTraslado
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,7 +256,7 @@ namespace QuickRoute.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NumeroChasis")
+                    b.Property<string>("NumeroTitulo")
                         .IsRequired()
                         .HasMaxLength(17)
                         .HasColumnType("nvarchar(17)");
@@ -432,8 +432,18 @@ namespace QuickRoute.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrasladoId"));
 
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Nombres")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("TrasladoId");
 
@@ -479,7 +489,12 @@ namespace QuickRoute.Migrations
                     b.Property<DateTime>("FechaEncuesta")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("VotacionId");
+
+                    b.HasIndex("Id");
 
                     b.ToTable("Votaciones");
                 });
@@ -616,6 +631,15 @@ namespace QuickRoute.Migrations
                     b.Navigation("Carro");
 
                     b.Navigation("Traslado");
+                });
+
+            modelBuilder.Entity("QuickRoute.Data.Models.Votaciones", b =>
+                {
+                    b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("Id");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.VotacionesDetalles", b =>
