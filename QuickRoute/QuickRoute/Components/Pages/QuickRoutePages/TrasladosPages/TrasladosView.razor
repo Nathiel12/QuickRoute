@@ -2,6 +2,7 @@
 @inject TrasladosService trasladosService
 @attribute [Authorize]
 @inject CarrosService carrosService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -124,7 +125,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        listaCarros = await carrosService.Listar(c => c.Aprobado);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (user.IsInRole("Admin"))
+        {
+            listaCarros = await carrosService.Listar(c => c.Aprobado); 
+        }
+        else if (!string.IsNullOrEmpty(usuarioId))
+        {
+            listaCarros = await carrosService.Listar(c => c.Id == usuarioId && c.Aprobado);
+        }
 
         if (TrasladoId.HasValue && TrasladoId.Value != 0)
         {
