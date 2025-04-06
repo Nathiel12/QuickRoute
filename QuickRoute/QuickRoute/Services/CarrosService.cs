@@ -130,10 +130,10 @@ namespace QuickRoute.Services
         public async Task<bool> TieneTrasladosActivos(int carroId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-
             return await contexto.Traslados
-            .Include(t => t.Carros) 
-            .AnyAsync(t => t.Carros.Any(c => c.CarroId == carroId));
+                .Include(t => t.TrasladosDetalles)
+                .ThenInclude(d => d.Carro)
+                .AnyAsync(t => t.TrasladosDetalles.Any(d => d.CarroId == carroId));
         }
         public async Task<bool> ExisteTitulo(string chasis)
         {
