@@ -3,6 +3,7 @@
 @attribute [Authorize]
 @inject CarrosService carroService
 @inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
 @* HTML *@
@@ -130,10 +131,23 @@
     public DateTime? Desde { get; set; }
 
     public DateTime? Hasta { get; set; }
+    private string? UsuarioIdActual { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        ListaCarros = await carroService.Listar(c => c.CarroId > 0);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (user.IsInRole("Admin"))
+        {
+            ListaCarros = await carroService.Listar(c => c.CarroId > 0); 
+        }
+        else if (!string.IsNullOrEmpty(UsuarioIdActual))
+        {
+            ListaCarros = await carroService.Listar(c => c.Id == UsuarioIdActual);
+        }
+
         Desde = null;
         Hasta = null;
     }
@@ -164,7 +178,6 @@
             ListaCarros = await carroService
                 .Listar(c => c.FechaRegistro >= Desde && c.FechaRegistro <= Hasta);
         }
-
 
         StateHasChanged();
 
