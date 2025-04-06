@@ -1,6 +1,6 @@
 ﻿@implements IDisposable
-
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -12,61 +12,74 @@
 
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="nav flex-column">
+        
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Carros/Index">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Carros
-            </NavLink>
-        </div>
+       
+        <AuthorizeView>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Register">
+                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Account/Login">
+                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Admin/Carros/Index">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Solicitudes
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Traslados/Index">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Traslados
-            </NavLink>
-        </div>
         
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Casos/Index">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Casos
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Contactos/Index">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Contactos
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Sugerencias/Index">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Sugerencias
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/Votaciones/Index">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Votos
-            </NavLink>
-        </div>
-
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Carros/Index">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Carros
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Admin/Carros/Index">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Solicitudes
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Traslados/Index">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Traslados
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Casos/Index">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Casos
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Contactos/Index">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Contactos
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Sugerencias/Index">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Sugerencias
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/Votaciones/Index">
+                        <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Votos
+                    </NavLink>
+                </div>
+
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
@@ -82,18 +95,6 @@
                     </form>
                 </div>
             </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
         </AuthorizeView>
     </nav>
 </div>

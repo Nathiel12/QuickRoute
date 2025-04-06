@@ -6,6 +6,9 @@
 
 @* HTML *@
 <PageTitle>Registro de Carros</PageTitle>
+@* Label para notificaciones *@
+<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+
 <div class="container">
     <div class="card shadow-lg">
         <div class="card-header space-between">
@@ -136,6 +139,8 @@
 
     public DateTime? Hasta { get; set; }
 
+    public string errorMensaje { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         ListaCarros = await carroService.ListarSegunPermisos(incluirNoAprobados: true);
@@ -170,7 +175,6 @@
                 .Listar(c => c.FechaRegistro >= Desde && c.FechaRegistro <= Hasta);
         }
 
-
         StateHasChanged();
 
     }
@@ -190,7 +194,17 @@
     }
     private async Task EliminarCarro(int carroId)
     {
-        
+        var carro = ListaCarros.FirstOrDefault(c => c.CarroId == carroId);
+        if(carro?.Aprobado == true){
+            errorMensaje = "No se puede eliminar un carro ya aprobado.";
+            return;
+        }
+        var verificar = await carroService.TieneTrasladosActivos(carroId);
+        if (!verificar)
+        {
+            errorMensaje = "No se puede eliminar el registro (El carro ya esta en proceso de traslado).";
+            return;
+        }
         var resultado = await carroService.Eliminar(carroId);
         if (resultado)
         {
