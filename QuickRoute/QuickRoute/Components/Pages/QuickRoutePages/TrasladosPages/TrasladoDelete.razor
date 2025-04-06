@@ -1,6 +1,6 @@
 @page "/Traslados/Delete/{TrasladoId:int}"
 @inject TrasladosService trasladosService
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 

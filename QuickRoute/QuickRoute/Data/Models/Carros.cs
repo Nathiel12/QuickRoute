@@ -21,16 +21,16 @@ namespace QuickRoute.Data.Models
         ErrorMessage = "Solo se permiten letras, números y espacios (sin puntos ni símbolos)")]
         public string Modelo { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
+        [Required(ErrorMessage = "Este campo es requerido.")]
         public DateTime FechaFabricacion { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Este campo es requerido")]
-        [StringLength(15, ErrorMessage = "El color no puede exceder los 15 caracteres")]
-        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El color solo puede contener letras y espacios")]
+        [StringLength(15, ErrorMessage = "El color no puede exceder los 15 caracteres.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El color solo puede contener letras y espacios.")]
         public string Color { get; set; }
 
-        [Required(ErrorMessage = "Este campo es requerido")]
-        [Range(1, double.MaxValue, ErrorMessage ="Ingrese un precio valido")]
+        [Required(ErrorMessage = "Este campo es requerido.")]
+        [Range(1, 5000000, ErrorMessage ="Ingrese un precio valido.")]
         public double Precio { get; set; }
 
         [Required(ErrorMessage = "El número de título es obligatorio.")]

@@ -1,6 +1,6 @@
 ﻿@page "/Casos/Delete/{CasoId:int}"
 @inject CasosService casosService
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 

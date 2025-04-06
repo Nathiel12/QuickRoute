@@ -10,7 +10,7 @@ namespace QuickRoute.Data.Models
 
         public int CarroId { get; set; }
 
-        [Range(0.0000000, double.MaxValue, ErrorMessage = "El monto debe ser positivo")]
+        [Range(0.0000000, 5000000, ErrorMessage = "El monto debe ser positivo")]
         [Required(ErrorMessage = "Este campo es requerido")]
         public double Monto { get; set; }
 

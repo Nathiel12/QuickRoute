@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Casos/Index">
+                    <NavLink class="nav-link" href="@GetCasosLink()">
                         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Casos
                     </NavLink>
                 </div>
@@ -115,6 +115,11 @@
     private string GetSugerenciasLink()
     {
         return isAdmin ? "/Sugerencias/Index" : "/Sugerencias/Create";
+    }
+
+    private string GetCasosLink()
+    {
+        return isAdmin ? "/Casos/Index" : "/Casos/Create";
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

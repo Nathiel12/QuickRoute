@@ -73,8 +73,11 @@
                         <th>Nombre</th>
                         <th>Telefono</th>
                         <th>Email</th>
-                        <th>Editar</th>
-                        <th>Eliminar</th>
+                        @if(isAdmin){
+                            <th>Editar</th>
+                            <th>Eliminar</th>
+                        }
+                        
                     </tr>
                 </thead>
                 <tbody>

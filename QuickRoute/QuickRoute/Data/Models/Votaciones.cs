@@ -7,7 +7,7 @@ namespace QuickRoute.Data.Models
     {
         [Key]
         public int VotacionId { get; set; }
-        public DateTime FechaEncuesta { get; set; }
+        public DateTime FechaEncuesta { get; set; } = DateTime.Now;
         [Required(ErrorMessage = "Este campo es requerido")]
         public List<VotacionesDetalles> VotacionesDetalle { get; set; } = new List<VotacionesDetalles>();
         public string Id { get; set; }
