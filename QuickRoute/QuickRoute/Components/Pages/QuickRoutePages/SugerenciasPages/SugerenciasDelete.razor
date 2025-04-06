@@ -1,5 +1,6 @@
 @page "/Sugerencias/Delete/{SugerenciaId:int}"
 @inject SugerenciasService sugerenciasService
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -41,7 +42,7 @@
     protected override async Task OnInitializedAsync()
     {
         Sugerencia = await sugerenciasService.Buscar(SugerenciaId);
-        Pregunta = "¿Está seguro de querer eliminar esta Sugerencia?";
+        Pregunta = "¿EstEseguro de querer eliminar esta Sugerencia?";
     }
 
     public async Task Eliminar()
