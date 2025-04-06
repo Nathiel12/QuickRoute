@@ -51,7 +51,7 @@
 	public async Task Eliminar()
 	{
 		var verificar = await carroService.TieneTrasladosActivos(CarroId);
-		if(!verificar){
+		if(verificar){
 			Confirmacion = "No se puede eliminar el registro (El carro esta en proceso de traslado)";
 			return;
 		}
