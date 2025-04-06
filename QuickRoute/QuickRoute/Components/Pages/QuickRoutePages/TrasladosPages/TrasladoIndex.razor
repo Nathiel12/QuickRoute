@@ -1,6 +1,7 @@
 @page "/Traslados/Index"
 @inject TrasladosService trasladosService
 @attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -103,6 +104,7 @@
 
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
+    private string? UsuarioIdActual { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,7 +113,18 @@
 
     private async Task CargarTraslados()
     {
-        ListaTraslados = await trasladosService.Listar(t => t.TrasladoId > 0);
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UsuarioIdActual = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (user.IsInRole("Admin"))
+        {
+            ListaTraslados = await trasladosService.Listar(c => c.TrasladoId > 0);
+        }
+        else if (!string.IsNullOrEmpty(UsuarioIdActual))
+        {
+            ListaTraslados = await trasladosService.ListarPorUsuario(UsuarioIdActual);
+        }
     }
 
     private async Task Buscar()

@@ -2,6 +2,7 @@
 @page "/Carros/Create"
 @attribute [Authorize]
 @inject CarrosService carroService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -99,10 +100,19 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
+
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		Carro.Id = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+		
 		var Existe = await carroService.ExisteTitulo(Carro.NumeroTitulo);
-		if(Existe){
-			errorMensaje = "Ya existe este Numero de Título en el Registro";
-		}else{
+		if (Existe)
+		{
+			errorMensaje = "Ya existe este Número de Título en el Registro";
+		}
+		else
+		{
 			var guardo = await carroService.Guardar(Carro);
 			if (guardo != null)
 			{
@@ -113,7 +123,6 @@
 				errorMensaje = "Error al guardar el Registro";
 			}
 		}
-		
 	}
 
 	private void Nuevo(){

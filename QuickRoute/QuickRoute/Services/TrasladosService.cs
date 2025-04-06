@@ -130,5 +130,14 @@ namespace QuickRoute.Services
                 .AsNoTracking()
                 .ToListAsync();
         }
+        public async Task<List<Traslados>> ListarPorUsuario(string usuarioId)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Traslados
+                .Include(t => t.TrasladosDetalles)
+                .ThenInclude(d => d.Carro)
+                .Where(t => t.TrasladosDetalles.Any(d => d.Carro.Id == usuarioId))
+                .ToListAsync();
+        }
     }
 }

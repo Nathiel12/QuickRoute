@@ -1,6 +1,6 @@
 ﻿@page "/Contactos/Edit/{ContactoId:int}"
 @inject ContactosService contactosService
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 

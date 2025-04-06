@@ -1,5 +1,6 @@
 @page "/Sugerencias/Index"
 @inject SugerenciasService sugerenciasService
+@attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
