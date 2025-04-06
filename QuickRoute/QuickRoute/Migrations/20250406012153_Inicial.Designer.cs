@@ -12,8 +12,8 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250406011012_añadidoTituloCarrosyNombresTraslado")]
-    partial class añadidoTituloCarrosyNombresTraslado
+    [Migration("20250406012153_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
