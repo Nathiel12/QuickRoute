@@ -82,9 +82,9 @@
                                 }
                             </td>
                             <td>
-                                @if (traslado.Usuario is not null)
+                                @if (traslado.Usuario != null)
                                 {
-                                    @traslado.Usuario.Email
+                                    @traslado.Usuario.Id
                                 }
                             </td>
                             @if(isAdmin){
