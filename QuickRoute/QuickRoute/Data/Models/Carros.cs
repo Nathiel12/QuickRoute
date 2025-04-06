@@ -9,18 +9,24 @@ namespace QuickRoute.Data.Models
         public int CarroId { get; set; }
 
         [Required(ErrorMessage ="Este campo es requerido")]
+        [StringLength(15, ErrorMessage = "La marca no puede exceder los 15 caracteres")]
         [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "La marca solo puede contener letras y espacios")]
         public string Marca { get; set; }
 
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Este campo es requerido")]
+        [StringLength(15, ErrorMessage = "El modelo no puede exceder los 15 caracteres")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9\s]+$",
+        ErrorMessage = "Solo se permiten letras, números y espacios (sin puntos ni símbolos)")]
         public string Modelo { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public DateTime FechaFabricacion { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Este campo es requerido")]
+        [StringLength(15, ErrorMessage = "El color no puede exceder los 15 caracteres")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", ErrorMessage = "El color solo puede contener letras y espacios")]
         public string Color { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
