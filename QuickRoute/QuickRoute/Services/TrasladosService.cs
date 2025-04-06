@@ -136,8 +136,8 @@ namespace QuickRoute.Services
             return await contexto.Traslados
                 .Include(t => t.TrasladosDetalles)
                 .ThenInclude(d => d.Carro)
-                .Include(t => t.Usuario)
-                .Where(t => t.TrasladosDetalles.Any(d => d.Carro.Id == usuarioId))
+                .Include(t => t.Usuario)  
+                .Where(t => t.Id == usuarioId)  
                 .ToListAsync();
         }
     }

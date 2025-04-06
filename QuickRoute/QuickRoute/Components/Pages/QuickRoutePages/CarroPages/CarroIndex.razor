@@ -1,12 +1,10 @@
-﻿@*Nathiel Taveras*@
-@page "/Carros/Index"
+﻿@page "/Carros/Index"
 @attribute [Authorize]
 @inject CarrosService carroService
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
-@* HTML *@
 <PageTitle>Registro de Carros</PageTitle>
 <div class="container">
     <div class="card shadow-lg">
@@ -16,24 +14,16 @@
         </div>
 
         <div class="card-body">
-
-            @*labels*@
             <div class="row">
-
-                @*Filtrar por*@
                 <div class="col-3">
                     <label class="col-form-label"><strong>Filtrar por</strong></label>
                 </div>
-
-                @*ValorFiltro*@
                 <div class="col-4">
                     <label class="col-form-label"><strong>Busqueda</strong></label>
                 </div>
             </div>
 
-            @*Inputs y botones*@
             <div class="row align-items-center">
-                @*filtro*@
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opcion</option>
@@ -44,7 +34,6 @@
                     </InputSelect>
                 </div>
 
-                @*Busqueda*@
                 <div class="col-4">
                     <div class="input-group">
                         <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
@@ -52,34 +41,27 @@
                     </div>
                 </div>
 
-                @*Restablecer*@
                 <div class="col-3">
                     <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
                             @onclick="Restablecer">
                     </button>
                 </div>
 
-                @*FiltroFecha*@
                 <div class="row mt-3">
-
-                    @*Desde*@
                     <div class="col-3">
                         <label class="col-form-label"><strong>Desde</strong></label>
                         <InputDate class="form-control" @bind-Value="Desde"></InputDate>
                     </div>
 
-                    @*Hasta*@
                     <div class="col-3">
                         <label class="col-form-label"><strong>Hasta</strong></label>
                         <div class="input-group">
                             <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
                         </div>
-
                     </div>
                 </div>
-
             </div>
-            @* Tabla *@
+
             <table class="table table-hover">
                 <thead class="table  table-striped text-black">
                     <tr>
@@ -90,6 +72,7 @@
                         <th>Modelo</th>
                         <th>Color</th>
                         <th>Precio</th>
+                        <th>Monto de Traslado</th>
                         <th>Numero de Titulo</th>
                         <th>Editar</th>
                         <th>Eliminar</th>
@@ -99,15 +82,15 @@
                     @foreach (var carro in ListaCarros)
                     {
                         <tr>
-                            <td> @carro.CarroId</td>
-                            <td> @carro.FechaRegistro.ToString("dd/MM/yyyy")</td>
-                            <td> @carro.FechaFabricacion.ToString("dd/MM/yyyy")</td>
-                            <td> @carro.Marca</td>
-                            <td> @carro.Modelo</td>
-                            <td> @carro.Color</td>
-                            <td> @carro.Precio.ToString("N2")</td>
-                            <td> @carro.NumeroTitulo</td>
-
+                            <td>@carro.CarroId</td>
+                            <td>@carro.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                            <td>@carro.FechaFabricacion.ToString("dd/MM/yyyy")</td>
+                            <td>@carro.Marca</td>
+                            <td>@carro.Modelo</td>
+                            <td>@carro.Color</td>
+                            <td>@carro.Precio.ToString("N2")</td>
+                            <td>@montoTrasladoDict.GetValueOrDefault(carro.CarroId, 0).ToString("N2")</td>
+                            <td>@carro.NumeroTitulo</td>
                             <td>
                                 <a href="/Carros/Edit/@carro.CarroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                             </td>
@@ -119,38 +102,57 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="card-footer">
+            <div class="row">
+                <div class="col">
+                    <strong>Cantidad de Carros:</strong> @ListaCarros.Count
+                </div>
+                <div class="col">
+                    <strong>Cantidad de Carros Trasladados:</strong> @totalTrasladados
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @code {
-
     public List<Carros> ListaCarros { get; set; } = new List<Carros>();
+    private Dictionary<int, double> montoTrasladoDict = new();
+    private int totalTrasladados;
 
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
     public DateTime? Desde { get; set; }
-
     public DateTime? Hasta { get; set; }
     private string? UsuarioIdActual { get; set; }
 
     protected override async Task OnInitializedAsync()
+{
+    var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+    UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+    if (user.IsInRole("Admin"))
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-        if (user.IsInRole("Admin"))
-        {
-            ListaCarros = await carroService.Listar(c => c.CarroId > 0); 
-        }
-        else if (!string.IsNullOrEmpty(UsuarioIdActual))
-        {
-            ListaCarros = await carroService.Listar(c => c.Id == UsuarioIdActual);
-        }
-
-        Desde = null;
-        Hasta = null;
+        ListaCarros = await carroService.Listar(c => c.CarroId > 0); 
     }
+    else if (!string.IsNullOrEmpty(UsuarioIdActual))
+    {
+        ListaCarros = await carroService.Listar(c => c.Id == UsuarioIdActual);
+    }
+
+    var detalles = await carroService.ObtenerTodosDetalles();
+    
+    var carrosIds = ListaCarros.Select(c => c.CarroId).ToHashSet();
+    var detallesFiltrados = detalles.Where(d => carrosIds.Contains(d.CarroId)).ToList();
+    
+    montoTrasladoDict = detallesFiltrados
+        .GroupBy(d => d.CarroId)
+        .ToDictionary(g => g.Key, g => g.Sum(d => d.Monto));
+    
+    totalTrasladados = montoTrasladoDict.Count; 
+}
 
     private async Task Buscar()
     {
@@ -158,10 +160,8 @@
         {
             if (int.TryParse(ValorFiltro, out var carroId))
             {
-                ListaCarros = await carroService
-                    .Listar(c => c.CarroId == carroId);
+                ListaCarros = await carroService.Listar(c => c.CarroId == carroId);
             }
-
         }
         else if (ValorFiltro.Trim() != "" && Filtro == "Marca")
         {
@@ -179,13 +179,16 @@
                 .Listar(c => c.FechaRegistro >= Desde && c.FechaRegistro <= Hasta);
         }
 
+        totalTrasladados = ListaCarros.Count(c => montoTrasladoDict.ContainsKey(c.CarroId));
         StateHasChanged();
-
     }
+
     private async Task Restablecer()
     {
         ListaCarros = await carroService.Listar(c => c.CarroId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
+        totalTrasladados = ListaCarros.Count(c => montoTrasladoDict.ContainsKey(c.CarroId));
+        StateHasChanged();
     }
 }

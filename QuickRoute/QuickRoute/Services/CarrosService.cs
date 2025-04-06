@@ -140,5 +140,13 @@ namespace QuickRoute.Services
             await using var contexto = await DbFactory.CreateDbContextAsync();
             return await contexto.Carros.AnyAsync(c => c.NumeroTitulo.ToLower() == chasis.ToLower());
         }
+        public async Task<List<TrasladosDetalle>> ObtenerTodosDetalles()
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.TrasladosDetalles
+                .Include(d => d.Carro)
+                .Include(d => d.Traslado)  
+                .ToListAsync();
+        }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuickRoute.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class validaciones : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,9 +58,9 @@ namespace QuickRoute.Migrations
                 {
                     ContactoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     CasoId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -272,11 +272,11 @@ namespace QuickRoute.Migrations
                 {
                     CarroId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Marca = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Marca = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Modelo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Modelo = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     FechaFabricacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Precio = table.Column<double>(type: "float", nullable: false),
                     NumeroTitulo = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: false),
                     Aprobado = table.Column<bool>(type: "bit", nullable: false),
