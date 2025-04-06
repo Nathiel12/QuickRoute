@@ -200,7 +200,7 @@
             return;
         }
         var verificar = await carroService.TieneTrasladosActivos(carroId);
-        if (!verificar)
+        if (verificar)
         {
             errorMensaje = "No se puede eliminar el registro (El carro ya esta en proceso de traslado).";
             return;
