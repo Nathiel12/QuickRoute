@@ -1,17 +1,10 @@
-﻿@*Nathiel Taveras*@
-@page "/Contactos/Delete/{ContactoId:int}"
+﻿@page "/Contactos/Delete/{ContactoId:int}"
 @inject ContactosService contactosService
 @attribute [Authorize(Roles = "Admin")]
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
-@* HTML *@
 <PageTitle>Eliminar</PageTitle>
-
-@*Labels para notificaciones*@
-<label style="color:red;" hidden="@string.IsNullOrEmpty(Confirmacion)">@Confirmacion</label>
-<label style="color:darkred">@Pregunta</label>
-
 <div class="container">
 	<div class="card shadow-lg">
 		<div class="card-header text-center">
@@ -38,19 +31,17 @@
 
 	private Contactos Contacto { get; set; } = new Contactos();
 	private string Confirmacion { get; set; } = string.Empty;
-	private string Pregunta { get; set; } = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
 		Contacto = await contactosService.Buscar(ContactoId);
-		Pregunta = "¿Esta seguro de querer eliminar el Registro?";
 	}
 
 	public async Task Eliminar()
 	{
 		await contactosService.Eliminar(Contacto.ContactoId);
 		
-		Confirmacion = "Registro Eliminado Correctamente";
-		
+		navigationManager.NavigateTo("/Contactos/Index");
+
 	}
 }
