@@ -63,3 +63,66 @@
         padding: 1rem;
     }
 }
+
+/* ===== ESTRUCTURA PRINCIPAL ===== */
+.page:not(.home-page) {
+    background: -webkit-linear-gradient(left, #0072ff, #00c6ff);
+    min-height: 100vh;
+}
+
+    .page:not(.home-page) .main-content {
+        background: transparent;
+    }
+
+.form-page .content-container {
+    background: #fff;
+    border-radius: 1rem;
+    width: 70%;
+    margin: 5% auto;
+    padding: 3rem !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Mantenemos el resto de tus estilos originales para el formulario */
+.form-page form {
+    width: 100%;
+}
+
+.form-page .form-control {
+    border-radius: 1rem !important;
+}
+
+    .form-page h3 {
+        margin-bottom: 2rem;
+        text-align: center;
+        color: #0062cc;
+    }
+
+    .form-page .btn-contact {
+        width: 100%;
+        border: none;
+        border-radius: 1rem !important;
+        padding: 1rem;
+        background: #dc3545;
+        font-weight: 600;
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+        .form-page .btn-contact:hover {
+            background: #c82333;
+        }
+
+/* Responsive */
+@media (max-width: 992px) {
+    .form-page .content-container {
+        width: 85%;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-page .content-container {
+        width: 95%;
+        padding: 2rem !important;
+    }
+}

@@ -4,7 +4,7 @@
 	<NavMenu />
     
 	<main class="main-content">
-		<div class="content-container">
+		<div class="content-container @(ShouldApplyFormStyles() ? "form-page" : "")">
 			@Body
 		</div>
 	</main>
@@ -21,6 +21,16 @@
 	{
 		var uri = NavigationManager.Uri;
 		return uri.EndsWith("/") || uri.EndsWith(NavigationManager.BaseUri.TrimEnd('/'));
+	}
+    
+	private bool ShouldApplyFormStyles()
+	{
+		var uri = NavigationManager.Uri;
+		var baseUri = NavigationManager.BaseUri;
+        
+		return !(uri == baseUri || 
+		         uri == $"{baseUri}Account/Login" || 
+		         uri == $"{baseUri}Account/Register");
 	}
     
 	[Inject] private NavigationManager NavigationManager { get; set; }
