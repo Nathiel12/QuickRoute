@@ -22,6 +22,7 @@ namespace QuickRoute.Data.Models
         public string Modelo { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido.")]
+        [Range(typeof(DateTime), "1/1/1900", "1/1/2100", ErrorMessage = "Fecha inválida")]
         public DateTime FechaFabricacion { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Este campo es requerido")]
@@ -30,7 +31,7 @@ namespace QuickRoute.Data.Models
         public string Color { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido.")]
-        [Range(1, 5000000, ErrorMessage ="Ingrese un precio valido.")]
+        [Range(1, 5000000, ErrorMessage = "Debe ser entre $1 y $5,000,000")]
         public double Precio { get; set; }
 
         [Required(ErrorMessage = "El número de título es obligatorio.")]
@@ -40,10 +41,13 @@ namespace QuickRoute.Data.Models
 
         [Required(ErrorMessage = "Este campo es requerido")]
         public bool Aprobado { get; set; } = false;
+        public bool EnTraslado { get; set; } = false;
         public int? TrasladoId { get; set; }
         public Traslados? Traslado { get; set; }
         public string Id { get; set; }
         [ForeignKey("Id")]
         public ApplicationUser Usuario { get; set; }
+        [NotMapped] 
+        public double MontoAcumuladoTraslados { get; set; }
     }
 }
