@@ -2,102 +2,106 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="top-row ps-3 navbar navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">QuickRoute</a>
-    </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
+        <!-- Logo a la izquierda -->
+        <NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">
+            QuickRoute
+        </NavLink>
         
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <!-- Elementos del centro -->
+            <ul class="navbar-nav mx-auto"> <!-- mx-auto centra los elementos -->
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/Carros/Index">
+                                <span class="bi bi-car-front-fill" aria-hidden="true"></span> Carros
+                            </NavLink>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/Admin/Carros/Index">
+                                <span class="bi bi-clipboard2-check-fill" aria-hidden="true"></span> Aprobación
+                            </NavLink>
+                        </li>
+
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/Traslados/Index">
+                                <span class="bi bi-train-freight-front-fill" aria-hidden="true"></span> Traslados
+                            </NavLink>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="@GetCasosLink()">
+                                <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
+                            </NavLink>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/Contactos/Index">
+                                <span class="bi bi-journal-bookmark-fill" aria-hidden="true"></span> Contactos
+                            </NavLink>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="@GetSugerenciasLink()">
+                                <span class="bi bi-archive" aria-hidden="true"></span> Sugerencias
+                            </NavLink>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/Votaciones/Index">
+                                <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Votos
+                            </NavLink>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
+            </ul>
+            
+            <!-- Elementos a la derecha (Login/Logout) -->
+            <ul class="navbar-nav">
+                <AuthorizeView>
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="Account/Login">
+                                <span class="bi bi-person-circle" aria-hidden="true"></span> Login
+                            </NavLink>
+                        </li>
+                    </NotAuthorized>
+                    
+                    <Authorized>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <NavLink class="dropdown-item" href="Account/Manage">
+                                        <span class="bi bi-person-fill" aria-hidden="true"></span> Mi cuenta
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <form action="Account/Logout" method="post">
+                                        <AntiforgeryToken />
+                                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                        <button type="submit" class="dropdown-item">
+                                            <span class="bi bi-arrow-bar-left" aria-hidden="true"></span> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </Authorized>
+                </AuthorizeView>
+            </ul>
         </div>
-
-       
-        <AuthorizeView>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-
-        
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Carros/Index">
-                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Carros
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Admin/Carros/Index">
-                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Solicitudes
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Traslados/Index">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Traslados
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="@GetCasosLink()">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Casos
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Contactos/Index">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Contactos
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="@GetSugerenciasLink()">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Sugerencias
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Votaciones/Index">
-                        <span class="bi bi-star-half" aria-hidden="true"></span> Votos
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-        </AuthorizeView>
-    </nav>
-</div>
+    </div>
+</nav>
 
 @code {
     private string? currentUrl;
@@ -133,4 +137,3 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
-
