@@ -1,7 +1,7 @@
-/* Estilos para la barra de navegación con gradiente */
+/* Estilos para la barra de navegación con gradiente unificado */
 .navbar {
-    background: linear-gradient(135deg, #0066ff, #00ccff) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    /* Usamos el mismo gradiente que el fondo de la página */
+    background: linear-gradient(to right, #0072ff, #00c6ff) !important;
     position: fixed !important;
     top: 0;
     left: 0;
@@ -9,15 +9,17 @@
     z-index: 1030;
     width: 100%;
     padding: 0.5rem 1rem;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+    border-bottom: none;
 }
 
-/* Ajuste del padding superior del body */
+/* Ajuste del padding superior del body para que el contenido no quede oculto bajo el nav */
 body {
     padding-top: 70px;
-    background: linear-gradient(to right, #0072ff, #00c6ff);
+    /* Aseguramos que el fondo tenga el mismo gradiente que el navbar */
+    background: linear-gradient(to right, #0072ff, #00c6ff) !important;
     min-height: 100vh;
 }
 
@@ -159,7 +161,6 @@ body {
         padding: 1.5rem !important;
         margin-top: 0.75rem !important;
         border-radius: 15px !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
     }
 
     .navbar-nav .nav-item {
@@ -206,4 +207,9 @@ body {
     margin-right: 0.5rem;
     color: white !important;
     opacity: 1 !important;
+}
+/* Gradiente para el navbar */
+.custom-gradient {
+    background: linear-gradient(to right, #0072ff, #00c6ff) !important;
+    border-bottom: none;
 }
