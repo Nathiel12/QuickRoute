@@ -16,34 +16,48 @@
 
 <PageTitle>Crear cuenta</PageTitle>
 
-<h1>Crear cuenta</h1>
+<div class="bg"></div>
 
-<div class="row">
-    <div class="col-lg-6">
-        <StatusMessage Message="@Message" />
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator />
-            <hr />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
-                <label for="Input.Email">Correo electrónico</label>
-                <ValidationMessage For="() => Input.Email" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
-                <label for="Input.Password">Contraseña</label>
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
-            </div>
-            <div class="form-floating mb-3">
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
-                <label for="Input.ConfirmPassword">Confirmar contraseña</label>
-                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Registrarse</button>
-        </EditForm>
-    </div>
-</div>
+<main class="form-signin">
+    <h1 class="h3">Crear cuenta</h1>
+    
+    <StatusMessage Message="@Message" />
+    <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+        
+        <div class="form-floating">
+            <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" 
+                      autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
+            <label for="Input.Email">Correo electrónico</label>
+            <ValidationMessage For="() => Input.Email" class="text-danger" />
+        </div>
+        
+        <div class="form-floating">
+            <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" 
+                      autocomplete="new-password" aria-required="true" placeholder="contraseña" />
+            <label for="Input.Password">Contraseña</label>
+            <ValidationMessage For="() => Input.Password" class="text-danger" />
+        </div>
+        
+        <div class="form-floating">
+            <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control" 
+                      autocomplete="new-password" aria-required="true" placeholder="confirmar contraseña" />
+            <label for="Input.ConfirmPassword">Confirmar contraseña</label>
+            <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+        </div>
+        
+        <button type="submit" class="w-100 btn btn-lg">Registrarse</button>
+        
+        <p class="mt-3 text-center">
+            <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Login", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
+                ¿Ya tienes una cuenta? Inicia sesión
+            </a>
+        </p>
+    </EditForm>
+    
+    <p class="copyright">&copy; @DateTime.Now.Year</p>
+</main>
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
