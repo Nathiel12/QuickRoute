@@ -24,14 +24,20 @@ namespace QuickRoute.Services
         public async Task<bool> Insertar(Traslados traslado)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
+            var carrosIds = traslado.TrasladosDetalles.Select(d => d.CarroId).ToList();
             contexto.Traslados.Add(traslado);
+
+            var carros = await contexto.Carros
+            .Where(c => carrosIds.Contains(c.CarroId))
+            .ToListAsync();
 
             foreach (var detalle in traslado.TrasladosDetalles)
             {
                 var carro = await contexto.Carros.FindAsync(detalle.CarroId);
+                carro.MontoAcumuladoTraslados = carro.Precio;
                 if (carro != null)
                 {
-                    carro.Precio += detalle.Monto;
+                    carro.MontoAcumuladoTraslados += detalle.Monto;
                 }
             }
 
@@ -48,6 +54,11 @@ namespace QuickRoute.Services
 
             if (trasladoExistente == null)
                 return false;
+
+            var nuevosCarrosIds = trasladoActualizado.TrasladosDetalles
+            .Select(d => d.CarroId)
+            .Except(trasladoExistente.TrasladosDetalles.Select(d => d.CarroId))
+            .ToList();
 
             foreach (var detalleNew in trasladoActualizado.TrasladosDetalles)
             {
@@ -108,6 +119,11 @@ namespace QuickRoute.Services
             if (traslado == null)
                 return false;
 
+            var carrosIds = traslado.TrasladosDetalles.Select(d => d.CarroId).ToList();
+            var carros = await contexto.Carros
+                .Where(c => carrosIds.Contains(c.CarroId))
+                .ToListAsync();
+
             foreach (var detalle in traslado.TrasladosDetalles)
             {
                 var carro = await contexto.Carros.FindAsync(detalle.CarroId);
@@ -138,6 +154,33 @@ namespace QuickRoute.Services
                 .ThenInclude(d => d.Carro)
                 .Include(t => t.Usuario)  
                 .Where(t => t.Id == usuarioId)  
+                .ToListAsync();
+        }
+        public async Task<List<int>> ObtenerCarrosEnTraslados(int trasladoIdActual = 0)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Traslados
+                .Where(t => trasladoIdActual == 0 || t.TrasladoId != trasladoIdActual)
+                .SelectMany(t => t.TrasladosDetalles)
+                .Select(d => d.CarroId)
+                .Distinct()
+                .ToListAsync();
+        }
+        public async Task<List<int>> ObtenerCarrosEnOtrosTraslados(int? trasladoIdActual = null)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+
+            var query = contexto.Traslados.AsQueryable();
+
+            if (trasladoIdActual.HasValue)
+            {
+                query = query.Where(t => t.TrasladoId != trasladoIdActual.Value);
+            }
+
+            return await query
+                .SelectMany(t => t.TrasladosDetalles)
+                .Select(d => d.CarroId)
+                .Distinct()
                 .ToListAsync();
         }
     }
