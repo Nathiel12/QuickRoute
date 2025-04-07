@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuickRoute.Migrations
 {
     /// <inheritdoc />
-    public partial class validaciones : Migration
+    public partial class MergeConflict : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -280,6 +280,7 @@ namespace QuickRoute.Migrations
                     Precio = table.Column<double>(type: "float", nullable: false),
                     NumeroTitulo = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: false),
                     Aprobado = table.Column<bool>(type: "bit", nullable: false),
+                    EnTraslado = table.Column<bool>(type: "bit", nullable: false),
                     TrasladoId = table.Column<int>(type: "int", nullable: true),
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
