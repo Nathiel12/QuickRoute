@@ -149,37 +149,73 @@
     public TrasladosDetalle DetalleSeleccionado { get; set; } = new TrasladosDetalle();
     private string ErrorCalculo { get; set; } = string.Empty;
     private double PrecioIngresado { get; set; }
+    private bool EsAdmin { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        var usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        if (!TrasladoId.HasValue || TrasladoId.Value == 0)
-        {
-            Traslado.Id = usuarioId;
-        }
-        if (user.IsInRole("Admin"))
-        {
-            listaCarros = await carrosService.Listar(c => c.Aprobado); 
-        }
-        else if (!string.IsNullOrEmpty(usuarioId))
-        {
-            listaCarros = await carrosService.Listar(c => c.Id == usuarioId && c.Aprobado);
-        }
+        EsAdmin = user.IsInRole("Admin");
+        var usuarioActualId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (TrasladoId.HasValue && TrasladoId.Value != 0)
         {
-            var trasladoEncontrado = await trasladosService.Buscar(TrasladoId.Value);
-            if (trasladoEncontrado is not null)
-            {
-                Traslado = trasladoEncontrado;
-            }
-            else
-            {
-                navigationManager.NavigateTo("/Traslados/Index");
-            }
+            await CargarTrasladoExistente();
+        }
+        else 
+        {
+            Traslado.Id = EsAdmin ? null : usuarioActualId; 
+            await CargarCarrosDisponibles();
+        }
+    }
+
+    private async Task CargarTrasladoExistente()
+    {
+        Traslado = await trasladosService.Buscar(TrasladoId.Value);
+
+        if (Traslado == null)
+        {
+            navigationManager.NavigateTo("/Traslados/Index");
+            return; 
+        }
+
+        await CargarCarrosDisponibles(usuarioEspecifico: Traslado.Id);
+    }
+
+    private async Task CargarCarrosDisponibles(string usuarioEspecifico = null)
+    {
+        List<Carros> carrosAprobados;
+
+        if (usuarioEspecifico != null) 
+        {
+            carrosAprobados = await carrosService.Listar(c => c.Id == usuarioEspecifico && c.Aprobado);
+        }
+        else if (EsAdmin) 
+        {
+            carrosAprobados = await carrosService.Listar(c => c.Aprobado);
+        }
+        else 
+        {
+            var usuarioActualId = (await AuthenticationStateProvider.GetAuthenticationStateAsync())
+                .User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            carrosAprobados = await carrosService.Listar(c => c.Id == usuarioActualId && c.Aprobado);
+        }
+
+        var carrosEnOtrosTraslados = await trasladosService.ObtenerCarrosEnOtrosTraslados(Traslado?.TrasladoId);
+
+        if (TrasladoId.HasValue && TrasladoId.Value != 0) 
+        {
+            var carrosDelTrasladoActual = Traslado.TrasladosDetalles.Select(d => d.CarroId).ToList();
+            listaCarros = carrosAprobados
+                .Where(c => !carrosEnOtrosTraslados.Contains(c.CarroId) ||
+                       carrosDelTrasladoActual.Contains(c.CarroId))
+                .ToList();
+        }
+        else 
+        {
+            listaCarros = carrosAprobados
+                .Where(c => !carrosEnOtrosTraslados.Contains(c.CarroId))
+                .ToList();
         }
     }
 
@@ -256,6 +292,11 @@
 
     private async Task Guardar()
     {
+        if (!Traslado.TrasladosDetalles.Any())
+        {
+            ErrorCalculo = "Debe agregar al menos un carro al traslado";
+            return;
+        }
         if (string.IsNullOrEmpty(Traslado.Id))
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
