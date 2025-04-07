@@ -195,10 +195,6 @@
     private async Task EliminarCarro(int carroId)
     {
         var carro = ListaCarros.FirstOrDefault(c => c.CarroId == carroId);
-        if(carro?.Aprobado == true){
-            errorMensaje = "No se puede eliminar un carro ya aprobado.";
-            return;
-        }
         var verificar = await carroService.TieneTrasladosActivos(carroId);
         if (verificar)
         {
