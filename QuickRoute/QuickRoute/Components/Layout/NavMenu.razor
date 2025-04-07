@@ -2,7 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark custom-gradient">
     <div class="container-fluid">
         <!-- Logo a la izquierda -->
         <NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">
@@ -67,11 +67,14 @@
             <ul class="navbar-nav">
                 <AuthorizeView>
                     <NotAuthorized>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="Account/Login">
-                                <span class="bi bi-person-circle" aria-hidden="true"></span> Login
-                            </NavLink>
-                        </li>
+                        @if (!isLoginPage)
+                        {
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="Account/Login" ActiveClass="">
+                                    <span class="bi bi-person-circle" aria-hidden="true"></span> Iniciar Sesión
+                                </NavLink>
+                            </li>
+                        }
                     </NotAuthorized>
                     
                     <Authorized>
@@ -106,10 +109,12 @@
 @code {
     private string? currentUrl;
     private bool isAdmin = false;
+    private bool isLoginPage = false;
 
     protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        isLoginPage = currentUrl.Contains("Account/Login", StringComparison.OrdinalIgnoreCase);
         NavigationManager.LocationChanged += OnLocationChanged;
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -129,6 +134,7 @@
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        isLoginPage = currentUrl.Contains("Account/Login", StringComparison.OrdinalIgnoreCase);
         StateHasChanged();
     }
 
