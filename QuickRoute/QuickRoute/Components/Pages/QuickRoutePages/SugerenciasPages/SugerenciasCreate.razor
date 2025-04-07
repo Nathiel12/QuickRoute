@@ -1,6 +1,7 @@
 @page "/Sugerencias/Create"
 @inject SugerenciasService sugerenciasService
 @attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -38,13 +39,13 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label"><strong>Descripción</strong></label>
+                    <label class="form-label"><strong>Descripcion</strong></label>
                     <textarea class="form-control" @bind="Sugerencia.Descripcion" rows="5" placeholder="Describa su sugerencia en detalle..."></textarea>
                     <ValidationMessage For="(() => Sugerencia.Descripcion)" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label"><strong>Nivel de Satisfacción</strong></label>
+                    <label class="form-label"><strong>Nivel de Satisfaccion</strong></label>
                     <InputNumber class="form-control" @bind-Value="Sugerencia.satisfaccion" min="1" max="5"></InputNumber>
                     <ValidationMessage For="(() => Sugerencia.satisfaccion)" />
                 </div>
@@ -53,7 +54,7 @@
 
             @* Footer *@
             <div class="card-footer text-center mt-2">
-                <a href="/Sugerencias/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+                <a href="@(isAdmin ? "/Sugerencias/Index" : "/")" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
                 <button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
                 <button type="reset" class="btn btn-outline-primary bi bi-plus" @onclick="Nuevo">Nuevo</button>
             </div>
@@ -64,6 +65,13 @@
 @code {
     public Sugerencias Sugerencia { get; set; } = new Sugerencias();
     public string errorMensaje { get; set; } = string.Empty;
+    private bool isAdmin { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+    }
 
     public async Task Guardar()
     {
@@ -72,7 +80,7 @@
         var guardo = await sugerenciasService.Guardar(Sugerencia);
         if (guardo)
         {
-            navigationManager.NavigateTo("/Sugerencias/Index");
+            navigationManager.NavigateTo(isAdmin ? "/Sugerencias/Index" : "/");
         }
         else
         {
