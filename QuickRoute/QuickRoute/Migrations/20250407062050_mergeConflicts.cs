@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace QuickRoute.Migrations
 {
     /// <inheritdoc />
-    public partial class MergeConflict : Migration
+    public partial class mergeConflicts : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -12,8 +12,8 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250406184807_MergeConflict")]
-    partial class MergeConflict
+    [Migration("20250407062050_mergeConflicts")]
+    partial class mergeConflicts
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
