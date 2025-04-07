@@ -1,6 +1,7 @@
 ﻿@*Nathiel Taveras*@
 @page "/Carros/Edit/{CarroId:int}"
 @inject CarrosService carroService
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -90,10 +91,27 @@
 	public int CarroId { get; set; }
 
 	public Carros Carro { get; set; } = new Carros();
+	public List<Carros> ListaCarros { get; set; } = new List<Carros>();
 	public string errorMensaje { get; set; } = string.Empty;
 
 	protected override async Task OnInitializedAsync(){
+
+		var authState = await authStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		var usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
 		Carro = await carroService.Buscar(CarroId);
+
+		if (Carro == null)
+		{
+			navigationManager.NavigateTo("/Carros/Index"); 
+			return;
+		}
+		if (!user.IsInRole("Admin") && Carro.Id != usuarioId)
+		{
+			navigationManager.NavigateTo("/Account/AccessDenied");
+			return;
+		}
 	}
 
 	private async Task<bool> Validar()
@@ -117,6 +135,17 @@
 
 		if (!await Validar())
 		{
+			return;
+		}
+		var verificar = await carroService.TieneTrasladosActivos(CarroId);
+		if (verificar)
+		{
+			errorMensaje = "No se puede modificar el registro (El carro esta en proceso de traslado)";
+			return;
+		}
+		if (Carro?.Aprobado == true)
+		{
+			errorMensaje = "No se puede modificar un carro ya aprobado.";
 			return;
 		}
 
