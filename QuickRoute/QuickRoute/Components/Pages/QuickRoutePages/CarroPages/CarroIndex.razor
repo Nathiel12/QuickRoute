@@ -8,10 +8,12 @@
 <PageTitle>Registro de Carros</PageTitle>
 <div class="container">
     <div class="card shadow-lg">
-        <div class="card-header space-between">
-            <h5 class="card-title">Registro de Carros</h5>
-            <a href="/Carros/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
-        </div>
+	    <div class="card-header d-flex justify-content-between align-items-center">
+		    <h5 class="card-title">Gestión de Carros</h5>
+		    <a href="/Carros/Create" class="btn btn-primary">
+			    <span class="bi bi-plus-square mt-3"></span> Crear
+		    </a>
+	    </div>
 
         <div class="card-body">
             <div class="row">
@@ -102,17 +104,14 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="card-footer">
-            <div class="row">
-                <div class="col">
-                    <strong>Cantidad de Carros:</strong> @ListaCarros.Count
-                </div>
-                <div class="col">
-                    <strong>Cantidad de Carros Trasladados:</strong> @totalTrasladados
-                </div>
-            </div>
-        </div>
+	    <div class="card-footer d-flex justify-content-between align-items-center">
+		    <div>
+			    <strong>Cantidad de Carros:</strong> @ListaCarros.Count
+		    </div>
+		    <div>
+			    <strong>Cantidad de Carros Trasladados:</strong> @totalTrasladados
+		    </div>
+	    </div>
     </div>
 </div>
 
