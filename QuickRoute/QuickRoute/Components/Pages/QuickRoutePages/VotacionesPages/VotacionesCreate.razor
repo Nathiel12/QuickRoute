@@ -33,13 +33,11 @@
 
 			<div class="card-body">
 
-				@* TecnicoId *@
 				<div class="mb-3">
 					<label class="form-label"><strong>VotacionId</strong></label>
 					<InputNumber class="form-control" @bind-Value="Votacion.VotacionId" readonly></InputNumber>
 				</div>
 
-				@* Nombre *@
 				<div class="mb-3">
 					<label class="form-label"><strong>Fecha de Registro</strong></label>
 					<InputDate class="form-control" @bind-Value="Votacion.FechaEncuesta" readonly></InputDate>
@@ -98,10 +96,7 @@
             {
                 Vehiculos = await vehiculosService.Listar(v => v.TipoVehiculoId > 0);
             }
-            else
-            {
-                navigationManager.NavigateTo("/Votaciones/Index");
-            }
+         
 
             foreach (var v in Vehiculos)
             {

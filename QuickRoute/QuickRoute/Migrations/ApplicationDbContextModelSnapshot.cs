@@ -236,6 +236,9 @@ namespace QuickRoute.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<bool>("EnTraslado")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("FechaFabricacion")
                         .HasColumnType("datetime2");
 

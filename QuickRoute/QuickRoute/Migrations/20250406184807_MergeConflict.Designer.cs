@@ -12,8 +12,8 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250406151950_validaciones")]
-    partial class validaciones
+    [Migration("20250406184807_MergeConflict")]
+    partial class MergeConflict
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,6 +238,9 @@ namespace QuickRoute.Migrations
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
+
+                    b.Property<bool>("EnTraslado")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("FechaFabricacion")
                         .HasColumnType("datetime2");

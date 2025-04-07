@@ -19,6 +19,6 @@ public class Sugerencias
     public string Descripcion { get; set; }
 
     [Range(1,5)]
-    [Required(ErrorMessage = "Por favor Seleccione su nivel de satisfacción")]
+    [Required(ErrorMessage = "Por favor Seleccione su nivel de satisfaccion")]
     public int satisfaccion { get; set; }
 }

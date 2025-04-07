@@ -2,6 +2,7 @@
 @page "/Carros/Delete/{CarroId:int}"
 @inject CarrosService carroService
 @attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -44,12 +45,26 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		var authState = await authStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		var usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 		Carro = await carroService.Buscar(CarroId);
+		if (Carro == null)
+		{
+			navigationManager.NavigateTo("/Carros/Index");
+			return;
+		}
+		if (!user.IsInRole("Admin") && Carro.Id != usuarioId)
+		{
+			navigationManager.NavigateTo("/Account/AccessDenied");
+			return;
+		}
 		Pregunta = "¿Esta seguro de querer eliminar el Registro?";
 	}
 
 	public async Task Eliminar()
 	{
+		Confirmacion = string.Empty;
 		var verificar = await carroService.TieneTrasladosActivos(CarroId);
 		if(verificar){
 			Confirmacion = "No se puede eliminar el registro (El carro esta en proceso de traslado)";
@@ -57,6 +72,7 @@
 		}
 		else
 		{
+			Confirmacion = string.Empty;
 			var eliminado = await carroService.Eliminar(Carro.CarroId);
 			if (eliminado != null)
 			{
