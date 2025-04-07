@@ -55,8 +55,8 @@
                         <th>Dirección</th>
                         <th>Total Monto</th>
                         <th>Carros</th>
-                        <th>Usuario</th>
                         @if(isAdmin){
+                            <th>Usuario</th>
                             <th>Editar</th>
                             <th>Eliminar</th>
                         }
@@ -81,13 +81,14 @@
                                     </ul>
                                 }
                             </td>
-                            <td>
-                                @if (traslado.Usuario != null)
-                                {
-                                    @traslado.Usuario.Id
-                                }
-                            </td>
+                            
                             @if(isAdmin){
+                                <td>
+                                    @if (traslado.Usuario != null)
+                                    {
+                                        @traslado.Usuario.Email
+                                    }
+                                </td>
                                 <td>
                                     <a href="/Traslados/View/@traslado.TrasladoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                                 </td>
