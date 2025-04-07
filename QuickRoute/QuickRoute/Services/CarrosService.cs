@@ -60,18 +60,17 @@ namespace QuickRoute.Services
         public async Task<bool> Eliminar(int CarroId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
+            var carro = await contexto.Carros.FindAsync(CarroId);
 
-            var carro = await contexto.Carros
-                .FirstOrDefaultAsync(c => c.CarroId == CarroId);
+            if (carro == null) return false;
 
-            if (carro == null || carro.Aprobado)
-            {
-                return false;
-            }
+            var enTraslado = await contexto.TrasladosDetalles
+                .AnyAsync(d => d.CarroId == CarroId);
+
+            if (enTraslado) return false;
 
             contexto.Carros.Remove(carro);
             return await contexto.SaveChangesAsync() > 0;
-
 
         }
 
@@ -130,10 +129,8 @@ namespace QuickRoute.Services
         public async Task<bool> TieneTrasladosActivos(int carroId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Traslados
-                .Include(t => t.TrasladosDetalles)
-                .ThenInclude(d => d.Carro)
-                .AnyAsync(t => t.TrasladosDetalles.Any(d => d.CarroId == carroId));
+            return await contexto.TrasladosDetalles
+                .AnyAsync(d => d.CarroId == carroId);
         }
         public async Task<bool> ExisteTitulo(string chasis)
         {
