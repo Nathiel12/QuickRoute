@@ -1,0 +1,321 @@
+@page "/Traslados/View/{TrasladoId:int?}"
+@inject TrasladosService trasladosService
+@attribute [Authorize]
+@inject CarrosService carrosService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<EditForm Model="Traslado" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h3 class="card-title">
+                    @(Traslado.TrasladoId == 0 ? "Nuevo Traslado" : "Editar Traslado")
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-2">
+                        <label class="form-label">ID</label>
+                        <InputNumber class="form-control" @bind-Value="Traslado.TrasladoId" disabled />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Nombres</label>
+                        <InputText class="form-control" @bind-Value="Traslado.Nombres" />
+                        <ValidationMessage For="@(() => Traslado.Nombres)" />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Dirección</label>
+                        <InputText class="form-control" @bind-Value="Traslado.Direccion" />
+                        <ValidationMessage For="@(() => Traslado.Direccion)" />
+                    </div>
+                </div>
+
+                <div class="border border-success p-3 mt-3">
+                    <h3>Detalle del Carro</h3>
+                    <div class="row align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label">Carro</label>
+                            <InputSelect class="form-select form-select-sm" 
+                                       @bind-Value="DetalleSeleccionado.CarroId"
+                                       @onchange="LimpiarCalculos">
+                                <option disabled value="0">Seleccione Carro</option>
+                                @foreach (var carro in listaCarros)
+                                {
+                                    <option value="@carro.CarroId">@($"{carro.Marca} {carro.Modelo} - ${carro.Precio.ToString("N2")}")</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="col-auto ms-2">
+                            <label class="form-label">Precio Carro</label>
+                            <InputNumber class="form-control form-control-sm" 
+                                       @bind-Value="PrecioIngresado" 
+                                       min="0" />
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" 
+                                  class="btn btn-secondary mt-3" 
+                                  @onclick="CalcularMonto"
+                                  title="Calcular 60% del precio">
+                                Calcular
+                            </button>
+                        </div>
+                        <div class="col-auto ms-2">
+                            <label class="form-label">Monto (60%)</label>
+                            <InputNumber class="form-control form-control-sm" 
+                                       @bind-Value="DetalleSeleccionado.Monto" 
+                                       disabled />
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" 
+                                  class="btn btn-primary mt-3" 
+                                  @onclick="AgregarDetalle">
+                                <span class="bi bi-plus"></span><strong>Agregar</strong>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(ErrorCalculo))
+                    {
+                        <div class="text-danger mt-2">@ErrorCalculo</div>
+                    }
+
+                    <table class="table mt-3">
+                        <thead>
+                            <tr>
+                                <th>Carro</th>
+                                <th>Precio Original</th>
+                                <th>Monto (60%)</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in Traslado.TrasladosDetalles)
+                            {
+                                var carro = listaCarros.FirstOrDefault(c => c.CarroId == detalle.CarroId);
+                                <tr>
+                                    <td>@carro?.Marca @carro?.Modelo</td>
+                                    <td>@carro?.Precio.ToString("N2")</td>
+                                    <td>@detalle.Monto.ToString("N2")</td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-dark" @onclick="() => EliminarDetalle(detalle)">
+                                            <span class="bi bi-trash"></span> Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column">
+                            <label class="mb-1">Cantidad:</label>
+                            <div class="border p-2">@Traslado.TrasladosDetalles.Count</div>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <label class="mb-1">Total:</label>
+                            <div class="border p-2 text-end">@Traslado.TrasladosDetalles.Sum(d => d.Monto).ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <div class="btn-group" role="group">
+                    <a href="/Traslados/Index" class="btn btn-outline-primary">
+	                    <span class="bi bi-arrow-left"></span> Volver
+                    </a>
+                    <button type="submit" class="btn btn-outline-success">
+                        <span class="bi bi-file-earmark-text-fill"></span> Guardar
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">
+	                    <span class="bi bi-trash-fill"></span> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? TrasladoId { get; set; }
+    
+    public Traslados Traslado { get; set; } = new Traslados();
+    public List<Carros> listaCarros { get; set; } = new List<Carros>();
+    public TrasladosDetalle DetalleSeleccionado { get; set; } = new TrasladosDetalle();
+    private string ErrorCalculo { get; set; } = string.Empty;
+    private double PrecioIngresado { get; set; }
+    private bool EsAdmin { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        EsAdmin = user.IsInRole("Admin");
+        var usuarioActualId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (TrasladoId.HasValue && TrasladoId.Value != 0)
+        {
+            await CargarTrasladoExistente();
+        }
+        else 
+        {
+            Traslado.Id = EsAdmin ? null : usuarioActualId; 
+            await CargarCarrosDisponibles();
+        }
+    }
+
+    private async Task CargarTrasladoExistente()
+    {
+        Traslado = await trasladosService.Buscar(TrasladoId.Value);
+
+        if (Traslado == null)
+        {
+            navigationManager.NavigateTo("/Traslados/Index");
+            return; 
+        }
+
+        await CargarCarrosDisponibles(usuarioEspecifico: Traslado.Id);
+    }
+
+    private async Task CargarCarrosDisponibles(string usuarioEspecifico = null)
+    {
+        List<Carros> carrosAprobados;
+
+        if (usuarioEspecifico != null) 
+        {
+            carrosAprobados = await carrosService.Listar(c => c.Id == usuarioEspecifico && c.Aprobado);
+        }
+        else if (EsAdmin) 
+        {
+            carrosAprobados = await carrosService.Listar(c => c.Aprobado);
+        }
+        else 
+        {
+            var usuarioActualId = (await AuthenticationStateProvider.GetAuthenticationStateAsync())
+                .User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            carrosAprobados = await carrosService.Listar(c => c.Id == usuarioActualId && c.Aprobado);
+        }
+
+        var carrosEnOtrosTraslados = await trasladosService.ObtenerCarrosEnOtrosTraslados(Traslado?.TrasladoId);
+
+        if (TrasladoId.HasValue && TrasladoId.Value != 0) 
+        {
+            var carrosDelTrasladoActual = Traslado.TrasladosDetalles.Select(d => d.CarroId).ToList();
+            listaCarros = carrosAprobados
+                .Where(c => !carrosEnOtrosTraslados.Contains(c.CarroId) ||
+                       carrosDelTrasladoActual.Contains(c.CarroId))
+                .ToList();
+        }
+        else 
+        {
+            listaCarros = carrosAprobados
+                .Where(c => !carrosEnOtrosTraslados.Contains(c.CarroId))
+                .ToList();
+        }
+    }
+
+    private void LimpiarCalculos()
+    {
+        PrecioIngresado = 0;
+        DetalleSeleccionado.Monto = 0;
+        ErrorCalculo = string.Empty;
+    }
+
+    private void CalcularMonto()
+    {
+        ErrorCalculo = string.Empty;
+        
+        if (DetalleSeleccionado.CarroId == 0)
+        {
+            ErrorCalculo = "Seleccione un carro primero";
+            return;
+        }
+
+        var carroSeleccionado = listaCarros.FirstOrDefault(c => c.CarroId == DetalleSeleccionado.CarroId);
+        
+        if (carroSeleccionado == null)
+        {
+            ErrorCalculo = "Carro no encontrado";
+            return;
+        }
+
+        if (PrecioIngresado != carroSeleccionado.Precio)
+        {
+            ErrorCalculo = $"El precio debe ser exactamente {carroSeleccionado.Precio.ToString("N2")}";
+            return;
+        }
+
+        DetalleSeleccionado.Monto = PrecioIngresado * 0.6;
+    }
+
+    private void AgregarDetalle()
+    {
+        ErrorCalculo = string.Empty;
+        
+        if (DetalleSeleccionado.CarroId == 0)
+        {
+            ErrorCalculo = "Seleccione un carro";
+            return;
+        }
+
+        if (DetalleSeleccionado.Monto <= 0)
+        {
+            ErrorCalculo = "Calcule el monto primero";
+            return;
+        }
+
+        var carroExistente = Traslado.TrasladosDetalles.Any(d => d.CarroId == DetalleSeleccionado.CarroId);
+        
+        if (carroExistente)
+        {
+            ErrorCalculo = "Este carro ya fue agregado";
+            return;
+        }
+
+        Traslado.TrasladosDetalles.Add(new TrasladosDetalle {
+            CarroId = DetalleSeleccionado.CarroId,
+            Monto = DetalleSeleccionado.Monto
+        });
+
+        LimpiarCalculos();
+    }
+
+    private void EliminarDetalle(TrasladosDetalle detalle)
+    {
+        Traslado.TrasladosDetalles.Remove(detalle);
+    }
+
+    private async Task Guardar()
+    {
+        if (!Traslado.TrasladosDetalles.Any())
+        {
+            ErrorCalculo = "Debe agregar al menos un carro al traslado";
+            return;
+        }
+        if (string.IsNullOrEmpty(Traslado.Id))
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            Traslado.Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        if (await trasladosService.Guardar(Traslado))
+        {
+            navigationManager.NavigateTo("/Traslados/Index");
+        }
+    }
+
+    private async Task Eliminar()
+    {
+        if (Traslado.TrasladoId != 0)
+        {
+            await trasladosService.Eliminar(Traslado.TrasladoId);
+            navigationManager.NavigateTo("/Traslados/Index");
+        }
+    }
+}

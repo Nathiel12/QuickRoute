@@ -1,0 +1,95 @@
+﻿@*Nathiel Taveras*@
+@page "/Votaciones/Index"
+@inject VotacionesService votacionesService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Votos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+	    <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Votación de vehículos</h5>
+            @if (!usuarioYaVoto)
+            {
+                <a href="/Votaciones/Create" class="btn btn-primary">
+                    <span class="bi bi-plus-square"></span> Crear
+                </a>
+            }
+        </div>
+
+        <div class="card-body">
+            @* Tabla *@
+            <table class="table table-hover">
+                <thead class="table  table-striped text-black">
+                    <tr>
+                        <th>VehiculoId</th>
+                        <th>Nombre</th>
+                        <th>Total</th>
+                        <th>Promedio</th>
+                        @if (isAdmin)
+                        {
+                            <th>Eliminar</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vehiculo in Vehiculos)
+                    {
+                        <tr>
+
+                            <td>@vehiculo.TipoVehiculoId</td>
+                            <td>@vehiculo.VehiculoNombre</td>
+                            <td>@vehiculo.PuntuacionTotal.ToString("N2")</td>
+                            <td>@vehiculo.PuntuacionPromedio.ToString("N2")</td>
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    <button class="btn btn-danger btn-sm bi bi-trash"
+                                            @onclick="() => EliminarVotos(vehiculo.TipoVehiculoId)">
+                                    </button>
+                                </td>
+                            }
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card-footer mt-2">
+            <label><strong>Total:@Vehiculos.Sum(v => v.PuntuacionTotal)</strong></label>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<TipoVehiculos> Vehiculos { get; set; } = new List<TipoVehiculos>();
+    private bool isAdmin { get; set; } = false;
+    private bool usuarioYaVoto = false;
+    private string usuarioId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+        usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        usuarioYaVoto = await votacionesService.UsuarioYaVoto(usuarioId);
+        Vehiculos = await votacionesService.ListarConEstadisticas(v => v.TipoVehiculoId > 0);
+    }
+
+    private async Task EliminarVotos(int tipoVehiculoId)
+    {
+        if (!isAdmin)
+            return;
+        var resultado = await votacionesService.EliminarVotosPorVehiculo(tipoVehiculoId);
+        if (resultado)
+        {
+            Vehiculos = await votacionesService.ListarConEstadisticas(v=>v.TipoVehiculoId>0);
+            StateHasChanged();
+        }
+    }
+}

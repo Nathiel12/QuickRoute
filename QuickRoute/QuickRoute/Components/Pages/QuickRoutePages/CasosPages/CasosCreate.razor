@@ -1,0 +1,112 @@
+﻿@*Nathiel Taveras*@
+@page "/Casos/Create"
+@inject CasosService casosService
+@attribute [Authorize]
+@inject ContactosService contactosService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Caso" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	@* Label para notificaciones *@
+	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+	<label class="text-white" hidden="@string.IsNullOrEmpty(Saved)">@Saved</label>
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Registro de Casos</h5>
+			</div>
+
+			<div class="card-body">
+
+				@* CarroId *@
+				<div class="mb-3">
+					<label class="form-label"><strong>CasoId</strong></label>
+					<InputNumber class="form-control" @bind-Value="Caso.CasoId" readonly></InputNumber>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Fecha</strong></label>
+					<InputDate class="form-control" @bind-Value="Caso.Fecha"></InputDate>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Contacto Aduanero</strong></label>
+
+					<div class="input-group">
+						<InputSelect class="form-control form-select" @bind-Value="Caso.ContactoId">
+							<option value=0 selected disabled>Seleccione el Contacto Aduanero</option>
+							@foreach (var contacto in ListaContactos)
+							{
+								<option value="@contacto.ContactoId">@contacto.Nombre</option>
+							}
+						</InputSelect>
+						<ValidationMessage For="(() => Caso.ContactoId)" />
+					</div>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Asunto</strong></label>
+					<InputText class="form-control" @bind-Value="Caso.Asunto"></InputText>
+					<ValidationMessage For="(() => Caso.Asunto)" />
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Descripcion</strong></label>
+					<textarea class="form-control" @bind="Caso.Descripcion" rows="5" placeholder="Describa en detalle..."></textarea>
+					<ValidationMessage For="(() => Caso.Descripcion)" />
+				</div>
+
+			</div>
+
+
+			@* Footer *@
+			<div class="card-footer text-center mt-2">
+				<a href="/Casos/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+				<button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
+				<button type="reset" class="btn btn-outline-primary bi bi-plus" @onclick="Nuevo">Nuevo</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+
+@code {
+	public Casos Caso { get; set; } = new Casos();
+	public List<Contactos> ListaContactos { get; set; } = new List<Contactos>();
+	public string errorMensaje { get; set; } = string.Empty;
+	private string Saved { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		ListaContactos = await contactosService.Listar(c => c.ContactoId > 0);
+	}
+
+	public async Task Guardar()
+	{
+		errorMensaje = string.Empty;
+
+		var guardo = await casosService.Guardar(this.Caso);
+		if (guardo != null)
+		{
+			Saved = "Caso enviado a aduanas exitosamente";
+        
+			await Task.Delay(2500);
+        
+			Nuevo();
+		}
+		else
+		{
+			errorMensaje = "Error al guardar el Registro";
+		}
+	}
+
+	public void Nuevo()
+	{
+		this.Caso = new Casos();
+	}
+}

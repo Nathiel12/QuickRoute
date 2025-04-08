@@ -1,0 +1,99 @@
+@page "/Sugerencias/Create"
+@inject SugerenciasService sugerenciasService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Sugerencia" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    @* Label para notificaciones *@
+    <label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+    <label class="text-white" hidden="@string.IsNullOrEmpty(Saved)">@Saved</label>
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Registro de Sugerencias</h5>
+            </div>
+
+            <div class="card-body">
+
+                @* SugerenciaId *@
+                <div class="mb-3">
+                    <label class="form-label"><strong>SugerenciaId</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Sugerencia.SugerenciaId" readonly></InputNumber>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha</strong></label>
+                    <InputDate class="form-control" @bind-Value="Sugerencia.Fecha"></InputDate>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Asunto</strong></label>
+                    <InputText class="form-control" @bind-Value="Sugerencia.Asunto"></InputText>
+                    <ValidationMessage For="(() => Sugerencia.Asunto)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Descripcion</strong></label>
+                    <textarea class="form-control" @bind="Sugerencia.Descripcion" rows="5" placeholder="Describa su sugerencia en detalle..."></textarea>
+                    <ValidationMessage For="(() => Sugerencia.Descripcion)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Nivel de Satisfaccion</strong></label>
+                    <InputNumber class="form-control" @bind-Value="Sugerencia.satisfaccion" min="1" max="5"></InputNumber>
+                    <ValidationMessage For="(() => Sugerencia.satisfaccion)" />
+                </div>
+
+            </div>
+
+            @* Footer *@
+            <div class="card-footer text-center mt-2">
+                <a href="@(isAdmin ? "/Sugerencias/Index" : "/")" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+                <button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
+                <button type="reset" class="btn btn-outline-primary bi bi-plus" @onclick="Nuevo">Nuevo</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Sugerencias Sugerencia { get; set; } = new Sugerencias();
+    public string errorMensaje { get; set; } = string.Empty;
+    private bool isAdmin { get; set; }
+    private string Saved { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+    }
+
+    public async Task Guardar()
+    {
+        errorMensaje = string.Empty;
+
+        var guardo = await sugerenciasService.Guardar(Sugerencia);
+        if (guardo)
+        {
+            navigationManager.NavigateTo(isAdmin ? "/Sugerencias/Index" : "/Sugerencias/Create");
+            Saved = "¡Sugerencia recibida, gracias por tu opinión!";
+            Nuevo();
+        }
+        else
+        {
+            errorMensaje = "Error al guardar la Sugerencia";
+        }
+    }
+
+    private void Nuevo()
+    {
+        Sugerencia = new Sugerencias();
+    }
+}
