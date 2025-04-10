@@ -39,6 +39,8 @@ namespace QuickRoute.Services
         private async Task<bool> Insertar(Carros carro)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
+            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            carro.Id = userId;
             contexto.Carros.Add(carro);
             return await contexto.SaveChangesAsync() > 0;
         }
