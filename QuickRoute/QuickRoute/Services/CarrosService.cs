@@ -48,17 +48,18 @@ namespace QuickRoute.Services
         }
 
        
-        public async Task<List<Carros>> ListarProductos(bool soloDisponibles = true)
+        public async Task<List<Carros>> ListarProductos(Expression<Func<Carros, bool>> criterio, bool soloDisponibles = true)
         {
             await using var context = await DbFactory.CreateDbContextAsync();
-            var query = context.Carros.AsQueryable();
+            var resultado = context.Carros.AsQueryable();
+            resultado.Where(criterio);
 
             if (soloDisponibles)
             {
-                query = query.Where(c => c.Disponibilidad && c.CantidadStock > 0);
+                resultado = resultado.Where(c => c.Disponibilidad && c.CantidadStock > 0);
             }
 
-            return await query.AsNoTracking().ToListAsync();
+            return await resultado.AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> ActualizarStock(int carroId, int cantidad)
