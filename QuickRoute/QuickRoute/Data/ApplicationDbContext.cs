@@ -80,6 +80,60 @@ namespace QuickRoute.Data
                     PuntuacionVoto = 0,
                 }
             });
+            modelBuilder.Entity<Carros>().HasData(
+            new List<Carros>()
+            {
+                new()
+                {
+                    CarroId = 1,
+                    Marca = "Honda",
+                    Modelo = "Civic",
+                    Color = "Azul",
+                    Precio = 24250,
+                    CantidadStock = 10,
+                    FechaFabricacion = new DateTime(2011, 4, 20)
+                },
+                new()
+                {
+                    CarroId = 2,
+                    Marca = "Toyota",
+                    Modelo = "Corolla",
+                    Color = "Rojo",
+                    Precio = 22325,
+                    CantidadStock = 5,
+                    FechaFabricacion = new DateTime(2014, 6, 19)
+                },
+                new()
+                {
+                    CarroId = 3,
+                    Marca = "Toyota",
+                    Modelo = "Camry",
+                    Color = "Blanco",
+                    Precio = 29795,
+                    CantidadStock = 6,
+                    FechaFabricacion = new DateTime(2018, 12, 11)
+                },
+                new()
+                {
+                    CarroId = 4,
+                    Marca = "Audi",
+                    Modelo = "a4",
+                    Color = "Negro",
+                    Precio = 44100,
+                    CantidadStock = 9,
+                    FechaFabricacion = new DateTime(2015, 09, 4)
+                },
+                new()
+                {
+                    CarroId = 5,
+                    Marca = "BMW",
+                    Modelo = "m4",
+                    Color = "Amarillo",
+                    Precio = 80875,
+                    CantidadStock = 7,
+                    FechaFabricacion = new DateTime(2016, 01, 07)
+                }
+            });
         }
     }
 }
