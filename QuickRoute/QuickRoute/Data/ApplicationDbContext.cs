@@ -15,6 +15,9 @@ namespace QuickRoute.Data
         public virtual DbSet<Votaciones> Votaciones { get; set; }
         public virtual DbSet<VotacionesDetalles> VotacionesDetalles { get; set; }
         public virtual DbSet<TipoVehiculos> TipoVehiculos { get; set; }
+        public virtual DbSet<Ordenes> Ordenes { get; set; }
+        public virtual DbSet<OrdenDetalle> OrdenDetalles { get; set; }
+        public virtual DbSet<Carrito> Carritos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
