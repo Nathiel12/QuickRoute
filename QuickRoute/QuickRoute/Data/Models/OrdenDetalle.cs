@@ -9,6 +9,6 @@
         public double PrecioUnitario { get; set; }
 
         public virtual Carros Carro { get; set; }
-        public virtual Orden Orden { get; set; }
+        public virtual Ordenes Orden { get; set; }
     }
 }
