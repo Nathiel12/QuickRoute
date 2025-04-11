@@ -10,142 +10,77 @@ namespace QuickRoute.Services
     {
         public async Task<bool> Guardar(Carros carro)
         {
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await Existe(carro.CarroId))
+            await using var context = await DbFactory.CreateDbContextAsync();
+
+            if (carro.CarroId == 0) 
             {
-                carro.Id = userId;
-                return await Insertar(carro);
+                carro.Disponibilidad = true; 
+                context.Carros.Add(carro);
             }
-            else
+            else 
             {
-                return await Modificar(carro);
+                context.Carros.Update(carro);
             }
-        }
-        private string GetCurrentUserId()
-        {
-            return httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-        }
-        private bool IsAdmin()
-        {
-            return httpContextAccessor.HttpContext?.User?.IsInRole("Admin") ?? false;
+
+            return await context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> Existe(int CarroId)
+        public async Task<Carros?> ObtenerProducto(int carroId)
         {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.AnyAsync(c => c.CarroId == CarroId);
+            await using var context = await DbFactory.CreateDbContextAsync();
+            return await context.Carros
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.CarroId == carroId);
         }
 
-        private async Task<bool> Insertar(Carros carro)
+       
+        public async Task<bool> DesactivarProducto(int carroId)
         {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            carro.Id = userId;
-            contexto.Carros.Add(carro);
-            return await contexto.SaveChangesAsync() > 0;
-        }
-
-        private async Task<bool> Modificar(Carros carro)
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            contexto.Update(carro);
-            return await contexto.SaveChangesAsync() > 0;
-        }
-
-        public async Task<Carros?> Buscar(int CarroId)
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.Include(t=> t.Traslado).FirstOrDefaultAsync(c => c.CarroId == CarroId);
-        }
-
-        //Agregar validacion en el futuro si el carro esta en proceso de traslado no se puede eliminar
-        public async Task<bool> Eliminar(int CarroId)
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            var carro = await contexto.Carros.FindAsync(CarroId);
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var carro = await context.Carros.FindAsync(carroId);
 
             if (carro == null) return false;
 
-            var enTraslado = await contexto.TrasladosDetalles
-                .AnyAsync(d => d.CarroId == CarroId);
+            carro.Disponibilidad = false;
+            context.Carros.Update(carro);
 
-            if (enTraslado) return false;
-
-            contexto.Carros.Remove(carro);
-            return await contexto.SaveChangesAsync() > 0;
-
+            return await context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<Carros>> Listar(Expression<Func<Carros, bool>> criterio)
+       
+        public async Task<List<Carros>> ListarProductos(bool soloDisponibles = true)
         {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.Where(criterio).AsNoTracking().ToListAsync();
-        }
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var query = context.Carros.AsQueryable();
 
-        public async Task<bool> EliminarDetalle(int detalleId)
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            var detalle = await contexto.Traslados.FindAsync(detalleId);
-
-            if (detalle != null)
+            if (soloDisponibles)
             {
-                contexto.Traslados.Remove(detalle);
-                await contexto.SaveChangesAsync();
-                return true;
-            }
-            return false;
-        }
-        public async Task<bool> AprobarCarro(int carroId)
-        {
-            if (!IsAdmin()) return false;
-
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            var carro = await contexto.Carros.FindAsync(carroId);
-
-            if (carro == null) return false;
-
-            carro.Aprobado = true;
-            contexto.Update(carro);
-            return await contexto.SaveChangesAsync() > 0;
-        }
-        public async Task<List<Carros>> ListarSegunPermisos(bool incluirNoAprobados = false)
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            var query = contexto.Carros
-            .Include(c => c.Usuario)  
-            .AsQueryable();
-
-            if (!IsAdmin())
-            {
-                var userId = GetCurrentUserId();
-                query = query.Where(c => c.Id == userId);
-
-                if (!incluirNoAprobados)
-                {
-                    query = query.Where(c => c.Aprobado);
-                }
+                query = query.Where(c => c.Disponibilidad && c.CantidadStock > 0);
             }
 
             return await query.AsNoTracking().ToListAsync();
         }
-        public async Task<bool> TieneTrasladosActivos(int carroId)
+
+        public async Task<bool> ActualizarStock(int carroId, int cantidad)
         {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.TrasladosDetalles
-                .AnyAsync(d => d.CarroId == carroId);
-        }
-        public async Task<bool> ExisteTitulo(string chasis)
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Carros.AnyAsync(c => c.NumeroTitulo.ToLower() == chasis.ToLower());
-        }
-        public async Task<List<TrasladosDetalle>> ObtenerTodosDetalles()
-        {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.TrasladosDetalles
-                .Include(d => d.Carro)
-                .Include(d => d.Traslado)  
-                .ToListAsync();
+            await using var context = await DbFactory.CreateDbContextAsync();
+            var carro = await context.Carros.FindAsync(carroId);
+
+            if (carro == null) return false;
+
+            carro.CantidadStock += cantidad; 
+
+            if (carro.CantidadStock <= 0)
+            {
+                carro.CantidadStock = 0;
+                carro.Disponibilidad = false;
+            }
+            else if (!carro.Disponibilidad)
+            {
+                carro.Disponibilidad = true; 
+            }
+
+            return await context.SaveChangesAsync() > 0;
         }
     }
 }
