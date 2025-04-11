@@ -82,5 +82,11 @@ namespace QuickRoute.Services
 
             return await context.SaveChangesAsync() > 0;
         }
+        public async Task<Carros?> Buscar(int CarroId)
+        {
+            await using var Contexto = await DbFactory.CreateDbContextAsync();
+            return await Contexto.Carros.FirstOrDefaultAsync(c => c.CarroId == CarroId);
+        }
     }
+
 }
