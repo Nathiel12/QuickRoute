@@ -1,0 +1,177 @@
+@page "/detalle-vehiculo/{CarroId:int}"
+@inject NavigationManager Navigation
+@inject CarrosService CarrosService
+@inject IHttpContextAccessor HttpContextAccessor
+@attribute [Authorize]
+
+<div class="container py-5">
+    @if (carro == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <img class="card-img-top" src="@carro.ImagenUrl" alt="@carro.Marca @carro.Modelo">
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Especificaciones</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Marca:</strong> @carro.Marca</li>
+                            <li class="list-group-item"><strong>Modelo:</strong> @carro.Modelo</li>
+                            <li class="list-group-item"><strong>Año:</strong> @carro.FechaFabricacion.Year</li>
+                            <li class="list-group-item"><strong>Color:</strong> @carro.Color</li>
+                            <li class="list-group-item"><strong>Disponibilidad:</strong> 
+                                @if (carro.CantidadStock > 0)
+                                {
+                                    <span class="text-success">En stock (@carro.CantidadStock unidades)</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Agotado</span>
+                                }
+                            </li>
+                            @if (IsAdmin)
+                            {
+                                <li class="list-group-item">
+                                    <strong>Acciones:</strong>
+                                    <div class="mt-2">
+                                        <a href="/admin/editar-carro/@carro.CarroId" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <button class="btn btn-sm btn-danger" @onclick="() => DesactivarCarro(carro.CarroId)">
+                                            <i class="fas fa-times"></i> Desactivar
+                                        </button>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-body">
+                        <h2 class="card-title">@carro.Marca @carro.Modelo</h2>
+                        <h4 class="text-primary mb-4">@carro.Precio.ToString("C")</h4>
+                        
+                        <div class="d-grid gap-2">
+                            @if (carro.CantidadStock > 0)
+                            {
+                                <button class="btn btn-primary btn-lg" @onclick="AgregarAlCarrito">
+                                    <i class="fas fa-cart-plus me-2"></i> Agregar al carrito
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary btn-lg" disabled>
+                                    <i class="fas fa-exclamation-circle me-2"></i> No disponible
+                                </button>
+                            }
+                            <button class="btn btn-outline-secondary" @onclick="VolverAlCatalogo">
+                                <i class="fas fa-arrow-left me-2"></i> Volver al catálogo
+                            </button>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="alert alert-info mt-3">
+                            <h5><i class="fas fa-info-circle me-2"></i> Información de importación</h5>
+                            <p>Todos nuestros vehículos incluyen los costos de importación y trámites aduaneros.</p>
+                            <p class="mb-0">Tiempo estimado de entrega: 15-30 días hábiles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int CarroId { get; set; }
+    
+    private Carros carro;
+    private bool IsAdmin => HttpContextAccessor.HttpContext?.User?.IsInRole("Admin") ?? false;
+    private bool IsAuthenticated => HttpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            carro = await CarrosService.Buscar(CarroId);
+            
+            if (carro == null)
+            {
+                Navigation.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Manejar error
+            Console.WriteLine($"Error al cargar detalles del carro: {ex.Message}");
+            Navigation.NavigateTo("/");
+        }
+    }
+    
+    private async Task AgregarAlCarrito()
+    {
+        try
+        {
+            // Aquí iría la lógica para agregar al carrito
+            // Por ahora solo reduciremos el stock en 1
+            
+            var resultado = await CarrosService.ActualizarStock(carro.CarroId, -1);
+            
+            if (resultado)
+            {
+                // Actualizar la vista
+                carro = await CarrosService.Buscar(CarroId);
+                // Mostrar mensaje de éxito
+                // (Podrías implementar un sistema de notificaciones)
+            }
+            else
+            {
+                // Mostrar mensaje de error
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al agregar al carrito: {ex.Message}");
+        }
+    }
+    
+    private async Task DesactivarCarro(int carroId)
+    {
+        try
+        {
+            var resultado = await CarrosService.DesactivarProducto(carroId);
+            
+            if (resultado)
+            {
+                // Actualizar la vista o redirigir
+                Navigation.NavigateTo("/", forceLoad: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al desactivar carro: {ex.Message}");
+        }
+    }
+    
+    private void VolverAlCatalogo()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
