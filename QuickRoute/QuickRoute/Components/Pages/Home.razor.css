@@ -1,0 +1,516 @@
+/* General Styles */
+.page {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden;
+}
+
+/* Estilo de gradiente bot�n */
+.btn-primary {
+    background: linear-gradient(135deg, #0066ff, #00ccff) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, #0055dd, #00bbee) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    color: white !important;
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de brillo al pasar el mouse */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.btn-primary:hover::after {
+    transform: translateX(100%);
+}
+
+/* Estilo espec�fico para el bot�n "Cu�ntame m�s" */
+.btn-lg.px-4.py-3 {
+    font-size: 1.25rem;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+}
+
+/* Header Styles */
+.masthead {
+    position: relative;
+    background: url('img/header-bg.jpg') no-repeat center center;
+    background-size: cover;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 10rem 0 15rem 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.masthead .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.masthead-subheading {
+    font-size: 2rem;
+    font-style: italic;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin-bottom: 1rem;
+    color: white !important;
+}
+
+.masthead-heading {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 1.5rem 0;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.2;
+    color: white !important;
+}
+
+.masthead .btn {
+    color: white !important;
+    border-color: white !important;
+}
+
+/* Portfolio Styles */
+.portfolio-img-container {
+    height: 250px;
+    overflow: hidden;
+}
+
+.portfolio-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Client Logos */
+.img-brand {
+    max-width: 180px;
+    height: auto;
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+}
+
+.img-brand:hover {
+    filter: grayscale(0%);
+}
+
+/* Timeline Styles */
+.timeline-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.timeline {
+    position: relative;
+    padding: 40px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: #0d6efd;
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 60px;
+    width: 100%;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-img-container {
+    position: absolute;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #0d6efd;
+    background: white;
+    transform: translateX(-50%);
+    z-index: 1;
+    top: -20px;
+}
+
+.timeline-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.timeline-content {
+    width: 45%;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.timeline-item:nth-child(odd) .timeline-content {
+    margin-left: auto;
+}
+
+.timeline-item:nth-child(even) .timeline-content {
+    margin-right: auto;
+}
+
+.section-heading {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+}
+
+/* Team Section - Fixed Images */
+#team .card img.team-member-img {
+    width: 120px !important;
+    height: 120px !important;
+    margin: 1rem auto 0 auto !important;
+    display: block !important;
+    object-fit: cover !important;
+}
+
+#team .card img {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Contact Section */
+#contact {
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    position: relative;
+    background: url('img/map-image.png') no-repeat center center;
+    background-size: cover;
+    padding: 5rem 0;
+    background-color: #343a40;
+}
+
+#contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    z-index: 0;
+}
+
+#contact .container {
+    position: relative;
+    z-index: 1;
+}
+
+#contact h2,
+#contact h4,
+#contact p,
+#contact i {
+    color: white;
+    position: relative;
+}
+
+#contact .section-heading {
+    color: white;
+}
+
+/* FOOTER - VERSI�N SIN M�RGENES */
+footer.footer {
+    position: relative;
+    width: 100vw;
+    left: calc(-50vw + 50%);
+    right: calc(-50vw + 50%);
+    background-color: #343a40;
+    color: white;
+    padding: 2rem 0;
+    margin: 0;
+}
+
+.footer .container-fluid {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+}
+
+.footer .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1140px;
+    padding: 0 15px;
+}
+
+.footer .col-lg-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 15px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Estilos para desktop */
+@media (min-width: 992px) {
+    .footer .col-lg-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        margin-bottom: 0;
+    }
+
+    .footer .text-lg-start {
+        text-align: left;
+    }
+
+    .footer .text-lg-end {
+        text-align: right;
+    }
+}
+
+/* Asegurar que no haya overflow horizontal */
+body {
+    overflow-x: hidden;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .masthead {
+        padding: 8rem 0;
+    }
+
+    .masthead-subheading {
+        font-size: 1.5rem;
+    }
+
+    .masthead-heading {
+        font-size: 2.5rem;
+    }
+
+    .timeline::before {
+        left: 40px;
+    }
+
+    .timeline-img-container {
+        width: 80px;
+        height: 80px;
+        left: 40px;
+        transform: translateX(-50%);
+    }
+
+    .timeline-content {
+        width: calc(100% - 90px);
+        margin-left: 90px !important;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content,
+    .timeline-item:nth-child(even) .timeline-content {
+        margin-right: 0;
+    }
+}
+
+@media (min-width: 992px) {
+    .footer .col-lg-4 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+        margin-bottom: 0 !important;
+    }
+
+    .footer .text-lg-start {
+        text-align: left !important;
+    }
+
+    .footer .text-lg-end {
+        text-align: right !important;
+    }
+
+    .footer .text-center {
+        text-align: center !important;
+    }
+}
+
+/* Reestablecer el fondo alternado de las secciones */
+#services {
+    background-color: white;
+}
+
+#portfolio {
+    background-color: #f8f9fa;
+}
+
+#about {
+    background-color: white;
+}
+
+#team {
+    background-color: #f8f9fa;
+}
+
+/* CSS actualizado */
+.scroll-hint {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    text-decoration: none;
+}
+
+.arrow-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.arrow-down {
+    width: 22px;
+    height: 22px;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(45deg);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.arrow-down:nth-child(1) {
+    animation: vertical-bounce 2s infinite;
+}
+
+.arrow-down:nth-child(2) {
+    animation: vertical-bounce 2s infinite 0.2s;
+}
+
+.arrow-down:nth-child(3) {
+    animation: vertical-bounce 2s infinite 0.4s;
+}
+
+@keyframes vertical-bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: rotate(45deg) translateY(0);
+    }
+
+    40% {
+        transform: rotate(45deg) translateY(-8px);
+    }
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 65px; /* Reducido de 80px a 65px */
+}
+
+/* Estilos para el catálogo */
+.carro-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.carro-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.carro-img-container {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.carro-img-container img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Texto sobre las flechas */
+.scroll-hint-text {
+    position: absolute;
+    bottom: 120px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    animation: fadeInDown 1s ease;
+}
+
+/* Animación para el texto */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para la página de detalle */
+.sticky-top {
+    position: sticky;
+    z-index: 1020;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .carro-img-container {
+        height: 150px;
+    }
+
+    .scroll-hint-text {
+        bottom: 100px;
+        font-size: 1rem;
+    }
+}
