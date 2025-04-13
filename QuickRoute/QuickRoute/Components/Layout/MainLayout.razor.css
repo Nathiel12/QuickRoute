@@ -1,98 +1,128 @@
+/* ===== ESTRUCTURA PRINCIPAL ===== */
 .page {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    flex: 1;
+    padding-top: 70px; /* Debe coincidir con la altura del navbar */
     display: flex;
     flex-direction: column;
 }
 
-main {
+/* ===== EXCEPCIÓN PARA PÁGINA HOME ===== */
+.home-page .main-content {
+    padding-top: 0 !important;
+}
+
+.home-page .masthead {
+    margin-top: 0 !important;
+}
+
+.content-container {
     flex: 1;
-}
-
-.sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-}
-
-.top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
+    padding: 2rem 1rem;
     display: flex;
-    align-items: center;
+    flex-direction: column;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
-
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
-
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-@media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
-    }
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        margin-left: 0;
-    }
-}
-
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
-
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
-
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .top-row.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
-}
-
-#blazor-error-ui {
-    color-scheme: light only;
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-    position: fixed;
+/* ===== CONTENEDOR DE FORMULARIOS ===== */
+.form-container {
+    max-width: 800px;
     width: 100%;
-    z-index: 1000;
+    margin: auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .content-container {
+        padding: 1.5rem 0.5rem;
     }
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        padding: 1.5rem;
+        margin: 1rem;
+        width: auto;
+    }
+
+    .main-content {
+        padding-top: 60px; /* Ajuste para móviles si el navbar cambia altura */
+    }
+}
+
+@media (max-width: 576px) {
+    .form-container {
+        padding: 1rem;
+    }
+}
+
+/* ===== ESTRUCTURA PRINCIPAL ===== */
+.page:not(.home-page) {
+    background: -webkit-linear-gradient(left, #0072ff, #00c6ff);
+    min-height: 100vh;
+}
+
+.page:not(.home-page) .main-content {
+    background: transparent;
+}
+
+.form-page .content-container {
+    background: #fff;
+    border-radius: 1rem;
+    width: 70%;
+    margin: 5% auto;
+    padding: 3rem !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Mantenemos el resto de tus estilos originales para el formulario */
+.form-page form {
+    width: 100%;
+}
+
+.form-page .form-control {
+    border-radius: 1rem !important;
+}
+
+.form-page h3 {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #0062cc;
+}
+
+.form-page .btn-contact {
+    width: 100%;
+    border: none;
+    border-radius: 1rem !important;
+    padding: 1rem;
+    background: #dc3545;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.form-page .btn-contact:hover {
+    background: #c82333;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .form-page .content-container {
+        width: 85%;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-page .content-container {
+        width: 95%;
+        padding: 2rem !important;
+    }
+}
