@@ -22,5 +22,8 @@ public class Casos
 
     [Required(ErrorMessage = "Este campo es requerido")]
     [StringLength(250, ErrorMessage = "La descripción no puede exceder los 250 caracteres")]
-    public string Descripcion { get; set; } = string.Empty;  
+    public string Descripcion { get; set; } = string.Empty;
+    public string Id { get; set; }
+    [ForeignKey("Id")]
+    public ApplicationUser Usuario { get; set; }
 }
