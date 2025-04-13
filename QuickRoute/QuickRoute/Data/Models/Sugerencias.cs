@@ -21,4 +21,7 @@ public class Sugerencias
     [Range(1,5)]
     [Required(ErrorMessage = "Por favor Seleccione su nivel de satisfaccion")]
     public int satisfaccion { get; set; }
+    public string Id { get; set; }
+    [ForeignKey("Id")]
+    public ApplicationUser Usuario { get; set; }
 }

@@ -3,13 +3,17 @@ using QuickRoute.Data;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
-public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory)
+public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHttpContextAccessor httpContextAccessor)
 {
     public async Task<bool> Guardar(Casos caso)
     {
+        var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!await Existe(caso.CasoId))
         {
+            caso.Id = userId;
             return await Insertar(caso);
         }
         else
@@ -59,5 +63,13 @@ public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory)
             .AsNoTracking()
             .Include(c => c.Contacto)
             .ToListAsync();
+    }
+    private string GetCurrentUserId()
+    {
+        return httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
+    private bool IsAdmin()
+    {
+        return httpContextAccessor.HttpContext?.User?.IsInRole("Admin") ?? false;
     }
 }

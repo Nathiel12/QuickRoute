@@ -2,10 +2,11 @@ using System.Linq.Expressions;
 using QuickRoute.Data.Models;
 using QuickRoute.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace QuickRoute.Services
 {
-	public class SugerenciasService(IDbContextFactory<ApplicationDbContext> DbFactory)
+	public class SugerenciasService(IDbContextFactory<ApplicationDbContext> DbFactory, IHttpContextAccessor httpContextAccessor)
 	{
 		public async Task<bool> Existe(int id)
 		{
@@ -15,8 +16,12 @@ namespace QuickRoute.Services
 
 		public async Task<bool> Guardar(Sugerencias sugerencia)
 		{
-			if (!await Existe(sugerencia.SugerenciaId))
-				return await Insertar(sugerencia);
+            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!await Existe(sugerencia.SugerenciaId))
+			{
+				sugerencia.Id = userId;
+                return await Insertar(sugerencia);
+            }
 			else
 				return await Modificar(sugerencia);
 		}
