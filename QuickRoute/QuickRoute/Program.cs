@@ -29,7 +29,6 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<CarrosService>();
 builder.Services.AddScoped<CasosService>();
 builder.Services.AddScoped<ContactosService>();
-builder.Services.AddScoped<TrasladosService>();
 builder.Services.AddScoped<VotacionesService>();
 builder.Services.AddScoped<TipoVehiculosService>();
 builder.Services.AddScoped<SugerenciasService>();
