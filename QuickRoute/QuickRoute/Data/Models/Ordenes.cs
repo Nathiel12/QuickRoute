@@ -8,7 +8,7 @@ namespace QuickRoute.Data.Models
         public string Id { get; set; }
         public DateTime FechaOrden { get; set; } = DateTime.Now;
         public double Total { get; set; }
-        public string Estado { get; set; } = "Pendiente";
+        public bool Pagada { get; set; } = false;
         public ICollection<OrdenDetalle> Detalles { get; set; }
         [ForeignKey("Id")]
         public virtual ApplicationUser Usuario { get; set; }
