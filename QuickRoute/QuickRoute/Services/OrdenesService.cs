@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using QuickRoute.Data;
 using QuickRoute.Data.Models;
 
@@ -17,7 +18,7 @@ namespace QuickRoute.Services
                 Id = usuarioId,
                 FechaOrden = DateTime.Now,
                 Total = total,
-                Estado = "Pendiente",
+                Pagada = false,
                 Detalles = detalles
             };
 
@@ -60,11 +61,16 @@ namespace QuickRoute.Services
                 }
             }
 
-            orden.Estado = "Cancelada";
+            orden.Pagada = false;
             await context.SaveChangesAsync();
             return true;
         }
-        public async Task<List<Ordenes>> ObtenerOrdenesPorUsuario(string usuarioId)
+        public async Task<List<Ordenes>> Listar(Expression<Func<Ordenes, bool>> criterio)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Ordenes.Where(criterio).AsNoTracking().ToListAsync();
+        }
+        /**public async Task<List<Ordenes>> ObtenerOrdenesPorUsuario(string usuarioId)
         {
             await using var context = await DbFactory.CreateDbContextAsync();
             return await context.Ordenes
@@ -73,7 +79,7 @@ namespace QuickRoute.Services
                     .ThenInclude(d => d.Carro)
                 .OrderByDescending(o => o.FechaOrden)
                 .ToListAsync();
-        }
+        }**/
         public async Task<Ordenes> ObtenerOrdenDetallada(int ordenId, string usuarioId)
         {
             await using var context = await DbFactory.CreateDbContextAsync();
@@ -82,5 +88,11 @@ namespace QuickRoute.Services
                     .ThenInclude(d => d.Carro)
                 .FirstOrDefaultAsync(o => o.OrdenId == ordenId && o.Id == usuarioId);
         }
+        /**public async Task<Ordenes?> ObtenerOrdenActivaPorUsuario(string userId)
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+            return await context.Ordenes
+                .FirstOrDefaultAsync(o => o.Id == userId && !o.Pagada);
+        }**/
     }
 }
