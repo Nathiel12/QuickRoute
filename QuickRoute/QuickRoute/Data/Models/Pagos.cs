@@ -8,7 +8,11 @@ namespace QuickRoute.Data.Models
         public int PagoId { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
+        public string NombreCliente { get; set; }
+
+        [Required(ErrorMessage = "Este campo es requerido")]
         [RegularExpression(@"^\d{13,19}$", ErrorMessage = "Número de tarjeta inválido (13-19 dígitos)")]
+        [CreditCard]
         public string NumeroTarjeta { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
