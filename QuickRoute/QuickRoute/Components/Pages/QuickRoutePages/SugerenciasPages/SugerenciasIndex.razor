@@ -1,6 +1,7 @@
 @page "/Sugerencias/Index"
 @inject SugerenciasService sugerenciasService
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -79,7 +80,9 @@
         <table class="table table-hover">
             <thead class="table table-striped text-black">
                 <tr>
-                    <th>SugerenciaId</th>
+                    @if(isAdmin){
+                        <th>SugerenciaId</th>
+                    }
                     <th>Fecha</th>
                     <th>Asunto</th>
                     <th>Satisfaccion</th>
@@ -90,7 +93,9 @@
                 @foreach (var sugerencia in ListaSugerencias)
                 {
                     <tr>
-                        <td>@sugerencia.SugerenciaId</td>
+                        @if(isAdmin){
+                            <td>@sugerencia.SugerenciaId</td>
+                        }
                         <td>@sugerencia.Fecha.ToString("dd/MM/yyyy")</td>
                         <td>@sugerencia.Asunto</td>
                         <td>@sugerencia.satisfaccion</td>
@@ -110,10 +115,22 @@
     public string ValorFiltro { get; set; } = string.Empty;
     public DateTime? Desde { get; set; }
     public DateTime? Hasta { get; set; }
+    private string usuarioId;
+    private bool isAdmin { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        ListaSugerencias = await sugerenciasService.Listar(s => s.SugerenciaId > 0);
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+        usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (isAdmin)
+        {
+            ListaSugerencias = await sugerenciasService.Listar(s => s.SugerenciaId > 0);
+        }
+        else
+        {
+            ListaSugerencias = await sugerenciasService.Listar(c => c.Id == usuarioId);
+        }
     }
 
     private async Task Buscar()
