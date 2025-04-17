@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416055011_FixImagenUrl")]
+    partial class FixImagenUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,7 +244,7 @@ namespace QuickRoute.Migrations
 
                     b.HasIndex("CarroId");
 
-                    b.ToTable("Carrito");
+                    b.ToTable("Carritos");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Carros", b =>
@@ -302,7 +305,7 @@ namespace QuickRoute.Migrations
                             Color = "Azul",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2011, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/1.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Honda",
                             Modelo = "Civic",
                             Precio = 24250.0
@@ -314,7 +317,7 @@ namespace QuickRoute.Migrations
                             Color = "Rojo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2011, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/2.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Honda",
                             Modelo = "Civic",
                             Precio = 25800.0
@@ -326,7 +329,7 @@ namespace QuickRoute.Migrations
                             Color = "Rojo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2014, 6, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/3.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Toyota",
                             Modelo = "Corolla",
                             Precio = 22325.0
@@ -338,7 +341,7 @@ namespace QuickRoute.Migrations
                             Color = "Blanco",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2018, 12, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/4.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Toyota",
                             Modelo = "Camry",
                             Precio = 29795.0
@@ -350,7 +353,7 @@ namespace QuickRoute.Migrations
                             Color = "Negro",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2015, 9, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/5.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Audi",
                             Modelo = "a4",
                             Precio = 44100.0
@@ -362,7 +365,7 @@ namespace QuickRoute.Migrations
                             Color = "Amarillo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2016, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/6.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "BMW",
                             Modelo = "m4",
                             Precio = 80875.0
@@ -374,7 +377,7 @@ namespace QuickRoute.Migrations
                             Color = "Rojo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2020, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/7.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Ford",
                             Modelo = "Mustang",
                             Precio = 42865.0
@@ -386,7 +389,7 @@ namespace QuickRoute.Migrations
                             Color = "Negro",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2019, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/8.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Chevrolet",
                             Modelo = "Camaro",
                             Precio = 37695.0
@@ -398,7 +401,7 @@ namespace QuickRoute.Migrations
                             Color = "Blanco",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2017, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/9.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Volkswagen",
                             Modelo = "Golf",
                             Precio = 23995.0
@@ -410,7 +413,7 @@ namespace QuickRoute.Migrations
                             Color = "Plateado",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2018, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/10.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Mercedes-Benz",
                             Modelo = "C-Class",
                             Precio = 55150.0
@@ -422,7 +425,7 @@ namespace QuickRoute.Migrations
                             Color = "Gris",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2021, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/11.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Nissan",
                             Modelo = "Sentra",
                             Precio = 21510.0
@@ -434,7 +437,7 @@ namespace QuickRoute.Migrations
                             Color = "Azul Marino",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2020, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/12.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Hyundai",
                             Modelo = "Tucson",
                             Precio = 27650.0
@@ -446,7 +449,7 @@ namespace QuickRoute.Migrations
                             Color = "Verde",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2019, 4, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/13.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Kia",
                             Modelo = "Sportage",
                             Precio = 26490.0
@@ -458,7 +461,7 @@ namespace QuickRoute.Migrations
                             Color = "Marrón",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2021, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/14.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Subaru",
                             Modelo = "Outback",
                             Precio = 31995.0
@@ -470,7 +473,7 @@ namespace QuickRoute.Migrations
                             Color = "Rojo Carmesí",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2020, 8, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/15.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Mazda",
                             Modelo = "CX-5",
                             Precio = 29185.0
@@ -482,7 +485,7 @@ namespace QuickRoute.Migrations
                             Color = "Amarillo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2022, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/16.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Jeep",
                             Modelo = "Wrangler",
                             Precio = 39995.0
@@ -494,7 +497,7 @@ namespace QuickRoute.Migrations
                             Color = "Blanco",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2021, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/17.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Tesla",
                             Modelo = "Model 3",
                             Precio = 46990.0
@@ -506,7 +509,7 @@ namespace QuickRoute.Migrations
                             Color = "Gris Perla",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2019, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/18.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Lexus",
                             Modelo = "RX 350",
                             Precio = 51275.0
@@ -518,7 +521,7 @@ namespace QuickRoute.Migrations
                             Color = "Negro",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2020, 5, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/19.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Porsche",
                             Modelo = "911",
                             Precio = 113200.0
@@ -530,7 +533,7 @@ namespace QuickRoute.Migrations
                             Color = "Plateado",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2018, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/20.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Land Rover",
                             Modelo = "Range Rover",
                             Precio = 98500.0
@@ -542,7 +545,7 @@ namespace QuickRoute.Migrations
                             Color = "Azul Oscuro",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2021, 6, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/21.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Volvo",
                             Modelo = "XC60",
                             Precio = 45950.0
@@ -554,7 +557,7 @@ namespace QuickRoute.Migrations
                             Color = "Rojo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2022, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/22.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Ferrari",
                             Modelo = "488 GTB",
                             Precio = 335000.0
@@ -566,7 +569,7 @@ namespace QuickRoute.Migrations
                             Color = "Amarillo",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2021, 9, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/23.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Lamborghini",
                             Modelo = "Huracán",
                             Precio = 261274.0
@@ -578,7 +581,7 @@ namespace QuickRoute.Migrations
                             Color = "Gris Plata",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2020, 4, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/24.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Mitsubishi",
                             Modelo = "Outlander",
                             Precio = 28795.0
@@ -590,34 +593,10 @@ namespace QuickRoute.Migrations
                             Color = "Negro",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2019, 11, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/25.jpg",
+                            ImagenUrl = "/img/carros/default.jpg",
                             Marca = "Dodge",
                             Modelo = "Charger",
                             Precio = 36665.0
-                        },
-                        new
-                        {
-                            CarroId = 26,
-                            CantidadStock = 1,
-                            Color = "Azul",
-                            Disponibilidad = true,
-                            FechaFabricacion = new DateTime(1998, 6, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/26.jpg",
-                            Marca = "Toyota",
-                            Modelo = "Corolla",
-                            Precio = 2325.0
-                        },
-                        new
-                        {
-                            CarroId = 27,
-                            CantidadStock = 25,
-                            Color = "Negro",
-                            Disponibilidad = true,
-                            FechaFabricacion = new DateTime(2024, 6, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ImagenUrl = "/img/carros/27.jpg",
-                            Marca = "Toyota",
-                            Modelo = "Corolla",
-                            Precio = 22325.0
                         });
                 });
 

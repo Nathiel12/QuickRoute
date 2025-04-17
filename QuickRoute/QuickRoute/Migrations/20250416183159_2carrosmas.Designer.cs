@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416183159_2carrosmas")]
+    partial class _2carrosmas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -241,7 +244,7 @@ namespace QuickRoute.Migrations
 
                     b.HasIndex("CarroId");
 
-                    b.ToTable("Carrito");
+                    b.ToTable("Carritos");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Carros", b =>
@@ -598,19 +601,19 @@ namespace QuickRoute.Migrations
                         new
                         {
                             CarroId = 26,
-                            CantidadStock = 1,
+                            CantidadStock = 5,
                             Color = "Azul",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(1998, 6, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ImagenUrl = "/img/carros/26.jpg",
                             Marca = "Toyota",
                             Modelo = "Corolla",
-                            Precio = 2325.0
+                            Precio = 22325.0
                         },
                         new
                         {
                             CarroId = 27,
-                            CantidadStock = 25,
+                            CantidadStock = 5,
                             Color = "Negro",
                             Disponibilidad = true,
                             FechaFabricacion = new DateTime(2024, 6, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
