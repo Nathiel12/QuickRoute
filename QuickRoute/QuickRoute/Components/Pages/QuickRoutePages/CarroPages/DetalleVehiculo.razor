@@ -217,7 +217,7 @@
     {
         var mensaje = Uri.EscapeDataString("Tienes que iniciar sesión para realizar esta acción.");
         var returnUrl = Uri.EscapeDataString($"/detalle-vehiculo/{CarroId}");
-        Navigation.NavigateTo($"/Identity/Account/Login?returnUrl={returnUrl}&mensaje={mensaje}", true);
+        Navigation.NavigateTo($"/Account/Login?returnUrl={returnUrl}&mensaje={mensaje}", true);
     }
 
     private async Task DesactivarCarro(int carroId)
