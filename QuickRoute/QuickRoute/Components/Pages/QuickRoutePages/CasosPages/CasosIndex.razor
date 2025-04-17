@@ -1,7 +1,8 @@
 ﻿@*Nathiel Taveras*@
 @page "/Casos/Index"
 @inject CasosService casosService
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -124,9 +125,22 @@
     public DateTime? Desde { get; set; }
 
     public DateTime? Hasta { get; set; }
+    private string? UsuarioIdActual { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (user.IsInRole("Admin"))
+        {
+            ListaCasos = await casosService.Listar(c => c.CasoId > 0);
+        }
+        else if (!string.IsNullOrEmpty(UsuarioIdActual))
+        {
+            ListaCasos = await casosService.Listar(c => c.Id == UsuarioIdActual);
+        }
         ListaCasos = await casosService.Listar(c => c.CasoId > 0);
     }
 

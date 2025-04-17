@@ -1,0 +1,138 @@
+﻿@*Nathiel Taveras*@
+@page "/Direccion/Create"
+@attribute [Authorize]
+@inject DireccionesService direccionService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Direccion" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	@* Label para notificaciones *@
+	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Registro de Casos</h5>
+			</div>
+
+			<div class="card-body">
+
+				@* DireccionId *@
+				<div class="mb-3">
+					<label class="form-label"><strong>DireccionId</strong></label>
+					<InputNumber class="form-control" @bind-Value="Direccion.DireccionId" readonly></InputNumber>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Provincia</strong></label>
+					<InputSelect class="form-control" @bind-Value="Direccion.Provincia">
+						<option value="" selected disabled>--- Seleccione una provincia ---</option>
+						@foreach (var provincia in ProvinciasRD)
+						{
+							<option value="@provincia">@provincia</option>
+						}
+					</InputSelect>
+					<ValidationMessage For="@(() => Direccion.Provincia)" />
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Ciudad</strong></label>
+					<InputText class="form-control" @bind-Value="Direccion.Ciudad"></InputText>
+					<ValidationMessage For="(() => Direccion.Ciudad)" />
+				</div>
+
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Direccion</strong></label>
+					<InputText class="form-control" @bind-Value="Direccion.Direccion1"></InputText>
+					<ValidationMessage For="(() => Direccion.Direccion1)" />
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Direccion (continuacion)</strong></label>
+					<InputText class="form-control" @bind-Value="Direccion.Direccion2"></InputText>
+				</div>
+				<div class="mb-3">
+					<label class="form-label"><strong>Codigo Postal</strong></label>
+					<InputNumber class="form-control" @bind-Value="Direccion.CodigoPostal"></InputNumber>
+				</div>
+			</div>
+
+
+			@* Footer *@
+			<div class="card-footer text-center mt-2">
+				<a href="/Direccion/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+				<button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
+				<button type="reset" class="btn btn-outline-primary bi bi-plus" @onclick="Nuevo">Nuevo</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+
+@code {
+	public Direccion Direccion { get; set; } = new Direccion();
+	public string errorMensaje { get; set; } = string.Empty;
+
+	public async Task Guardar()
+	{
+		errorMensaje = string.Empty;
+
+		var guardo = await direccionService.Guardar(this.Direccion);
+		if (guardo != null)
+		{
+			navigationManager.NavigateTo("/Direccion/Index");
+		}
+		else
+		{
+			errorMensaje = "Error al guardar el Registro";
+		}
+
+
+	}
+
+	public void Nuevo()
+	{
+		this.Direccion = new Direccion();
+	}
+
+	private List<string> ProvinciasRD = new List<string>
+	{
+		"Distrito Nacional",
+		"Azua",
+		"Bahoruco",
+		"Barahona",
+		"Dajabón",
+		"Duarte",
+		"Elías Piña",
+		"El Seibo",
+		"Espaillat",
+		"Hato Mayor",
+		"Hermanas Mirabal",
+		"Independencia",
+		"La Altagracia",
+		"La Romana",
+		"La Vega",
+		"María Trinidad Sánchez",
+		"Monseñor Nouel",
+		"Monte Cristi",
+		"Monte Plata",
+		"Pedernales",
+		"Peravia",
+		"Puerto Plata",
+		"Samaná",
+		"Sánchez Ramírez",
+		"San Cristóbal",
+		"San José de Ocoa",
+		"San Juan",
+		"San Pedro de Macorís",
+		"Santiago",
+		"Santiago Rodríguez",
+		"Santo Domingo",
+		"Valverde"
+	};
+}

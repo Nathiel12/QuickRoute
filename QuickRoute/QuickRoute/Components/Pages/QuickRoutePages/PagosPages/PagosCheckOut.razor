@@ -1,0 +1,124 @@
+﻿@page "/CheckOut/{OrdenId:int}"
+@inject PagosService pagosService
+@inject OrdenesService ordenService
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider authProvider
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Pago" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	@* Label para notificaciones *@
+	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center">
+				<h5 class="card-title">Registro de Contactos</h5>
+			</div>
+
+			<div class="card-body">
+
+				@* PagoId *@
+				<div class="mb-3">
+					<label class="form-label"><strong>ContactoId</strong></label>
+					<InputNumber class="form-control" @bind-Value="Pago.PagoId" readonly></InputNumber>
+				</div>
+				<div class="mb-3">
+					<label class="form-label"><strong>Orden</strong></label>
+					@foreach(var orden in ListaDetalles){
+						<p>@orden.Carro - @orden.Cantidad - $@orden.PrecioUnitario.ToString("N2")</p>
+					}
+					<p>Total:@ListaDetalles.Sum(p => p.PrecioUnitario * p.Cantidad).ToString("N2")</p>
+				</div>
+
+				<div class="mb-3">
+					<label class="form-label"><strong>Nombre</strong></label>
+					<InputText class="form-control" @bind-Value="Pago.NombreCliente"></InputText>
+					<ValidationMessage For="(() => Pago.NombreCliente)" />
+				</div>
+
+				@* Numero de Tarjeta *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Numero de Tarjeta</strong></label>
+					<InputText class="form-control" @bind-Value="Pago.NumeroTarjeta" placeholder="4111 1111 1111 1111"></InputText>
+					<ValidationMessage For="(() => Pago.NumeroTarjeta)" />
+				</div>
+
+				@* Fecha *@
+				<div class="mb-3">
+					<label class="form-label"><strong>Fecha Exp. (MM/YY)</strong></label>
+					<InputText class="form-control" placeholder="12/25" @bind-Value="Pago.FechaExpiracion"></InputText>
+					<ValidationMessage For="(() => Pago.FechaExpiracion)" />
+				</div>
+				@* Email *@
+				<div class="mb-3">
+					<label class="form-label"><strong>CVV</strong></label>
+					<InputNumber class="form-control" placeholder="123" @bind-Value="Pago.CodigoSeguridad"></InputNumber>
+					<ValidationMessage For="(() => Pago.CodigoSeguridad)" />
+				</div>
+
+			</div>
+
+			@* Footer *@
+			<div class="card-footer text-center mt-2">
+				<a href="/Ordenes/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+				<button type="submit" class="btn btn-outline-success bi bi-floppy">Confirmar Pago</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+	[Parameter]
+	public int OrdenId { get; set; }
+
+	public Pagos Pago { get; set; } = new();
+	public string errorMensaje { get; set; } = string.Empty;
+	public List<OrdenDetalle> ListaDetalles { get; set; } = new List<OrdenDetalle>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await authProvider.GetAuthenticationStateAsync();
+		var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+		if (string.IsNullOrEmpty(userId))
+		{
+			errorMensaje = "Usuario no autenticado";
+			return;
+		}
+		var orden = await ordenService.ObtenerOrdenDetallada(OrdenId, userId);
+
+		if (orden == null)
+		{
+			errorMensaje = "Orden no encontrada o no pertenece al usuario";
+			return;
+		}
+
+		ListaDetalles = orden.Detalles?.ToList() ?? new List<OrdenDetalle>();
+		Pago.OrdenId = orden.OrdenId; 
+		if (orden.Pagada)
+		{
+			errorMensaje = "Esta orden ya fue pagada anteriormente";
+		}
+
+	}
+
+	public async Task Guardar()
+	{
+		errorMensaje = string.Empty;
+
+		var guardo = await pagosService.Guardar(this.Pago);
+		if (guardo != null)
+		{
+			navigationManager.NavigateTo("/OrderHistory");
+		}
+		else
+		{
+			errorMensaje = "Error al completar la transaccion";
+		}
+
+	}
+}
