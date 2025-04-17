@@ -13,34 +13,31 @@ namespace QuickRoute.Services
         {
             _dbFactory = dbFactory;
         }
- 
+
         public async Task<bool> AgregarAlCarrito(int carroId, string userId, int cantidad = 1)
         {
-            if (string.IsNullOrEmpty(userId)) return false;
- 
             await using var context = await _dbFactory.CreateDbContextAsync();
- 
+
             var itemExistente = await context.Carrito
                 .FirstOrDefaultAsync(c => c.Id == userId && c.CarroId == carroId);
- 
+
             if (itemExistente != null)
             {
                 itemExistente.Cantidad += cantidad;
             }
             else
             {
-                var nuevoItem = new Carrito
+                context.Carrito.Add(new Carrito
                 {
                     Id = userId,
                     CarroId = carroId,
-                    Cantidad = cantidad
-                };
-                context.Carrito.Add(nuevoItem);
+                    Cantidad = cantidad,
+                    FechaAgregado = DateTime.Now
+                });
             }
- 
             return await context.SaveChangesAsync() > 0;
         }
- 
+
         public async Task<List<Carrito>> ObtenerCarritoUsuario(string userId)
         {
             if (string.IsNullOrEmpty(userId)) return new List<Carrito>();
@@ -85,7 +82,7 @@ namespace QuickRoute.Services
             return await context.SaveChangesAsync() > 0;
         }
         
-        public async Task<decimal> ObtenerTotalCarrito(string userId)
+        public async Task<double> ObtenerTotalCarrito(string userId)
         {
             if (string.IsNullOrEmpty(userId)) return 0;
  
@@ -95,7 +92,19 @@ namespace QuickRoute.Services
                 .Include(c => c.Carro)
                 .ToListAsync();
  
-            return items.Sum(i => i.Cantidad * (decimal)i.Carro.Precio);
+            return items.Sum(i => i.Cantidad * (double)i.Carro.Precio);
+        }
+        public async Task<bool> VaciarCarrito(string userId)
+        {
+            await using var context = await _dbFactory.CreateDbContextAsync();
+            var items = await context.Carrito
+                .Where(c => c.Id == userId)
+                .ToListAsync();
+
+            if (!items.Any()) return true;
+
+            context.Carrito.RemoveRange(items);
+            return await context.SaveChangesAsync() > 0;
         }
     }
 }
