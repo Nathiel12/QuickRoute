@@ -12,45 +12,49 @@
 
 <PageTitle>Iniciar sesión</PageTitle>
 
-<h1>Iniciar sesión</h1>
-<div class="row">
-    <div class="col-lg-6">
-        <section>
-            <StatusMessage Message="@errorMessage" />
-            <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
-                <DataAnnotationsValidator />
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="form-floating mb-3">
-                    <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
-                    <label for="Input.Email" class="form-label">Correo electrónico</label>
-                    <ValidationMessage For="() => Input.Email" class="text-danger" />
-                </div>
-                <div class="form-floating mb-3">
-                    <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="contraseña" />
-                    <label for="Input.Password" class="form-label">Contraseña</label>
-                    <ValidationMessage For="() => Input.Password" class="text-danger" />
-                </div>
-                <div class="checkbox mb-3">
-                    <label class="form-label">
-                        <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Recordarme
-                    </label>
-                </div>
-                <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Iniciar sesión</button>
-                </div>
-                <div>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Registrarse como nuevo usuario</a>
-                    </p>
-                </div>
-            </EditForm>
-        </section>
-    </div>
-</div>
+<div class="bg"></div>
+
+<main class="form-signin">
+    <h1 class="h3">Iniciar sesión</h1>
+
+    <StatusMessage Message="@errorMessage" />
+    <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+
+        <div class="form-floating">
+            <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control"
+                       autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
+            <label for="Input.Email">Correo electrónico</label>
+            <ValidationMessage For="() => Input.Email" class="text-danger" />
+        </div>
+
+        <div class="form-floating">
+            <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control"
+                       autocomplete="current-password" aria-required="true" placeholder="contraseña" />
+            <label for="Input.Password">Contraseña</label>
+            <ValidationMessage For="() => Input.Password" class="text-danger" />
+        </div>
+
+        <div class="form-check form-switch">
+            <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" />
+            <label class="form-check-label">Recordarme</label>
+        </div>
+
+        <button type="submit" class="w-100 btn btn-lg">Siguiente</button>
+
+        <p class="mt-3 text-center">
+            <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">
+                Registrarse como nuevo usuario
+            </a>
+        </p>
+    </EditForm>
+
+    <p class="copyright">&copy; @DateTime.Now.Year</p>
+</main>
 
 @code {
+    // El código permanece igual que en tu versión original
     private string? errorMessage;
 
     [CascadingParameter]
@@ -66,15 +70,12 @@
     {
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            // Limpiar la cookie externa existente para asegurar un proceso de inicio de sesión limpio
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
     }
 
     public async Task LoginUser()
     {
-        // Esto no cuenta los intentos fallidos para el bloqueo de cuenta
-        // Para habilitar el bloqueo por contraseñas incorrectas, establece lockoutOnFailure: true
         var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
