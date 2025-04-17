@@ -15,9 +15,8 @@ namespace QuickRoute.Data.Models
         public string Color { get; set; }
 
         public double Precio { get; set; }
-        public string NumeroTitulo { get; set; }
         public int CantidadStock { get; set; }
-        public string ImagenUrl { get; set; }
+        public string ImagenUrl { get; set; } = "/img/carros/default.jpg";
         public bool Disponibilidad { get; set; } = true; 
     }
 }
