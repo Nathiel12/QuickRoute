@@ -24,7 +24,7 @@ namespace QuickRoute.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            
+
             modelBuilder.Entity<TipoVehiculos>().HasData(
             new List<TipoVehiculos>()
             {
