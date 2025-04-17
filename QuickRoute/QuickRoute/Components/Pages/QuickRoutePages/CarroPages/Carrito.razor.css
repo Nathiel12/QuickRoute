@@ -1,0 +1,61 @@
+/* Estilos para la tabla del carrito */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    min-width: 800px;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+.img-thumbnail {
+    object-fit: cover;
+    background-color: #f8f9fa;
+}
+
+/* Estilos para los botones de cantidad */
+.input-group {
+    max-width: 120px;
+}
+
+.input-group .form-control {
+    text-align: center;
+    padding: 0.375rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 992px) {
+    .sticky-top {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+/* Animación para mensajes */
+.alert {
+    transition: all 0.3s ease;
+}
+
+/* Estilos para el resumen */
+.card-header.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+dl.row {
+    margin-bottom: 0;
+}
+
+dl.row > dd, dl.row > dt {
+    padding: 0.25rem 0;
+}
+
+dl.row > dt {
+    font-weight: normal;
+}
+
+dl.row > hr {
+    margin: 0.5rem 0;
+}
