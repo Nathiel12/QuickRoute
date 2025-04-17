@@ -1,6 +1,7 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 
 <nav class="navbar navbar-expand-lg navbar-dark custom-gradient">
     <div class="container-fluid">
@@ -9,33 +10,15 @@
             QuickRoute
         </NavLink>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <button class="navbar-toggler" type="button" @onclick="ToggleNavbar" aria-expanded="@navbarCollapsed">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
+        <div class="collapse navbar-collapse @(navbarCollapsed ? "show" : "")" id="navbarContent">
             <!-- Elementos del centro -->
-            <ul class="navbar-nav mx-auto"> <!-- mx-auto centra los elementos -->
+            <ul class="navbar-nav mx-auto">
                 <AuthorizeView>
                     <Authorized>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/Carros/Index">
-                                <span class="bi bi-car-front-fill" aria-hidden="true"></span> Carros
-                            </NavLink>
-                        </li>
-
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/Admin/Carros/Index">
-                                <span class="bi bi-clipboard2-check-fill" aria-hidden="true"></span> Aprobación
-                            </NavLink>
-                        </li>
-
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/Traslados/Index">
-                                <span class="bi bi-train-freight-front-fill" aria-hidden="true"></span> Traslados
-                            </NavLink>
-                        </li>
-
                         <li class="nav-item">
                             <NavLink class="nav-link" href="@GetCasosLink()">
                                 <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
@@ -59,6 +42,11 @@
                                 <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Votos
                             </NavLink>
                         </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/carrito">
+                                <span class="bi bi-cart" aria-hidden="true"></span>
+                            </NavLink>
+                        </li>
                     </Authorized>
                 </AuthorizeView>
             </ul>
@@ -79,12 +67,12 @@
 
                     <Authorized>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" @onclick="ToggleDropdown" @onblur="CloseDropdown" role="button" aria-expanded="@dropdownOpen">
                                 <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end @(dropdownOpen ? "show" : "")">
                                 <li>
-                                    <NavLink class="dropdown-item" href="Account/Manage">
+                                    <NavLink class="dropdown-item" href="Account/Manage" @onclick="CloseDropdown">
                                         <span class="bi bi-person-fill" aria-hidden="true"></span> Mi cuenta
                                     </NavLink>
                                 </li>
@@ -110,6 +98,8 @@
     private string? currentUrl;
     private bool isAdmin = false;
     private bool isLoginPage = false;
+    private bool dropdownOpen = false;
+    private bool navbarCollapsed = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,6 +109,14 @@
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         isAdmin = authState.User.IsInRole("Admin");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initDropdowns");
+        }
     }
 
     private string GetSugerenciasLink()
@@ -136,6 +134,21 @@
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         isLoginPage = currentUrl.Contains("Account/Login", StringComparison.OrdinalIgnoreCase);
         StateHasChanged();
+    }
+
+    private void ToggleDropdown()
+    {
+        dropdownOpen = !dropdownOpen;
+    }
+
+    private void CloseDropdown()
+    {
+        dropdownOpen = false;
+    }
+
+    private void ToggleNavbar()
+    {
+        navbarCollapsed = !navbarCollapsed;
     }
 
     public void Dispose()
