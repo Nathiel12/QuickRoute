@@ -68,8 +68,7 @@
                     <th>N° Orden</th>
                     <th>Fecha</th>
                     <th>Total</th>
-                    <th>Pagada</th>
-                    <th>Acciones</th>
+                    <th>Ver</th>
                 </tr>
             </thead>
             <tbody>
@@ -78,22 +77,9 @@
                     <tr>
                         <td>@orden.OrdenId</td>
                         <td>@orden.FechaOrden.ToString("dd/MM/yyyy")</td>
-                        <td>@orden.Detalles.Sum(d => d.PrecioUnitario * d.Cantidad).ToString("N2")</td>
+                        <td>@((orden.Detalles.Sum(d => d.PrecioUnitario * d.Cantidad) * 1.20 + 2500).ToString("N2"))</td>
                         <td>
-                            @if (orden.Pagada)
-                            {
-                                <span class="badge bg-success">Pagada</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-warning">Pendiente</span>
-                            }
-                        </td>
-                        <td>
-                            @if (!orden.Pagada)
-                            {
-                                <a href="/CheckOut/@orden.OrdenId" class="btn btn-outline-success bi bi-credit-card"></a>
-                            }
+                            <a href="/Ordenes/View/@orden.OrdenId" class="btn btn-outline-secondary bi bi-eye"></a>
                         </td>
                     </tr>
                 }
