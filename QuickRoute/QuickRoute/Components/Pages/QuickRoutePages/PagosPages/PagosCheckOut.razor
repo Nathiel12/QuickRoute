@@ -1,124 +1,178 @@
-﻿@page "/CheckOut/{OrdenId:int}"
+﻿@page "/CheckOut"
 @inject PagosService pagosService
-@inject OrdenesService ordenService
+@inject CarritoService carritoService
+@inject OrdenesService ordenesService
 @inject NavigationManager navigationManager
-@inject AuthenticationStateProvider authProvider
+@inject AuthenticationStateProvider AuthProvider
 @rendermode InteractiveServer
 
-@*HTML*@
-<PageTitle>Create</PageTitle>
+<PageTitle>Checkout</PageTitle>
+
 <EditForm Model="Pago" OnValidSubmit="Guardar">
-	<DataAnnotationsValidator />
+    <DataAnnotationsValidator />
 
-	@* Label para notificaciones *@
-	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+    @* Notificaciones de error *@
+    @if (!string.IsNullOrEmpty(errorMensaje))
+    {
+        <div class="alert alert-danger">@errorMensaje</div>
+    }
 
-	<div class="container">
-		<div class="card shadow-lg">
-			<div class="card-header text-center">
-				<h5 class="card-title">Registro de Contactos</h5>
-			</div>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Resumen de tu pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ItemsCarrito.Any())
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio unitario</th>
+                                        <th>Subtotal</th>
+                                        <th>Impuestos</th>
+                                        <th>Envio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in ItemsCarrito)
+                                    {
+                                        <tr>
+                                            <td>@item.Carro.Marca @item.Carro.Modelo</td>
+                                            <td>@item.Cantidad</td>
+                                            <td>@item.Carro.Precio.ToString("N2")</td>
+                                            <td>@((item.Cantidad * item.Carro.Precio).ToString("N2"))</td>
+                                            <td>@(((item.Cantidad * item.Carro.Precio)*0.20).ToString("N2"))</td>
+                                            <td>2,500.00</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <div class="text-end fw-bold">
+                                Total: @((TotalCarrito * 1.20 + 2500).ToString("N2"))
+                            </div>
+                        }
+                        else
+                        {
+                            <p>No hay items en tu carrito</p>
+                        }
+                    </div>
+                </div>
+            </div>
 
-			<div class="card-body">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Información de pago</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre en la tarjeta</label>
+                            <InputText class="form-control" @bind-Value="Pago.NombreCliente" />
+                            <ValidationMessage For="@(() => Pago.NombreCliente)" />
+                        </div>
 
-				@* PagoId *@
-				<div class="mb-3">
-					<label class="form-label"><strong>ContactoId</strong></label>
-					<InputNumber class="form-control" @bind-Value="Pago.PagoId" readonly></InputNumber>
-				</div>
-				<div class="mb-3">
-					<label class="form-label"><strong>Orden</strong></label>
-					@foreach(var orden in ListaDetalles){
-						<p>@orden.Carro - @orden.Cantidad - $@orden.PrecioUnitario.ToString("N2")</p>
-					}
-					<p>Total:@ListaDetalles.Sum(p => p.PrecioUnitario * p.Cantidad).ToString("N2")</p>
-				</div>
+                        <div class="mb-3">
+                            <label class="form-label">Número de tarjeta</label>
+                            <InputText class="form-control" @bind-Value="Pago.NumeroTarjeta" 
+                            placeholder="4111 1111 1111 1111" />
+                            <ValidationMessage For="@(() => Pago.NumeroTarjeta)" />
+                        </div>
 
-				<div class="mb-3">
-					<label class="form-label"><strong>Nombre</strong></label>
-					<InputText class="form-control" @bind-Value="Pago.NombreCliente"></InputText>
-					<ValidationMessage For="(() => Pago.NombreCliente)" />
-				</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha exp. (MM/AA)</label>
+                                <InputText class="form-control" @bind-Value="Pago.FechaExpiracion" 
+                                placeholder="12/25" />
+                                <ValidationMessage For="@(() => Pago.FechaExpiracion)" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CVV</label>
+                                <InputText class="form-control" @bind-Value="Pago.CodigoSeguridad" 
+                                placeholder="123" />
+                                <ValidationMessage For="@(() => Pago.CodigoSeguridad)" />
+                            </div>
+                        </div>
 
-				@* Numero de Tarjeta *@
-				<div class="mb-3">
-					<label class="form-label"><strong>Numero de Tarjeta</strong></label>
-					<InputText class="form-control" @bind-Value="Pago.NumeroTarjeta" placeholder="4111 1111 1111 1111"></InputText>
-					<ValidationMessage For="(() => Pago.NumeroTarjeta)" />
-				</div>
-
-				@* Fecha *@
-				<div class="mb-3">
-					<label class="form-label"><strong>Fecha Exp. (MM/YY)</strong></label>
-					<InputText class="form-control" placeholder="12/25" @bind-Value="Pago.FechaExpiracion"></InputText>
-					<ValidationMessage For="(() => Pago.FechaExpiracion)" />
-				</div>
-				@* Email *@
-				<div class="mb-3">
-					<label class="form-label"><strong>CVV</strong></label>
-					<InputNumber class="form-control" placeholder="123" @bind-Value="Pago.CodigoSeguridad"></InputNumber>
-					<ValidationMessage For="(() => Pago.CodigoSeguridad)" />
-				</div>
-
-			</div>
-
-			@* Footer *@
-			<div class="card-footer text-center mt-2">
-				<a href="/Ordenes/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
-				<button type="submit" class="btn btn-outline-success bi bi-floppy">Confirmar Pago</button>
-			</div>
-		</div>
-	</div>
+                        <button type="submit" class="btn btn-primary w-100" 
+                        disabled="@(Procesando || !ItemsCarrito.Any())">
+                            @if (Procesando)
+                            {
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <span> Procesando...</span>
+                            }
+                            else
+                            {
+                                <span>Pagar @((TotalCarrito * 1.20 + 2500).ToString("N2"))</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </EditForm>
 
 @code {
-	[Parameter]
-	public int OrdenId { get; set; }
+    private List<Carrito> ItemsCarrito = new();
+    private double TotalCarrito = 0;
+    private Pagos Pago = new();
+    private string errorMensaje = string.Empty;
+    private bool Procesando = false;
+    private string UserId = string.Empty;
 
-	public Pagos Pago { get; set; } = new();
-	public string errorMensaje { get; set; } = string.Empty;
-	public List<OrdenDetalle> ListaDetalles { get; set; } = new List<OrdenDetalle>();
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        UserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-	protected override async Task OnInitializedAsync()
-	{
-		var authState = await authProvider.GetAuthenticationStateAsync();
-		var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(UserId))
+        {
+            errorMensaje = "Debes iniciar sesión para realizar el checkout";
+            return;
+        }
 
-		if (string.IsNullOrEmpty(userId))
-		{
-			errorMensaje = "Usuario no autenticado";
-			return;
-		}
-		var orden = await ordenService.ObtenerOrdenDetallada(OrdenId, userId);
+        await CargarCarrito();
+    }
 
-		if (orden == null)
-		{
-			errorMensaje = "Orden no encontrada o no pertenece al usuario";
-			return;
-		}
+    private async Task CargarCarrito()
+    {
+        ItemsCarrito = await carritoService.ObtenerCarritoUsuario(UserId);
+        TotalCarrito = await carritoService.ObtenerTotalCarrito(UserId);
 
-		ListaDetalles = orden.Detalles?.ToList() ?? new List<OrdenDetalle>();
-		Pago.OrdenId = orden.OrdenId; 
-		if (orden.Pagada)
-		{
-			errorMensaje = "Esta orden ya fue pagada anteriormente";
-		}
+        if (!ItemsCarrito.Any())
+        {
+            errorMensaje = "Tu carrito está vacío";
+        }
+    }
 
-	}
+    public async Task Guardar()
+    {
+        if (Procesando) return;
+        Procesando = true;
+        var ordenId = await ordenesService.CrearOrdenDesdeCarrito(UserId, TotalCarrito);
+        if (ordenId <= 0)
+        {
+            errorMensaje = "Error al crear la orden";
+            return;
+        }
 
-	public async Task Guardar()
-	{
-		errorMensaje = string.Empty;
+        Pago.OrdenId = ordenId;
+        var pagoExitoso = await pagosService.Guardar(Pago);
 
-		var guardo = await pagosService.Guardar(this.Pago);
-		if (guardo != null)
-		{
-			navigationManager.NavigateTo("/OrderHistory");
-		}
-		else
-		{
-			errorMensaje = "Error al completar la transaccion";
-		}
+        if (pagoExitoso)
+        {
+            await carritoService.VaciarCarrito(UserId);
+            navigationManager.NavigateTo("/OrderHistory");
+        }
+        else
+        {
+            errorMensaje = "Error al registrar el pago";
+        }
 
 	}
 }
