@@ -12,7 +12,7 @@
     flex-direction: column;
 }
 
-/* ===== EXCEPCIÓN PARA PÁGINA HOME ===== */
+/* ===== EXCEPCI�N PARA P�GINA HOME ===== */
 .home-page .main-content {
     padding-top: 0 !important;
 }
@@ -54,7 +54,7 @@
     }
 
     .main-content {
-        padding-top: 60px; /* Ajuste para móviles si el navbar cambia altura */
+        padding-top: 60px; /* Ajuste para m�viles si el navbar cambia altura */
     }
 }
 
