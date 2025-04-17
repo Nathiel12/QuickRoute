@@ -6,10 +6,13 @@ namespace QuickRoute.Data.Models
     {
         public int CarritoId { get; set; }
         public string Id { get; set; } 
-        public int CarroId { get; set; }     
+        public int CarroId { get; set; } 
         public int Cantidad { get; set; } = 1;
         public DateTime FechaAgregado { get; set; } = DateTime.Now;
+        
+        [ForeignKey("CarroId")]
         public virtual Carros Carro { get; set; }
+        
         [ForeignKey("Id")]
         public virtual ApplicationUser Usuario { get; set; }
     }
