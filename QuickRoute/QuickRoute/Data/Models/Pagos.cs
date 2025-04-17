@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickRoute.Data.Models
 {
@@ -23,6 +24,7 @@ namespace QuickRoute.Data.Models
         [RegularExpression(@"^\d{3}$", ErrorMessage = "Código de seguridad inválido (3 dígitos)")]
         public string CodigoSeguridad { get; set; }
         public int OrdenId { get; set; }
+        [ForeignKey("OrdenId")]
         public virtual Ordenes Ordenes { get; set; }
     }
 }
