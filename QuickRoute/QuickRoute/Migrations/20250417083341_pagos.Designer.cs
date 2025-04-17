@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuickRoute.Data;
 
@@ -11,9 +12,11 @@ using QuickRoute.Data;
 namespace QuickRoute.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417083341_pagos")]
+    partial class pagos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -689,45 +692,6 @@ namespace QuickRoute.Migrations
                     b.ToTable("Contactos");
                 });
 
-            modelBuilder.Entity("QuickRoute.Data.Models.Direccion", b =>
-                {
-                    b.Property<int>("DireccionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DireccionId"));
-
-                    b.Property<string>("Ciudad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CodigoPostal")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Direccion1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Direccion2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Provincia")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("DireccionId");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("Direcciones");
-                });
-
             modelBuilder.Entity("QuickRoute.Data.Models.OrdenDetalle", b =>
                 {
                     b.Property<int>("OrdenDetalleId")
@@ -780,44 +744,6 @@ namespace QuickRoute.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ordenes");
-                });
-
-            modelBuilder.Entity("QuickRoute.Data.Models.Pagos", b =>
-                {
-                    b.Property<int>("PagoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PagoId"));
-
-                    b.Property<string>("CodigoSeguridad")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FechaExpiracion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NombreCliente")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumeroTarjeta")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrdenId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OrdenesId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("PagoId");
-
-                    b.HasIndex("OrdenesId");
-
-                    b.ToTable("Pagos");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Sugerencias", b =>
@@ -1116,17 +1042,6 @@ namespace QuickRoute.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("QuickRoute.Data.Models.Direccion", b =>
-                {
-                    b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
-                });
-
             modelBuilder.Entity("QuickRoute.Data.Models.OrdenDetalle", b =>
                 {
                     b.HasOne("QuickRoute.Data.Models.Carros", "Carro")
@@ -1153,17 +1068,6 @@ namespace QuickRoute.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("QuickRoute.Data.Models.Pagos", b =>
-                {
-                    b.HasOne("QuickRoute.Data.Models.Ordenes", "Ordenes")
-                        .WithMany()
-                        .HasForeignKey("OrdenesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ordenes");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Sugerencias", b =>
