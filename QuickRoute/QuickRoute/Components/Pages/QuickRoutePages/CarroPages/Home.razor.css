@@ -1,0 +1,288 @@
+/* Agrega esto al inicio de tu CSS */
+:root {
+    --main-bg-color: #f8f9fa; /* Color de fondo principal */
+}
+
+/* Actualiza la sección del catálogo */
+#catalogo {
+    background-color: var(--main-bg-color);
+    padding: 2rem 0;
+}
+
+/* Asegura que las tarjetas tengan fondo blanco */
+.carro-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Actualiza el contenedor principal */
+.main-content {
+    background-color: var(--main-bg-color);
+}
+
+.content-container {
+    background-color: var(--main-bg-color);
+    min-height: calc(100vh - 120px); /* Ajusta según tu header/footer */
+}
+
+/* Asegura consistencia en el layout */
+.page {
+    background-color: var(--main-bg-color);
+}
+
+/* Mantén el footer con color oscuro */
+footer.footer {
+    background-color: #343a40 !important;
+    margin-top: auto;
+}
+
+/* General Styles */
+.page {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden;
+}
+
+/* Estilo de gradiente botón */
+.btn-primary {
+    background: linear-gradient(135deg, #0066ff, #00ccff) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, #0055dd, #00bbee) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    color: white !important;
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de brillo al pasar el mouse */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.btn-primary:hover::after {
+    transform: translateX(100%);
+}
+
+/* Estilo específico para el botón "Únete a nosotros" */
+.btn-lg.px-4.py-3 {
+    font-size: 1.25rem;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+}
+
+/* Header Styles - Versión Compacta */
+.masthead {
+    position: relative;
+    background: url('img/header-bg.jpg') no-repeat center center;
+    background-size: cover;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 4rem 0 6rem 0; /* Reducido en 65% */
+    display: flex;
+    align-items: center;
+    min-height: auto; /* Eliminado 100vh */
+}
+
+.masthead .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.masthead-subheading {
+    font-size: 1.8rem; /* Reducido desde 2rem */
+    font-style: italic;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin-bottom: 0.8rem; /* Reducido */
+    color: white !important;
+}
+
+.masthead-heading {
+    font-size: 2.8rem; /* Reducido desde 3.5rem */
+    font-weight: 700;
+    margin: 1rem 0; /* Reducido */
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.2;
+    color: white !important;
+}
+
+/* Catálogo Styles */
+.carro-card {
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.carro-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.carro-img-container {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.carro-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.carro-card:hover .carro-img-container img {
+    transform: scale(1.05);
+}
+
+.card-footer {
+    pointer-events: none;
+}
+
+/* Footer Styles */
+footer.footer {
+    position: relative;
+    width: 100vw;
+    left: calc(-50vw + 50%);
+    right: calc(-50vw + 50%);
+    background-color: #343a40;
+    color: white;
+    padding: 2rem 0;
+    margin: 0;
+}
+
+.footer .container-fluid {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+}
+
+.footer .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto;
+    max-width: 1140px;
+    padding: 0 15px;
+}
+
+.footer .col-lg-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0 15px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .masthead {
+        padding: 2.5rem 0 4rem 0 !important;
+    }
+
+    .masthead-subheading {
+        font-size: 1.4rem !important;
+    }
+
+    .masthead-heading {
+        font-size: 2rem !important;
+    }
+
+    .carro-img-container {
+        height: 150px;
+    }
+
+    .btn-lg.px-4.py-3 {
+        font-size: 1rem;
+        padding: 0.5rem 1.25rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .footer .col-lg-4 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+        margin-bottom: 0 !important;
+    }
+
+    .footer .text-lg-start {
+        text-align: left !important;
+    }
+
+    .footer .text-lg-end {
+        text-align: right !important;
+    }
+}
+
+/* Scroll Behavior */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 50px; /* Ajustado para header compacto */
+}
+
+/* Eliminar completamente las flechas y sus estilos */
+.scroll-hint, .arrow-stack, .arrow-down {
+    display: none !important;
+}
+
+/* Estilos para el enlace de la tarjeta */
+.card-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none !important;
+}
+
+.card-link:hover {
+    text-decoration: none !important;
+}
+
+/* Sección de catálogo */
+.section-heading {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+}
+
+/* Asegurar que no haya overflow horizontal */
+body {
+    overflow-x: hidden;
+}
