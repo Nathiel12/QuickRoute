@@ -38,7 +38,9 @@
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opcion</option>
-                        <option value="CasoId">CasoId</option>
+                        @if(isAdmin){
+                            <option value="CasoId">CasoId</option>
+                        }
                         <option value="Fecha">Fecha</option>
                         <option value="Asunto">Asunto</option>
                     </InputSelect>
@@ -86,7 +88,9 @@
         <table class="table table-hover">
             <thead class="table  table-striped text-black">
                 <tr>
-                    <th>CasoId</th>
+                    @if(isAdmin){
+                        <th>CasoId</th>
+                    }
                     <th>Fecha</th>
                     <th>Contacto Aduanero</th>
                     <th>Asunto</th>
@@ -98,7 +102,9 @@
                 @foreach (var casos in ListaCasos)
                 {
                     <tr>
-                        <td> @casos.CasoId</td>
+                        @if(isAdmin){
+                            <td> @casos.CasoId</td>
+                        }
                         <td> @casos.Fecha.ToString("dd/MM/yyyy")</td>
                         <td> @casos.Contacto.Nombre</td>
                         <td> @casos.Asunto</td>
@@ -123,15 +129,16 @@
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
     public DateTime? Desde { get; set; }
-
     public DateTime? Hasta { get; set; }
     private string? UsuarioIdActual { get; set; }
+    private bool isAdmin { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        isAdmin = authState.User.IsInRole("Admin");
 
         if (user.IsInRole("Admin"))
         {
@@ -141,7 +148,6 @@
         {
             ListaCasos = await casosService.Listar(c => c.Id == UsuarioIdActual);
         }
-        ListaCasos = await casosService.Listar(c => c.CasoId > 0);
     }
 
     private async Task Buscar()
