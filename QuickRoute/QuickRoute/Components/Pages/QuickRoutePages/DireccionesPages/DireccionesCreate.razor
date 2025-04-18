@@ -36,20 +36,20 @@
 							<option value="@provincia">@provincia</option>
 						}
 					</InputSelect>
-					<ValidationMessage For="@(() => Direccion.Provincia)" />
+					<ValidationMessage For="@(() => Direccion.Provincia)" class="text-danger" />
 				</div>
 
 				<div class="mb-3">
 					<label class="form-label"><strong>Ciudad</strong></label>
 					<InputText class="form-control" @bind-Value="Direccion.Ciudad"></InputText>
-					<ValidationMessage For="(() => Direccion.Ciudad)" />
+					<ValidationMessage For="(() => Direccion.Ciudad)" class="text-danger" />
 				</div>
 
 
 				<div class="mb-3">
 					<label class="form-label"><strong>Direccion</strong></label>
 					<InputText class="form-control" @bind-Value="Direccion.Direccion1"></InputText>
-					<ValidationMessage For="(() => Direccion.Direccion1)" />
+					<ValidationMessage For="(() => Direccion.Direccion1)" class="text-danger" />
 				</div>
 
 				<div class="mb-3">
@@ -59,7 +59,7 @@
 				<div class="mb-3">
 					<label class="form-label"><strong>Codigo Postal</strong></label>
 					<InputText class="form-control" @bind-Value="Direccion.CodigoPostal"></InputText>
-					<ValidationMessage For="(() => Direccion.CodigoPostal)" />
+					<ValidationMessage For="(() => Direccion.CodigoPostal)" class="text-danger" />
 				</div>
 			</div>
 
