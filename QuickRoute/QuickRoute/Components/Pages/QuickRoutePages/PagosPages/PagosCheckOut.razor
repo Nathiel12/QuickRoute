@@ -73,14 +73,14 @@
                         <div class="mb-3">
                             <label class="form-label">Nombre en la tarjeta</label>
                             <InputText class="form-control" @bind-Value="Pago.NombreCliente" />
-                            <ValidationMessage For="@(() => Pago.NombreCliente)" />
+                            <ValidationMessage For="@(() => Pago.NombreCliente)" class="text-danger" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Número de tarjeta</label>
                             <InputText class="form-control" @bind-Value="Pago.NumeroTarjeta" 
                             placeholder="4111 1111 1111 1111" />
-                            <ValidationMessage For="@(() => Pago.NumeroTarjeta)" />
+                            <ValidationMessage For="@(() => Pago.NumeroTarjeta)" class="text-danger" />
                         </div>
 
                         <div class="row">
@@ -88,13 +88,13 @@
                                 <label class="form-label">Fecha exp. (MM/AA)</label>
                                 <InputText class="form-control" @bind-Value="Pago.FechaExpiracion" 
                                 placeholder="12/25" />
-                                <ValidationMessage For="@(() => Pago.FechaExpiracion)" />
+                                <ValidationMessage For="@(() => Pago.FechaExpiracion)" class="text-danger" />
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">CVV</label>
                                 <InputText class="form-control" @bind-Value="Pago.CodigoSeguridad" 
                                 placeholder="123" />
-                                <ValidationMessage For="@(() => Pago.CodigoSeguridad)" />
+                                <ValidationMessage For="@(() => Pago.CodigoSeguridad)" class="text-danger" />
                             </div>
                         </div>
 
