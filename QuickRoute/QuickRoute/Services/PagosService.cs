@@ -27,9 +27,13 @@ namespace QuickRoute.Services
 
         private async Task<bool> Insertar(Pagos pagos)
         {
-            await using var contexto = await DbFactory.CreateDbContextAsync();
-            contexto.Pagos.Add(pagos);
-            return await contexto.SaveChangesAsync() > 0;
+            await using var context = await DbFactory.CreateDbContextAsync();
+
+            var ordenExiste = await context.Ordenes.AnyAsync(o => o.OrdenId == pagos.OrdenId);
+            if (!ordenExiste) return false;
+
+            context.Pagos.Add(pagos);
+            return await context.SaveChangesAsync() > 0;
         }
 
         private async Task<bool> Modificar(Pagos pagos)

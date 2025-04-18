@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickRoute.Data.Models
 {
     public class Carrito
     {
+        [Key]
         public int CarritoId { get; set; }
         public string Id { get; set; } 
         public int CarroId { get; set; } 

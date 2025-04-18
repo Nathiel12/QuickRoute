@@ -7,34 +7,38 @@ namespace QuickRoute.Services
 {
     public class OrdenesService(IDbContextFactory<ApplicationDbContext> DbFactory)
     {
-        public async Task<Ordenes> CrearOrden(List<OrdenDetalle> detalles, string usuarioId)
+        public async Task<int> CrearOrdenDesdeCarrito(string userId, double total)
         {
             await using var context = await DbFactory.CreateDbContextAsync();
 
-            double total = detalles.Sum(d => d.PrecioUnitario * d.Cantidad);
+            var itemsCarrito = await context.Carrito
+                .Where(c => c.Id == userId)
+                .Include(c => c.Carro)
+                .ToListAsync();
 
-            var nuevaOrden = new Ordenes
+            if (!itemsCarrito.Any()) return 0;
+
+            var orden = new Ordenes
             {
-                Id = usuarioId,
+                Id = userId,
                 FechaOrden = DateTime.Now,
                 Total = total,
-                Pagada = false,
-                Detalles = detalles
-            };
-
-            foreach (var detalle in detalles)
-            {
-                var carro = await context.Carros.FindAsync(detalle.CarroId);
-                if (carro != null)
+                Detalles = itemsCarrito.Select(i => new OrdenDetalle
                 {
-                    carro.CantidadStock -= detalle.Cantidad;
-                }
+                    CarroId = i.CarroId,
+                    Cantidad = i.Cantidad,
+                    PrecioUnitario = i.Carro.Precio
+                }).ToList()
+            };
+            foreach (var item in itemsCarrito)
+            {
+                item.Carro.CantidadStock -= item.Cantidad;
             }
 
-            context.Ordenes.Add(nuevaOrden);
+            context.Ordenes.Add(orden);
             await context.SaveChangesAsync();
 
-            return nuevaOrden;
+            return orden.OrdenId; // Retorna el ID generado
         }
         public async Task<bool> CancelarOrden(int ordenId, string usuarioId)
         {
@@ -68,7 +72,11 @@ namespace QuickRoute.Services
         public async Task<List<Ordenes>> Listar(Expression<Func<Ordenes, bool>> criterio)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Ordenes.Where(criterio).AsNoTracking().ToListAsync();
+            return await contexto.Ordenes
+                .Where(criterio)
+                .Include(o => o.Detalles) // Asegura cargar los detalles
+                .AsNoTracking()
+                .ToListAsync();
         }
         /**public async Task<List<Ordenes>> ObtenerOrdenesPorUsuario(string usuarioId)
         {

@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuickRoute.Data.Models
 {
     public class Ordenes
     {
+        [Key]
         public int OrdenId { get; set; }
         public string Id { get; set; }
         public DateTime FechaOrden { get; set; } = DateTime.Now;

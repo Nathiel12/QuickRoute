@@ -33,6 +33,8 @@ builder.Services.AddScoped<PagosService>();
 builder.Services.AddScoped<OrdenesService>();
 builder.Services.AddScoped<CasosService>();
 builder.Services.AddScoped<ContactosService>();
+builder.Services.AddScoped<PagosService>();
+builder.Services.AddScoped<OrdenesService>();
 builder.Services.AddScoped<VotacionesService>();
 builder.Services.AddScoped<TipoVehiculosService>();
 builder.Services.AddScoped<SugerenciasService>();

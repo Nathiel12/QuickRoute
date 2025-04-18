@@ -156,7 +156,7 @@
     private List<Data.Models.Carrito> itemsCarrito;
     private decimal subtotal = 0;
     private decimal impuestos = 0;
-    private decimal envio = 1500; 
+    private decimal envio = 2500; 
     private decimal total = 0;
     
     private bool mostrarMensaje = false;
@@ -237,13 +237,13 @@
 
     private void ProcederAlPago()
     {
-        Navigation.NavigateTo("/checkout");
+        Navigation.NavigateTo("/CheckOut");
     }
     
     private void CalcularTotales()
     {
         subtotal = itemsCarrito?.Sum(i => i.Cantidad * (decimal)i.Carro.Precio) ?? 0;
-        impuestos = subtotal * 0.18m;
+        impuestos = subtotal * 0.20m;
         total = subtotal + impuestos + envio;
     }
     
