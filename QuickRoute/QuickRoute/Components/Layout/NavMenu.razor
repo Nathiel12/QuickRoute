@@ -41,12 +41,15 @@
                                         <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
                                     </NavLink>
                                 </li>
+                                @if(isAdmin){
+                                    <li>
 
-                                 <li>
                                         <NavLink class="dropdown-item" href="/Contactos/Index" @onclick="CloseCenterDropdown">
                                             <span class="bi bi-journal-bookmark-fill" aria-hidden="true"></span> Contactos
                                         </NavLink>
-                                 </li>
+
+                                    </li>
+                                }
 
                                 <li>
                                     <NavLink class="dropdown-item" href="/Sugerencias/Index" @onclick="CloseCenterDropdown">
