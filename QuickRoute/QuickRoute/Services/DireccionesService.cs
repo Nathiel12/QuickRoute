@@ -50,7 +50,7 @@ namespace QuickRoute.Services
         public async Task<List<Direccion>> Listar(Expression<Func<Direccion, bool>> criterio)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Direcciones.Where(criterio).AsNoTracking().ToListAsync();
+            return await contexto.Direcciones.Where(criterio).Include(d => d.Usuario).AsNoTracking().ToListAsync();
         }
         public async Task<bool> Eliminar(int direccionId)
         {
