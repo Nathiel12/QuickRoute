@@ -14,7 +14,7 @@
     border-bottom: none;
 }
 
-/* Ajuste del padding superior del body para que el contenido no quede oculto bajo el nav */
+/* Ajuste del padding superior del body */
 body {
     padding-top: 70px;
     background: linear-gradient(to right, #0072ff, #00c6ff) !important;
@@ -65,7 +65,7 @@ body {
     color: white !important;
 }
 
-/* Estilos para los elementos activos */
+/* Estilos para elementos activos */
 .nav-item ::deep a.active {
     background-color: rgba(255, 255, 255, 0.3) !important;
     color: white !important;
@@ -139,12 +139,6 @@ body {
     fill: #0066ff !important;
 }
 
-/* Íconos específicos del dropdown de usuario */
-.bi-person-fill,
-.bi-box-arrow-left {
-    visibility: visible !important;
-}
-
 /* Toggler personalizado - ícono hamburguesa blanco */
 .navbar-toggler {
     border: none !important;
@@ -215,4 +209,102 @@ body {
 .custom-gradient {
     background: linear-gradient(to right, #0072ff, #00c6ff) !important;
     border-bottom: none;
+}
+
+/* Estilos para el dropdown del centro */
+.dropdown-menu-center {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+/* Estilo para el ícono de lista del menú central */
+.bi-list {
+    margin-right: 0.5rem;
+}
+
+/* ===== ESTILOS DEL CARRITO (MODIFICADOS) ===== */
+.cart-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+}
+
+.cart-icon-container .nav-link {
+    padding: 0.5rem 0.75rem !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent !important;
+}
+
+.cart-icon-container .bi-cart,
+.cart-icon-container .bi-cart-fill {
+    font-size: 1.3rem;
+    color: white !important;
+    transition: transform 0.2s ease;
+    margin-right: 0;
+}
+
+.cart-icon-container .nav-link:hover {
+    background-color: transparent !important;
+}
+
+.cart-icon-container .nav-link:hover .bi-cart,
+.cart-icon-container .nav-link:hover .bi-cart-fill {
+    transform: scale(1.1);
+    background-color: transparent !important;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+    border: 2px solid #0072ff;
+}
+
+/* Versión móvil para el carrito */
+@media (max-width: 992px) {
+    .cart-icon-container {
+        margin: 0.5rem 0;
+    }
+
+    .cart-icon-container .bi-cart,
+    .cart-icon-container .bi-cart-fill {
+        font-size: 1.5rem;
+    }
+
+    .cart-badge {
+        top: 5px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Ajuste para móviles general */
+@media (max-width: 992px) {
+    .dropdown-menu-center {
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+        text-align: center;
+    }
+
+    .dropdown-menu-center .dropdown-item {
+        justify-content: center !important;
+    }
 }

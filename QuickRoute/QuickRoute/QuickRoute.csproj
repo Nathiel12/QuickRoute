@@ -33,4 +33,8 @@
     <_ContentIncludedByDefault Remove="Components\Pages\QuickRoutePages\TrasladosPages\TrasladosView.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

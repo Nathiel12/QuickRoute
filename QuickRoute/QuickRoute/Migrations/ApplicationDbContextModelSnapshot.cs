@@ -222,13 +222,13 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.Models.Carrito", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Cantidad")
+                    b.Property<int>("CarritoId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("CarritoId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarritoId"));
+
+                    b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
                     b.Property<int>("CarroId")
@@ -237,9 +237,15 @@ namespace QuickRoute.Migrations
                     b.Property<DateTime>("FechaAgregado")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CarritoId");
 
                     b.HasIndex("CarroId");
+
+                    b.HasIndex("Id");
 
                     b.ToTable("Carrito");
                 });
@@ -745,9 +751,6 @@ namespace QuickRoute.Migrations
                     b.Property<int>("OrdenId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OrdenId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<double>("PrecioUnitario")
                         .HasColumnType("float");
 
@@ -755,21 +758,24 @@ namespace QuickRoute.Migrations
 
                     b.HasIndex("CarroId");
 
-                    b.HasIndex("OrdenId1");
+                    b.HasIndex("OrdenId");
 
                     b.ToTable("OrdenDetalles");
                 });
 
             modelBuilder.Entity("QuickRoute.Data.Models.Ordenes", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("OrdenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrdenId"));
 
                     b.Property<DateTime>("FechaOrden")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("OrdenId")
-                        .HasColumnType("int");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("Pagada")
                         .HasColumnType("bit");
@@ -777,7 +783,9 @@ namespace QuickRoute.Migrations
                     b.Property<double>("Total")
                         .HasColumnType("float");
 
-                    b.HasKey("Id");
+                    b.HasKey("OrdenId");
+
+                    b.HasIndex("Id");
 
                     b.ToTable("Ordenes");
                 });
@@ -809,13 +817,9 @@ namespace QuickRoute.Migrations
                     b.Property<int>("OrdenId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OrdenesId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("PagoId");
 
-                    b.HasIndex("OrdenesId");
+                    b.HasIndex("OrdenId");
 
                     b.ToTable("Pagos");
                 });
@@ -1137,7 +1141,9 @@ namespace QuickRoute.Migrations
 
                     b.HasOne("QuickRoute.Data.Models.Ordenes", "Orden")
                         .WithMany("Detalles")
-                        .HasForeignKey("OrdenId1");
+                        .HasForeignKey("OrdenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Carro");
 
@@ -1148,9 +1154,7 @@ namespace QuickRoute.Migrations
                 {
                     b.HasOne("QuickRoute.Data.ApplicationUser", "Usuario")
                         .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Id");
 
                     b.Navigation("Usuario");
                 });
@@ -1159,7 +1163,7 @@ namespace QuickRoute.Migrations
                 {
                     b.HasOne("QuickRoute.Data.Models.Ordenes", "Ordenes")
                         .WithMany()
-                        .HasForeignKey("OrdenesId")
+                        .HasForeignKey("OrdenId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

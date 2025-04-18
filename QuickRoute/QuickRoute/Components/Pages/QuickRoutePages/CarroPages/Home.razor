@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject CarrosService CarrosService
 @inject IHttpContextAccessor HttpContextAccessor
+@rendermode InteractiveServer
 
 <a id="page-top"></a>
 
@@ -22,9 +23,45 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-heading">Nuestros Vehículos Disponibles</h2>
-            <p class="text-muted">Selecciona un vehículo para ver más detalles</p>
+            <!-- Barra de búsqueda mejorada -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8 col-lg-6">
+                    <div class="search-container shadow-sm rounded-pill bg-white">
+                        <div class="input-group">
+                            <div class="input-group-prepend position-relative">
+                                <select class="form-select border-0 bg-transparent rounded-pill-start ps-4 pe-5" 
+                                        @bind="FiltroSeleccionado"
+                                        style="appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                                    <option value="Marca">Marca</option>
+                                    <option value="Modelo">Modelo</option>
+                                    <option value="Color">Color</option>
+                                    <option value="Año">Año</option>
+                                    <option value="Precio">Precio</option>
+                                </select>
+                                <div class="position-absolute end-0 top-50 translate-middle-y me-3" style="pointer-events: none;">
+                                    <i class="bi bi-chevron-down text-muted"></i>
+                                </div>
+                            </div>
+                            <span class="input-group-text border-0 bg-transparent ps-1 pe-2">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control border-0 bg-transparent" 
+                                   placeholder="Buscar vehículos..." 
+                                   @bind="TerminoBusqueda"
+                                   @oninput="(e) => FiltrarCarros(e.Value?.ToString())" />
+                            <button class="btn btn-link text-muted rounded-pill-end pe-3" 
+                                    type="button" 
+                                    @onclick="LimpiarFiltros"
+                                    style="min-width: 40px;">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
+        
         @if (carros == null)
         {
             <div class="text-center">
@@ -36,7 +73,7 @@
         else
         {
             <div class="row">
-                @foreach (var carro in carros)
+                @foreach (var carro in carrosFiltrados ?? carros)
                 {
                     <div class="col-lg-4 col-md-6 mb-4">
                         <a href="/detalle-vehiculo/@carro.CarroId" class="text-decoration-none card-link">
@@ -98,6 +135,9 @@
 
 @code {
     private List<Carros> carros;
+    private List<Carros>? carrosFiltrados;
+    private string TerminoBusqueda = string.Empty;
+    private string FiltroSeleccionado = "Marca";
     private bool IsAuthenticated => HttpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
 
     protected override async Task OnInitializedAsync()
@@ -112,5 +152,32 @@
             // Manejar error (podrías mostrar un mensaje al usuario)
             Console.WriteLine($"Error al cargar carros: {ex.Message}");
         }
+    }
+
+    private void FiltrarCarros(string? termino)
+    {
+        if (string.IsNullOrWhiteSpace(termino))
+        {
+            carrosFiltrados = null;
+            return;
+        }
+
+        termino = termino.ToLower();
+
+        carrosFiltrados = FiltroSeleccionado switch
+        {
+            "Marca" => carros.Where(c => c.Marca.ToLower().Contains(termino)).ToList(),
+            "Modelo" => carros.Where(c => c.Modelo.ToLower().Contains(termino)).ToList(),
+            "Color" => carros.Where(c => c.Color.ToLower().Contains(termino)).ToList(),
+            "Año" => carros.Where(c => c.FechaFabricacion.Year.ToString().Contains(termino)).ToList(),
+            "Precio" => carros.Where(c => c.Precio.ToString().Contains(termino)).ToList(),
+            _ => carros.Where(c => c.Marca.ToLower().Contains(termino)).ToList()
+        };
+    }
+
+    private void LimpiarFiltros()
+    {
+        TerminoBusqueda = string.Empty;
+        carrosFiltrados = null;
     }
 }
