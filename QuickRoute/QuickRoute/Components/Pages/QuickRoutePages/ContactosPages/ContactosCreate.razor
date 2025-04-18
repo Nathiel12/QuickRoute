@@ -30,20 +30,20 @@
 				<div class="mb-3">
 					<label class="form-label"><strong>Nombres</strong></label>
 					<InputText class="form-control" @bind-Value="Contacto.Nombre"></InputText>
-					<ValidationMessage For="(() => Contacto.Nombre)" />
+					<ValidationMessage For="(() => Contacto.Nombre)" class="text-danger" />
 				</div>
 
 				@* Telefono *@
 				<div class="mb-3">
 					<label class="form-label"><strong>Telefono</strong></label>
 					<InputText class="form-control" @bind-Value="Contacto.Telefono"></InputText>
-					<ValidationMessage For="(() => Contacto.Telefono)" />
+					<ValidationMessage For="(() => Contacto.Telefono)" class="text-danger" />
 				</div>
 				@* Email *@
 				<div class="mb-3">
 					<label class="form-label"><strong>Email</strong></label>
 					<InputText class="form-control" @bind-Value="Contacto.Email"></InputText>
-					<ValidationMessage For="(() => Contacto.Email)" />
+					<ValidationMessage For="(() => Contacto.Email)" class="text-danger" />
 				</div>
 
 			</div>
