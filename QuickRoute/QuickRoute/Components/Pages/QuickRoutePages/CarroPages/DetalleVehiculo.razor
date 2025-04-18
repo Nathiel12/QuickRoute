@@ -138,22 +138,17 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-    
-        Console.WriteLine($"Usuario autenticado: {user.Identity.IsAuthenticated}");
-        Console.WriteLine($"UserId: {user.FindFirst(ClaimTypes.NameIdentifier)?.Value}");
-    
-        IsAuthenticated = user?.Identity?.IsAuthenticated ?? false;
         IsAdmin = user.IsInRole("Admin");
-        userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId))
-        {
-            Console.WriteLine("ADVERTENCIA: userId es nulo o vacío");
-        }
 
         try
         {
             carro = await CarrosService.Buscar(CarroId);
+        
+            if (carro != null && !carro.Disponibilidad && !IsAdmin)
+            {
+                Navigation.NavigateTo("/");
+                return;
+            }
         
             if (carro == null)
             {
