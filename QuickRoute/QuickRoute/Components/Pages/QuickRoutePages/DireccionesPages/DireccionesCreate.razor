@@ -58,7 +58,8 @@
 				</div>
 				<div class="mb-3">
 					<label class="form-label"><strong>Codigo Postal</strong></label>
-					<InputNumber class="form-control" @bind-Value="Direccion.CodigoPostal"></InputNumber>
+					<InputText class="form-control" @bind-Value="Direccion.CodigoPostal"></InputText>
+					<ValidationMessage For="(() => Direccion.CodigoPostal)" />
 				</div>
 			</div>
 
@@ -81,6 +82,10 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
+		if (string.IsNullOrWhiteSpace(Direccion.Direccion2))
+		{
+			Direccion.Direccion2 = "N/A";
+		}
 
 		var guardo = await direccionService.Guardar(this.Direccion);
 		if (guardo != null)
