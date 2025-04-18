@@ -216,3 +216,98 @@ body {
     background: linear-gradient(to right, #0072ff, #00c6ff) !important;
     border-bottom: none;
 }
+/* Estilos para el dropdown del centro */
+.dropdown-menu-center {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+/* Estilo para el ícono de lista del menú central */
+.bi-list {
+    margin-right: 0.5rem;
+}
+
+/* Ajuste para el dropdown en móviles */
+@media (max-width: 992px) {
+    .dropdown-menu-center {
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+        text-align: center;
+    }
+
+    .dropdown-menu-center .dropdown-item {
+        justify-content: center !important;
+    }
+}
+/* Estilo para el ícono del carrito */
+.navbar-nav .nav-item:has(.bi-cart) .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.25rem !important;
+    margin: 0 0.5rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: white !important;
+    background-color: transparent;
+    height: 100%;
+}
+
+/* Efecto hover */
+.navbar-nav .nav-item:has(.bi-cart) .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-2px);
+    color: white !important;
+}
+
+/* Tamaño aumentado del ícono del carrito */
+.navbar-nav .nav-item:has(.bi-cart) .bi-cart {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin: 0;
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover para el ícono */
+.navbar-nav .nav-item:has(.bi-cart) .nav-link:hover .bi-cart {
+    transform: scale(1.1);
+}
+
+/* Versión móvil */
+@media (max-width: 992px) {
+    .navbar-nav .nav-item:has(.bi-cart) .nav-link {
+        padding: 0.75rem !important;
+        margin: 0.25rem 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .navbar-nav .nav-item:has(.bi-cart) .bi-cart {
+        font-size: 1.75rem;
+    }
+}
+
+/* Espaciado entre elementos del navbar */
+.navbar-nav .nav-item {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+/* Ajuste para móviles */
+@media (max-width: 992px) {
+    .navbar .bi-cart {
+        font-size: 1.25rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .navbar-nav .nav-item {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0.5rem 0;
+    }
+}

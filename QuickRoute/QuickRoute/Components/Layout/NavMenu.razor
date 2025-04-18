@@ -1,7 +1,6 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IJSRuntime JSRuntime
 
 <nav class="navbar navbar-expand-lg navbar-dark custom-gradient">
     <div class="container-fluid">
@@ -15,57 +14,57 @@
         </button>
 
         <div class="collapse navbar-collapse @(navbarCollapsed ? "show" : "")" id="navbarContent">
-            <!-- Elementos del centro -->
-            <ul class="navbar-nav mx-auto">
+            <!-- Elementos a la derecha (Menú, Carrito y Login/Logout) -->
+            <ul class="navbar-nav ms-auto">
                 <AuthorizeView>
                     <Authorized>
+                        <!-- Ícono del Carrito -->
                         <li class="nav-item">
-                            <NavLink class="nav-link" href="@GetCasosLink()">
-                                <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
-                            </NavLink>
-                        </li>
-
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/Contactos/Index">
-                                <span class="bi bi-journal-bookmark-fill" aria-hidden="true"></span> Contactos
-                            </NavLink>
-                        </li>
-
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="@GetSugerenciasLink()">
-                                <span class="bi bi-archive" aria-hidden="true"></span> Sugerencias
-                            </NavLink>
-                        </li>
-
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/Votaciones/Index">
-                                <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Votos
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/carrito">
+                            <NavLink class="nav-link rounded-pill px-3 d-flex align-items-center" href="/carrito">
                                 <span class="bi bi-cart" aria-hidden="true"></span>
                             </NavLink>
                         </li>
-                    </Authorized>
-                </AuthorizeView>
-            </ul>
+                        
+                        <!-- Dropdown del Menú -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" @onclick="ToggleCenterDropdown" @onblur="CloseCenterDropdown" role="button" aria-expanded="@centerDropdownOpen">
+                                <span class="bi bi-list" aria-hidden="true"></span> Menú
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end @(centerDropdownOpen ? "show" : "")">
+                                <li>
+                                    <NavLink class="dropdown-item" href="@GetCasosLink()" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
+                                    </NavLink>
+                                </li>
 
-            <!-- Elementos a la derecha (Login/Logout) -->
-            <ul class="navbar-nav">
-                <AuthorizeView>
-                    <NotAuthorized>
-                        @if (!isLoginPage)
-                        {
-                            <li class="nav-item">
-                                <NavLink class="nav-link" href="Account/Login" ActiveClass="">
-                                    <span class="bi bi-person-circle" aria-hidden="true"></span> Iniciar Sesión
-                                </NavLink>
-                            </li>
-                        }
-                    </NotAuthorized>
+                                @if (isAdmin)
+                                {
+                                    <li>
+                                        <NavLink class="dropdown-item" href="/Contactos/Index" @onclick="CloseCenterDropdown">
+                                            <span class="bi bi-journal-bookmark-fill" aria-hidden="true"></span> Contactos
+                                        </NavLink>
+                                    </li>
+                                }
 
-                    <Authorized>
+                                <li>
+                                    <NavLink class="dropdown-item" href="@GetSugerenciasLink()" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-archive" aria-hidden="true"></span> Sugerencias
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Votaciones/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Votos
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Direccion/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-archive" aria-hidden="true"></span> Direcciones
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Dropdown del Usuario -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" @onclick="ToggleDropdown" @onblur="CloseDropdown" role="button" aria-expanded="@dropdownOpen">
                                 <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
@@ -78,8 +77,8 @@
                                 </li>
                                 <li>
                                     <form action="Account/Logout" method="post">
-                                        <AntiforgeryToken />
-                                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                        <AntiforgeryToken/>
+                                        <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
                                         <button type="submit" class="dropdown-item">
                                             <span class="bi bi-arrow-bar-left" aria-hidden="true"></span> Logout
                                         </button>
@@ -88,6 +87,17 @@
                             </ul>
                         </li>
                     </Authorized>
+
+                    <NotAuthorized>
+                        @if (!isLoginPage)
+                        {
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="Account/Login" ActiveClass="">
+                                    <span class="bi bi-person-circle" aria-hidden="true"></span> Iniciar Sesión
+                                </NavLink>
+                            </li>
+                        }
+                    </NotAuthorized>
                 </AuthorizeView>
             </ul>
         </div>
@@ -99,6 +109,7 @@
     private bool isAdmin = false;
     private bool isLoginPage = false;
     private bool dropdownOpen = false;
+    private bool centerDropdownOpen = false;
     private bool navbarCollapsed = true;
 
     protected override async Task OnInitializedAsync()
@@ -109,14 +120,6 @@
 
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         isAdmin = authState.User.IsInRole("Admin");
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("initDropdowns");
-        }
     }
 
     private string GetSugerenciasLink()
@@ -139,11 +142,23 @@
     private void ToggleDropdown()
     {
         dropdownOpen = !dropdownOpen;
+        centerDropdownOpen = false; // Cerrar el otro dropdown si está abierto
     }
 
     private void CloseDropdown()
     {
         dropdownOpen = false;
+    }
+
+    private void ToggleCenterDropdown()
+    {
+        centerDropdownOpen = !centerDropdownOpen;
+        dropdownOpen = false; // Cerrar el otro dropdown si está abierto
+    }
+
+    private void CloseCenterDropdown()
+    {
+        centerDropdownOpen = false;
     }
 
     private void ToggleNavbar()
