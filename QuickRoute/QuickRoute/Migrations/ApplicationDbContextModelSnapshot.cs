@@ -709,14 +709,14 @@ namespace QuickRoute.Migrations
 
                     b.Property<string>("CodigoPostal")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
 
                     b.Property<string>("Direccion1")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Direccion2")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Id")
@@ -802,6 +802,9 @@ namespace QuickRoute.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DireccionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FechaExpiracion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -818,6 +821,8 @@ namespace QuickRoute.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("PagoId");
+
+                    b.HasIndex("DireccionId");
 
                     b.HasIndex("OrdenId");
 
@@ -1161,11 +1166,19 @@ namespace QuickRoute.Migrations
 
             modelBuilder.Entity("QuickRoute.Data.Models.Pagos", b =>
                 {
+                    b.HasOne("QuickRoute.Data.Models.Direccion", "Direccion")
+                        .WithMany()
+                        .HasForeignKey("DireccionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("QuickRoute.Data.Models.Ordenes", "Ordenes")
                         .WithMany()
                         .HasForeignKey("OrdenId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Direccion");
 
                     b.Navigation("Ordenes");
                 });
