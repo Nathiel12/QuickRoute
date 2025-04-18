@@ -52,7 +52,7 @@ namespace QuickRoute.Services
         {
             await using var context = await DbFactory.CreateDbContextAsync();
             var resultado = context.Carros.AsQueryable();
-            resultado.Where(criterio);
+            resultado = resultado.Where(criterio);
 
             if (soloDisponibles)
             {
