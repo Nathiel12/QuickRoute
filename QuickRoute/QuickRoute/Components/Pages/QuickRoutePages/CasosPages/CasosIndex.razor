@@ -92,10 +92,15 @@
                         <th>CasoId</th>
                     }
                     <th>Fecha</th>
-                    <th>Contacto Aduanero</th>
+                    @if (isAdmin){
+                        <th>Contacto Aduanero</th>
+                    }
+                    <th>Titulo</th>
                     <th>Asunto</th>
-                    <th>Editar</th>
-                    <th>Eliminar</th>
+                    @if (isAdmin){
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -106,15 +111,20 @@
                             <td> @casos.CasoId</td>
                         }
                         <td> @casos.Fecha.ToString("dd/MM/yyyy")</td>
-                        <td> @casos.Contacto.Nombre</td>
+                        @if (isAdmin){
+                            <td> @casos.Contacto.Nombre</td>
+                        }
+                        <td>@casos.Titulo</td>
                         <td> @casos.Asunto</td>
-
-                        <td>
-                            <a href="/Casos/Edit/@casos.CasoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
-                        </td>
-                        <td>
-                            <a href="/Casos/Delete/@casos.CasoId" class="btn btn-outline-danger bi bi-trash"></a>
-                        </td>
+                        @if (isAdmin){
+                            <td>
+                                <a href="/Casos/Edit/@casos.CasoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                            <td>
+                                <a href="/Casos/Delete/@casos.CasoId" class="btn btn-outline-danger bi bi-trash"></a>
+                            </td>
+                        }
+                      
                     </tr>
                 }
             </tbody>
