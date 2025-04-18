@@ -286,3 +286,101 @@ html {
 body {
     overflow-x: hidden;
 }
+
+/* Estilos mejorados para la barra de búsqueda */
+.search-container {
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.search-container:focus-within {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.search-container .input-group-prepend {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-container .vr {
+    height: 1.5rem;
+    opacity: 0.5;
+    background-color: currentColor;
+}
+
+.search-container .form-select {
+    cursor: pointer;
+    background-image: none;
+    padding-right: 2rem;
+    border-right: none !important;
+    min-width: 100px;
+}
+
+.search-container .input-group-text {
+    padding-left: 0.25rem;
+    padding-right: 0.75rem;
+}
+
+.search-container .form-control {
+    padding-left: 0.5rem;
+}
+
+/* Ajustes para el dropdown */
+.search-container .bi-chevron-down {
+    font-size: 0.75rem;
+    pointer-events: none;
+}
+
+/* Efecto hover para el selector */
+.search-container .input-group-prepend:hover .bi-chevron-down {
+    color: var(--bs-primary);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .search-container .form-select {
+        min-width: 80px;
+        font-size: 0.875rem;
+        padding-left: 0.75rem;
+        padding-right: 1.5rem;
+    }
+
+    .search-container .form-control::placeholder {
+        font-size: 0.875rem;
+    }
+
+    .search-container .vr {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+    }
+}
+/* Estilos para el selector con flecha integrada */
+.search-container .form-select {
+    cursor: pointer;
+    background-image: none;
+    padding-right: 2.5rem; /* Más espacio para la flecha */
+    min-width: 100px;
+    background-position: right 0.75rem center; /* Posición del icono nativo (oculto) */
+}
+
+/* La flecha personalizada */
+.search-container .bi-chevron-down {
+    font-size: 0.75rem;
+    transition: color 0.2s ease;
+}
+
+.search-container select:focus ~ .bi-chevron-down {
+    color: var(--bs-primary);
+}
+
+/* Ajuste para móviles */
+@media (max-width: 768px) {
+    .search-container .form-select {
+        min-width: 80px;
+        font-size: 0.875rem;
+        padding-right: 2rem;
+    }
+}
