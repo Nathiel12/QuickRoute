@@ -35,7 +35,9 @@
                 <div class="col-3">
                     <InputSelect class="form-select" @bind-Value="Filtro">
                         <option value="" selected disabled>Elija una opcion</option>
-                        <option value="SugerenciaId">SugerenciaId</option>
+                        @if(isAdmin){
+                            <option value="SugerenciaId">SugerenciaId</option>
+                        }
                         <option value="Fecha">Fecha</option>
                         <option value="Asunto">Asunto</option>
                         <option value="satisfaccion">Satisfaccion</option>
