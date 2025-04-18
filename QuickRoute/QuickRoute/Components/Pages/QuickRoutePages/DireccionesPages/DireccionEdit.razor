@@ -3,6 +3,7 @@
 @inject CasosService casosService
 @attribute [Authorize]
 @inject DireccionesService direccionService
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -81,6 +82,18 @@
 
 	public Direccion Direccion { get; set; } = new Direccion();
 	public string errorMensaje { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync(){
+		var authState = await authStateProvider.GetAuthenticationStateAsync();
+		var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+		Direccion = await direccionService.Buscar(DireccionId);
+
+		if (Direccion == null || (Direccion.Id != userId && !authState.User.IsInRole("Admin")))
+		{
+			navigationManager.NavigateTo("/Account/AccessDenied");
+			return;
+		}
+	}
 
 	public async Task Guardar()
 	{
