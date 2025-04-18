@@ -1,5 +1,4 @@
 @page "/detalle-vehiculo/{CarroId:int}"
-@using System.Security.Claims
 @inject NavigationManager Navigation
 @inject CarrosService CarrosService
 @inject CarritoService CarritoService
@@ -36,15 +35,27 @@
                             <li class="list-group-item"><strong>Año:</strong> @carro.FechaFabricacion.Year</li>
                             <li class="list-group-item"><strong>Color:</strong> @carro.Color</li>
                             <li class="list-group-item"><strong>Disponibilidad:</strong> 
-                                @if (carro.CantidadStock > 0)
+                                @if (!carro.Disponibilidad)
                                 {
-                                    <span class="text-success">En stock (@carro.CantidadStock unidades)</span>
+                                    <span class="text-danger">No disponible</span>
+                                    @if (IsAdmin)
+                                    {
+                                        <span class="text-muted"> (Desactivado - Stock: @carro.CantidadStock)</span>
+                                    }
+                                }
+                                else if (carro.CantidadStock > 0)
+                                {
+                                    <span class="text-success">Disponible (@carro.CantidadStock unidades)</span>
                                 }
                                 else
                                 {
                                     <span class="text-danger">Agotado</span>
+                                    @if (IsAdmin)
+                                    {
+                                        <span class="text-muted"> (Stock: @carro.CantidadStock)</span>
+                                    }
                                 }
-                            </li>
+                            </li>   
                             @if (IsAdmin)
                             {
                                 <li class="list-group-item">
@@ -71,7 +82,7 @@
                         <h4 class="text-primary mb-4">@carro.Precio.ToString("C")</h4>
                         
                         <div class="d-grid gap-2">
-                            @if (carro.CantidadStock > 0)
+                            @if (carro.Disponibilidad && carro.CantidadStock > 0)
                             {
                                 <button class="btn btn-primary btn-lg" @onclick="OnAgregarAlCarritoClick">
                                     <i class="fas fa-cart-plus me-2"></i> Agregar al carrito
@@ -80,7 +91,8 @@
                             else
                             {
                                 <button class="btn btn-secondary btn-lg" disabled>
-                                    <i class="fas fa-exclamation-circle me-2"></i> No disponible
+                                    <i class="fas fa-ban me-2"></i> 
+                                    @(carro.Disponibilidad ? "Agotado" : "No disponible")
                                 </button>
                             }
 
@@ -220,21 +232,9 @@
         Navigation.NavigateTo($"/Account/Login?returnUrl={returnUrl}&mensaje={mensaje}", true);
     }
 
-    private async Task DesactivarCarro(int carroId)
+    private void DesactivarCarro(int carroId)
     {
-        try
-        {
-            var resultado = await CarrosService.DesactivarProducto(carroId);
-
-            if (resultado)
-            {
-                Navigation.NavigateTo("/", forceLoad: true);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al desactivar carro: {ex.Message}");
-        }
+        Navigation.NavigateTo($"/admin/desactivar-carro/{carroId}");
     }
 
     private void VolverAlCatalogo()
