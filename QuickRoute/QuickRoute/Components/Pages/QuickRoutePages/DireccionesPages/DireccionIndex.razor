@@ -78,6 +78,7 @@
             <tbody>
                 @foreach (var direccion in ListaDirecciones)
                 {
+
                     <tr>
                         @if(isAdmin){
                             <td>@direccion.DireccionId</td>
@@ -87,7 +88,7 @@
                         <td>@direccion.CodigoPostal</td>
                         <td>@direccion.Usuario.Email</td>
                         <td>
-                            <a href="/Direccion/Edit/@direccion.DireccionId" class="btn btn-outline-danger bi bi-trash"></a>
+                            <a href="/Direccion/Edit/@direccion.DireccionId" class="btn btn-outline-primary bi bi-pencil-square"></a>
                         </td>
                         <td>
                             <a href="/Direccion/Delete/@direccion.DireccionId" class="btn btn-outline-danger bi bi-trash"></a>
@@ -109,8 +110,8 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await authStateProvider.GetAuthenticationStateAsync();
-        isAdmin = authState.User.IsInRole("Admin");
         usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        isAdmin = authState.User.IsInRole("Admin");
         if (isAdmin)
         {
             ListaDirecciones = await direccionService.Listar(d => d.DireccionId > 0);
