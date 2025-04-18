@@ -1,6 +1,7 @@
 ﻿@page "/Direccion/Delete/{DireccionId:int}"
 @inject DireccionesService direccionService
 @attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -41,7 +42,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         Direccion = await direccionService.Buscar(DireccionId);
+        if (Direccion == null || (Direccion.Id != userId && !authState.User.IsInRole("Admin")))
+        {
+            navigationManager.NavigateTo("/Account/AccessDenied");
+            return;
+        }
         Pregunta = "Esta seguro de querer eliminar esta Direccion?";
     }
 
