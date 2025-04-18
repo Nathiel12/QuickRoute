@@ -45,7 +45,7 @@ namespace QuickRoute.Services
         public async Task<Direccion?> Buscar(int direccionId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            return await contexto.Direcciones.FirstOrDefaultAsync(d => d.DireccionId == direccionId);
+            return await contexto.Direcciones.Include(d => d.Usuario).FirstOrDefaultAsync(d => d.DireccionId == direccionId);
         }
         public async Task<List<Direccion>> Listar(Expression<Func<Direccion, bool>> criterio)
         {
