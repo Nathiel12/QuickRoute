@@ -1,0 +1,134 @@
+@page "/admin/desactivar-carro/{CarroId:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject CarrosService CarrosService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Desactivar Vehículo</PageTitle>
+
+@* Notificaciones *@
+@if (!string.IsNullOrEmpty(ErrorMensaje))
+{
+    <div class="alert alert-danger">@ErrorMensaje</div>
+}
+
+<div class="container py-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-danger text-white text-center">
+            <h3 class="card-title">
+                <i class="fas fa-exclamation-triangle me-2"></i> Desactivar Vehículo
+            </h3>
+        </div>
+        
+        @if (carro != null)
+        {
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img class="img-fluid rounded" src="/img/carros/@(carro.CarroId).jpg"
+                             alt="@carro.Marca @carro.Modelo"
+                             onerror="this.onerror=null;this.src='/img/carros/default.jpg';">
+                    </div>
+                    <div class="col-md-8">
+                        <h4>@carro.Marca @carro.Modelo</h4>
+                        <p class="text-muted">ID: @carro.CarroId</p>
+                        <hr>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Año:</strong> @carro.FechaFabricacion.Year</p>
+                                <p><strong>Color:</strong> @carro.Color</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Precio:</strong> @carro.Precio.ToString("C")</p>
+                                <p><strong>Stock:</strong> @carro.CantidadStock unidades</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning mt-4">
+                            <h5><i class="fas fa-exclamation-circle me-2"></i> Advertencia</h5>
+                            <p>Al desactivar este vehículo:</p>
+                            <ul>
+                                <li>No aparecerá más en el catálogo público</li>
+                                <li>No podrá ser agregado a nuevos carritos de compra</li>
+                                <li>Los usuarios que ya lo tengan en su carrito podrán seguir viéndolo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer text-center">
+                <button class="btn btn-outline-secondary me-3" @onclick="Volver">
+                    <i class="fas fa-arrow-left me-2"></i> Volver atrás
+                </button>
+                <button class="btn btn-danger" @onclick="ConfirmarDesactivacion">
+                    <i class="fas fa-ban me-2"></i> Confirmar Desactivación
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="card-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando información del vehículo...</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CarroId { get; set; }
+    
+    private Carros? carro;
+    private string ErrorMensaje = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            carro = await CarrosService.Buscar(CarroId);
+            
+            if (carro == null)
+            {
+                ErrorMensaje = "No se encontró el vehículo especificado";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMensaje = $"Error al cargar el vehículo: {ex.Message}";
+        }
+    }
+
+    private async Task ConfirmarDesactivacion()
+    {
+        try
+        {
+            if (carro != null)
+            {
+                var resultado = await CarrosService.DesactivarProducto(carro.CarroId);
+                
+                if (resultado)
+                {
+                    NavigationManager.NavigateTo($"/detalle-vehiculo/{carro.CarroId}");
+                }
+                else
+                {
+                    ErrorMensaje = "No se pudo desactivar el vehículo";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMensaje = $"Error al desactivar: {ex.Message}";
+        }
+    }
+
+    private void Volver()
+    {
+        NavigationManager.NavigateTo($"/detalle-vehiculo/{CarroId}");
+    }
+}
