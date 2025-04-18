@@ -384,3 +384,58 @@ body {
         padding-right: 2rem;
     }
 }
+/* Estilos para vehículos agotados (pero activos) */
+.carro-no-disponible {
+    opacity: 0.7;
+    filter: grayscale(70%);
+    position: relative;
+}
+
+.carro-no-disponible::after {
+    content: "AGOTADO";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.carro-no-disponible:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.carro-no-disponible .carro-img-container img {
+    transform: none !important;
+}
+
+.carro-no-disponible .card-title,
+.carro-no-disponible .card-text,
+.carro-no-disponible .text-primary {
+    color: #6c757d !important;
+}
+
+/* Estilos específicos para carros desactivados (solo visible para admin) */
+.carro-desactivado-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(100, 100, 100, 0.5);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Ajustes para la imagen cuando está desactivada */
+.carro-img-container:has(.carro-desactivado-overlay) img {
+    filter: grayscale(100%);
+    opacity: 0.7;
+}
