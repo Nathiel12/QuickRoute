@@ -73,38 +73,51 @@
         else
         {
             <div class="row">
-                @foreach (var carro in carrosFiltrados ?? carros)
-                {
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <a href="/detalle-vehiculo/@carro.CarroId" class="text-decoration-none card-link">
-                            <div class="card h-100 carro-card">
-                                <div class="carro-img-container">
-                                    <img class="card-img-top" src="/img/carros/@(carro.CarroId).jpg"
-                                         alt="@carro.Marca @carro.Modelo"
-                                         onerror="this.onerror=null;this.src='/img/carros/default.jpg';">
-                                </div>
-                                <div class="card-body">
-                                    <h4 class="card-title">@carro.Marca @carro.Modelo</h4>
-                                    <h5>@carro.Color</h5>
-                                    <p class="card-text">Año: @carro.FechaFabricacion.Year</p>
-                                </div>
-                                <div class="card-footer bg-transparent">
-                                    <h5 class="text-primary">@carro.Precio.ToString("C")</h5>
-
-                                    @if (carro.CantidadStock > 0)
-                                    {
-                                        <span class="badge bg-success">Disponible (@carro.CantidadStock)</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">Agotado</span>
-                                    }
-                                </div>
-                            </div>
-                        </a>
+    @foreach (var carro in carrosFiltrados ?? carros)
+    {
+        var noDisponible = carro.Disponibilidad && carro.CantidadStock <= 0;
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <a href="/detalle-vehiculo/@carro.CarroId" class="text-decoration-none card-link">
+                <div class="card h-100 carro-card @(noDisponible ? "carro-no-disponible" : "")">
+                    <div class="carro-img-container position-relative">
+                        @if (!carro.Disponibilidad && IsAdmin)
+                        {
+                            <div class="carro-desactivado-overlay"></div>
+                        }
+                        <img class="card-img-top" src="/img/carros/@(carro.CarroId).jpg"
+                             alt="@carro.Marca @carro.Modelo"
+                             onerror="this.onerror=null;this.src='/img/carros/default.jpg';">
                     </div>
-                }
-            </div>
+                    <div class="card-body">
+                        <h4 class="card-title">@carro.Marca @carro.Modelo</h4>
+                        <h5>@carro.Color</h5>
+                        <p class="card-text">Año: @carro.FechaFabricacion.Year</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <h5 class="text-primary">@carro.Precio.ToString("C")</h5>
+
+                        @if (carro.Disponibilidad)
+                        {
+                            @if (carro.CantidadStock > 0)
+                            {
+                                <span class="badge bg-success">Disponible (@carro.CantidadStock)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Agotado</span>
+                            }
+                        }
+                        else if (IsAdmin)
+                        {
+                            <span class="badge bg-danger">Desactivado (@carro.CantidadStock)</span>
+                        }
+                    </div>
+                </div>
+            </a>
+        </div>
+    }
+</div>
         }
     </div>
 </section>
@@ -139,17 +152,20 @@
     private string TerminoBusqueda = string.Empty;
     private string FiltroSeleccionado = "Marca";
     private bool IsAuthenticated => HttpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+    private bool IsAdmin => HttpContextAccessor.HttpContext?.User?.IsInRole("Admin") ?? false;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Obtener todos los carros disponibles
-            carros = await CarrosService.ListarProductos(c => true);
+            var todosCarros = await CarrosService.ListarProductos(c => true, soloDisponibles: false);
+            
+            carros = IsAdmin 
+                ? todosCarros 
+                : todosCarros.Where(c => c.Disponibilidad).ToList();
         }
         catch (Exception ex)
         {
-            // Manejar error (podrías mostrar un mensaje al usuario)
             Console.WriteLine($"Error al cargar carros: {ex.Message}");
         }
     }
