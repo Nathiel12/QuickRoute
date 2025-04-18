@@ -54,7 +54,7 @@
 
             @* Footer *@
             <div class="card-footer text-center mt-2">
-                <a href="@(isAdmin ? "/Sugerencias/Index" : "/")" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+                <a href="/Sugerencias/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
                 <button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
                 <button type="reset" class="btn btn-outline-primary bi bi-plus" @onclick="Nuevo">Nuevo</button>
             </div>
@@ -80,7 +80,7 @@
         var guardo = await sugerenciasService.Guardar(Sugerencia);
         if (guardo)
         {
-            navigationManager.NavigateTo(isAdmin ? "/Sugerencias/Index" : "/");
+            navigationManager.NavigateTo("/Sugerencias/Index");
         }
         else
         {
