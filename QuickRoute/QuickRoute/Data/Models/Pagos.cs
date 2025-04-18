@@ -9,6 +9,9 @@ namespace QuickRoute.Data.Models
         public int PagoId { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
+        [StringLength(85, ErrorMessage = "El nombre no puede exceder 85 caracteres")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$",
+        ErrorMessage = "Solo letras y espacios (sin números ni símbolos)")]
         public string NombreCliente { get; set; }
 
         [Required(ErrorMessage = "Este campo es requerido")]
