@@ -7,14 +7,18 @@ namespace QuickRoute.Data.Models
     {
         [Key]
         public int DireccionId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Este campo es requerido.")]
         public string Provincia { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Este campo es requerido.")]
+        [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-']+$",
+        ErrorMessage = "Solo se permiten letras, espacios y guiones.")]
         public string Ciudad { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Este campo es requerido.")]
         public string Direccion1 { get; set; }
-        public string Direccion2 { get; set; }
-        [Required]
+        public string? Direccion2 { get; set; }
+        [Required(ErrorMessage = "El código postal es requerido")]
+        [RegularExpression(@"^\d{5}$", ErrorMessage = "Debe tener 5 dígitos numéricos")]
+        [StringLength(5, MinimumLength = 5, ErrorMessage = "Debe tener exactamente 5 dígitos")]
         public string CodigoPostal { get; set; }
         public string Id { get; set; }
         [ForeignKey("Id")]
