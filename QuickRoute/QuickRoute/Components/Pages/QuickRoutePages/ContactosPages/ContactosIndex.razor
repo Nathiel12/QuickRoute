@@ -1,7 +1,7 @@
 ﻿@*Nathiel Taveras*@
 @page "/Contactos/Index"
 @inject ContactosService contactosService
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
