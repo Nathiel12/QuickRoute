@@ -37,22 +37,19 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end @(centerDropdownOpen ? "show" : "")">
                                 <li>
-                                    <NavLink class="dropdown-item" href="@GetCasosLink()" @onclick="CloseCenterDropdown">
+                                    <NavLink class="dropdown-item" href="/Casos/Index" @onclick="CloseCenterDropdown">
                                         <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
                                     </NavLink>
                                 </li>
 
-                                @if (isAdmin)
-                                {
-                                    <li>
+                                 <li>
                                         <NavLink class="dropdown-item" href="/Contactos/Index" @onclick="CloseCenterDropdown">
                                             <span class="bi bi-journal-bookmark-fill" aria-hidden="true"></span> Contactos
                                         </NavLink>
-                                    </li>
-                                }
+                                 </li>
 
                                 <li>
-                                    <NavLink class="dropdown-item" href="@GetSugerenciasLink()" @onclick="CloseCenterDropdown">
+                                    <NavLink class="dropdown-item" href="/Sugerencias/Index" @onclick="CloseCenterDropdown">
                                         <span class="bi bi-archive" aria-hidden="true"></span> Sugerencias
                                     </NavLink>
                                 </li>
@@ -172,15 +169,6 @@
         }
     }
 
-    private string GetSugerenciasLink()
-    {
-        return isAdmin ? "/Sugerencias/Index" : "/Sugerencias/Create";
-    }
-
-    private string GetCasosLink()
-    {
-        return isAdmin ? "/Casos/Index" : "/Casos/Create";
-    }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {

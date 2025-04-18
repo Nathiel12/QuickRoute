@@ -361,3 +361,13 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/QuickRoute/QuickRoute/appsettings.json
+/QuickRoute/QuickRoute/Migrations/ApplicationDbContextModelSnapshot.cs
+*.cs
+/QuickRoute/QuickRoute/Migrations/20250417083341_pagos.cs
+/QuickRoute/QuickRoute/Migrations/20250406184807_MergeConflict.cs
+/QuickRoute/QuickRoute/Migrations/20250406184807_MergeConflict.cs
+/QuickRoute/QuickRoute/Migrations/20250406184807_MergeConflict.cs
+/QuickRoute/QuickRoute/Migrations/20250406184807_MergeConflict.cs
+/QuickRoute/QuickRoute/appsettings.json
+/QuickRoute/QuickRoute/Migrations/ApplicationDbContextModelSnapshot.cs
