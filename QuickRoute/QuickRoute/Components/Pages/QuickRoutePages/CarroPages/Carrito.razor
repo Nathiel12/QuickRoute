@@ -67,15 +67,18 @@
                                                 </div>
                                             </td>
                                             <td class="align-middle text-center">
-                                                @item.Carro.Precio.ToString("C")
+                                                @item.Carro.Precio.ToString("N2")
                                             </td>
                                             <td class="align-middle text-center">
                                                 <div class="input-group" style="max-width: 120px; margin: 0 auto;">
-                                                    <button class="btn btn-outline-secondary" 
-                                                            @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad - 1)"
-                                                            disabled="@(item.Cantidad <= 1)">
-                                                        <i class="fas fa-minus"></i>
-                                                    </button>
+                                                    <div>
+                                                        <button class="btn btn-outline-secondary"
+                                                                @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad - 1)"
+                                                                disabled="@(item.Cantidad <= 1)">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                        <ValidationMessage For="(() => item.Cantidad)"/>
+                                                    </div>
                                                     <input type="number" class="form-control text-center" 
                                                            value="@item.Cantidad"
                                                            @onchange="e => CambioCantidad(e, item.CarritoId)">
@@ -87,7 +90,7 @@
                                                 </div>
                                             </td>
                                             <td class="align-middle text-center">
-                                                @((item.Cantidad * item.Carro.Precio).ToString("C"))
+                                                @((item.Cantidad * item.Carro.Precio).ToString("N2"))
                                             </td>
                                             <td class="align-middle text-center">
                                                 <button class="btn btn-outline-danger" 
@@ -115,18 +118,18 @@
                     <div class="card-body">
                         <dl class="row">
                             <dt class="col-6">Subtotal:</dt>
-                            <dd class="col-6 text-end">@subtotal.ToString("C")</dd>
+                            <dd class="col-6 text-end">@subtotal.ToString("N2")</dd>
                             
                             <dt class="col-6">Impuestos:</dt>
-                            <dd class="col-6 text-end">@impuestos.ToString("C")</dd>
+                            <dd class="col-6 text-end">@impuestos.ToString("N2")</dd>
                             
                             <dt class="col-6">Envío:</dt>
-                            <dd class="col-6 text-end">@envio.ToString("C")</dd>
+                            <dd class="col-6 text-end">@envio.ToString("N2")</dd>
                             
                             <hr class="my-2">
                             
                             <dt class="col-6 fw-bold">Total:</dt>
-                            <dd class="col-6 text-end fw-bold">@total.ToString("C")</dd>
+                            <dd class="col-6 text-end fw-bold">@total.ToString("N2")</dd>
                         </dl>
                         
                         <div class="d-grid gap-2 mt-4">
