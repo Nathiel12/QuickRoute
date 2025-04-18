@@ -71,14 +71,11 @@
                                             </td>
                                             <td class="align-middle text-center">
                                                 <div class="input-group" style="max-width: 120px; margin: 0 auto;">
-                                                    <div>
-                                                        <button class="btn btn-outline-secondary"
-                                                                @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad - 1)"
-                                                                disabled="@(item.Cantidad <= 1)">
-                                                            <i class="fas fa-minus"></i>
-                                                        </button>
-                                                        <ValidationMessage For="(() => item.Cantidad)"/>
-                                                    </div>
+                                                    <button class="btn btn-outline-secondary"
+                                                        @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad - 1)"
+                                                        disabled="@(item.Cantidad <= 1)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
                                                     <input type="number" class="form-control text-center" 
                                                            value="@item.Cantidad"
                                                            @onchange="e => CambioCantidad(e, item.CarritoId)">
@@ -196,7 +193,7 @@
 
     private async Task ActualizarCantidad(int carritoId, int nuevaCantidad)
     {
-        if (nuevaCantidad < 1) return;
+        if (nuevaCantidad < 1) nuevaCantidad = 1;
     
         try
         {
