@@ -23,6 +23,9 @@ namespace QuickRoute.Data.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         [RegularExpression(@"^\d{3}$", ErrorMessage = "Código de seguridad inválido (3 dígitos)")]
         public string CodigoSeguridad { get; set; }
+        public int DireccionId { get; set; }
+        [ForeignKey("DireccionId")]
+        public virtual Direccion Direccion { get; set; }
         public int OrdenId { get; set; }
         [ForeignKey("OrdenId")]
         public virtual Ordenes Ordenes { get; set; }
