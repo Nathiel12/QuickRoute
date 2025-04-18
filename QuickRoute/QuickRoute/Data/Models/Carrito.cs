@@ -8,7 +8,8 @@ namespace QuickRoute.Data.Models
         [Key]
         public int CarritoId { get; set; }
         public string Id { get; set; } 
-        public int CarroId { get; set; } 
+        public int CarroId { get; set; }
+        [Range(1, 10, ErrorMessage = "La cantidad debe de ser entre 1 y 10.")]
         public int Cantidad { get; set; } = 1;
         public DateTime FechaAgregado { get; set; } = DateTime.Now;
         
