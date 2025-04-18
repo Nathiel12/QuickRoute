@@ -44,20 +44,20 @@
 								<option value="@contacto.ContactoId">@contacto.Nombre</option>
 							}
 						</InputSelect>
-						<ValidationMessage For="(() => Caso.ContactoId)" />
+						<ValidationMessage For="(() => Caso.ContactoId)" class="text-danger" />
 					</div>
 				</div>
 
 				<div class="mb-3">
 					<label class="form-label"><strong>Asunto</strong></label>
 					<InputText class="form-control" @bind-Value="Caso.Asunto"></InputText>
-					<ValidationMessage For="(() => Caso.Asunto)" />
+					<ValidationMessage For="(() => Caso.Asunto)" class="text-danger" />
 				</div>
 
 				<div class="mb-3">
 					<label class="form-label"><strong>Descripcion</strong></label>
 					<textarea class="form-control" @bind="Caso.Descripcion" rows="5" placeholder="Describa en detalle..."></textarea>
-					<ValidationMessage For="(() => Caso.Descripcion)" />
+					<ValidationMessage For="(() => Caso.Descripcion)" class="text-danger" />
 				</div>
 
 			</div>
