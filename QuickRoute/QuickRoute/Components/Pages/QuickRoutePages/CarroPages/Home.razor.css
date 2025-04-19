@@ -32,12 +32,6 @@
     background-color: var(--main-bg-color);
 }
 
-/* Mantén el footer con color oscuro */
-footer.footer {
-    background-color: #343a40 !important;
-    margin-top: auto;
-}
-
 /* General Styles */
 .page {
     padding: 0 !important;
@@ -175,40 +169,63 @@ footer.footer {
     pointer-events: none;
 }
 
-/* Footer Styles */
+/* Footer Styles - Versión ajustada */
 footer.footer {
     position: relative;
     width: 100vw;
     left: calc(-50vw + 50%);
     right: calc(-50vw + 50%);
-    background-color: #343a40;
-    color: white;
-    padding: 2rem 0;
+    background-color: transparent !important;
+    color: #343a40;
+    padding: 1rem 0; /* Reducido el padding vertical */
     margin: 0;
+    border-top: 1px solid #343a40;
+    border-bottom: none;
 }
 
 .footer .container-fluid {
-    padding: 0;
-    margin: 0;
-    max-width: 100%;
+    padding: 0 15px;
+    max-width: 1140px;
+    margin: 0 auto;
 }
 
 .footer .row {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
-    margin: 0 auto;
-    max-width: 1140px;
-    padding: 0 15px;
+    justify-content: center;
+    margin: 0 -15px;
 }
 
 .footer .col-lg-4 {
     flex: 0 0 100%;
     max-width: 100%;
-    padding: 0 15px;
-    margin-bottom: 1rem;
+    padding: 0.25rem 15px; /* Reducido el padding vertical */
     text-align: center;
+}
+
+/* Estilos para los botones sociales */
+.btn-outline-light.btn-social {
+    color: #343a40 !important;
+    border-color: #343a40 !important;
+    margin: 0 0.25rem; /* Espaciado reducido entre botones */
+}
+
+.btn-outline-light.btn-social:hover {
+    color: white !important;
+    background-color: #343a40 !important;
+}
+
+/* Estilo para el enlace "Volver arriba" */
+.link-light {
+    color: #343a40 !important;
+    display: inline-block;
+    padding: 0.25rem 0;
+}
+
+.link-light:hover {
+    color: #212529 !important;
+    text-decoration: none;
 }
 
 /* Responsive Styles */
@@ -237,9 +254,9 @@ footer.footer {
 
 @media (min-width: 992px) {
     .footer .col-lg-4 {
-        flex: 0 0 33.333333% !important;
-        max-width: 33.333333% !important;
-        margin-bottom: 0 !important;
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        padding: 0 15px;
     }
 
     .footer .text-lg-start {
@@ -248,6 +265,11 @@ footer.footer {
 
     .footer .text-lg-end {
         text-align: right !important;
+    }
+
+    /* Ajuste fino para alinear verticalmente los elementos */
+    .footer .row {
+        align-items: baseline;
     }
 }
 
@@ -357,6 +379,7 @@ body {
         margin-right: 0.25rem;
     }
 }
+
 /* Estilos para el selector con flecha integrada */
 .search-container .form-select {
     cursor: pointer;
@@ -384,6 +407,7 @@ body {
         padding-right: 2rem;
     }
 }
+
 /* Estilos para vehículos agotados (pero activos) */
 .carro-no-disponible {
     opacity: 0.7;
