@@ -2,7 +2,6 @@
 @page "/Casos/Create"
 @inject CasosService casosService
 @attribute [Authorize]
-@inject ContactosService contactosService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
@@ -27,29 +26,7 @@
 					<label class="form-label"><strong>Fecha</strong></label>
 					<InputDate class="form-control" @bind-Value="Caso.Fecha"></InputDate>
 				</div>
-				@if(isAdmin){
-					<div class="mb-3">
-						<label class="form-label"><strong>Contacto Aduanero</strong></label>
-
-						<div class="input-group">
-							<InputSelect class="form-control form-select" @bind-Value="Caso.ContactoId">
-								<option value=0 selected disabled>Seleccione el Contacto Aduanero</option>
-								@foreach (var contacto in ListaContactos)
-								{
-									<option value="@contacto.ContactoId">@contacto.Nombre</option>
-								}
-							</InputSelect>
-							<ValidationMessage For="(() => Caso.ContactoId)" class="text-danger" />
-						</div>
-					</div>
-				}
-
-				<div class="mb-3">
-					<label class="form-label"><strong>Titulo</strong></label>
-					<InputText class="form-control" @bind-Value="Caso.Titulo"></InputText>
-					<ValidationMessage For="(() => Caso.Titulo)" class="text-danger" />
-				</div>
-
+				
 				<div class="mb-3">
 					<label class="form-label"><strong>Asunto</strong></label>
 					<InputText class="form-control" @bind-Value="Caso.Asunto"></InputText>
@@ -78,7 +55,6 @@
 
 @code {
 	public Casos Caso { get; set; } = new Casos();
-	public List<Contactos> ListaContactos { get; set; } = new List<Contactos>();
 	public string errorMensaje { get; set; } = string.Empty;
 	private string? UsuarioIdActual { get; set; }
 	private bool isAdmin { get; set; } = false;
@@ -89,7 +65,6 @@
 		var user = authState.User;
 		UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 		isAdmin = authState.User.IsInRole("Admin");
-		ListaContactos = await contactosService.Listar(c => c.ContactoId > 0);
 	}
 
 	public async Task Guardar()
