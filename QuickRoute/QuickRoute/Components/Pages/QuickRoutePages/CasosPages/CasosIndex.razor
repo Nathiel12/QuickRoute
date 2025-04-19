@@ -95,7 +95,6 @@
                     @if (isAdmin){
                         <th>Contacto Aduanero</th>
                     }
-                    <th>Titulo</th>
                     <th>Asunto</th>
                     @if (isAdmin){
                         <th>Editar</th>
@@ -112,9 +111,8 @@
                         }
                         <td> @casos.Fecha.ToString("dd/MM/yyyy")</td>
                         @if (isAdmin){
-                            <td> @casos.Contacto.Nombre</td>
+                            <td>@(casos.Contacto?.Nombre ?? "Sin asignar")</td>
                         }
-                        <td>@casos.Titulo</td>
                         <td> @casos.Asunto</td>
                         @if (isAdmin){
                             <td>
