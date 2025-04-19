@@ -57,6 +57,13 @@ namespace QuickRoute.Services
             await using var Contexto = await DbFactory.CreateDbContextAsync();
             return await Contexto.Direcciones.AsNoTracking().Where(d => d.DireccionId == direccionId).ExecuteDeleteAsync() > 0;
         }
+        public async Task<List<Direccion>> ObtenerDireccionesUsuario(string userId)
+        {
+            await using var contexto = await DbFactory.CreateDbContextAsync();
+            return await contexto.Direcciones
+                .Where(d => d.Id == userId)
+                .ToListAsync();
+        }
 
     }
 }
