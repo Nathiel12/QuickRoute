@@ -28,6 +28,7 @@ namespace QuickRoute.Data.Models
         public string CodigoSeguridad { get; set; }
         public int DireccionId { get; set; }
         [ForeignKey("DireccionId")]
+        [Required(ErrorMessage = "Este campo es requerido")]
         public virtual Direccion Direccion { get; set; }
         public int OrdenId { get; set; }
         [ForeignKey("OrdenId")]
