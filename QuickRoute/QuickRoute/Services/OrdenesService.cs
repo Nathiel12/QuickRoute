@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuickRoute.Data;
 using QuickRoute.Data.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace QuickRoute.Services
 {
@@ -88,19 +89,28 @@ namespace QuickRoute.Services
                 .OrderByDescending(o => o.FechaOrden)
                 .ToListAsync();
         }**/
-        public async Task<Ordenes> ObtenerOrdenDetallada(int ordenId, string usuarioId)
+        public async Task<Ordenes?> ObtenerOrdenDetallada(int ordenId, string usuarioId)
         {
             await using var context = await DbFactory.CreateDbContextAsync();
-            return await context.Ordenes
+
+            var resultado = context.Ordenes
                 .Include(o => o.Detalles)
                     .ThenInclude(d => d.Carro)
-                .FirstOrDefaultAsync(o => o.OrdenId == ordenId && o.Id == usuarioId);
+                .Where(o => o.OrdenId == ordenId);
+
+            if (!string.IsNullOrEmpty(usuarioId))
+            {
+                resultado = resultado.Where(o => o.Id == usuarioId);
+            }
+
+            return await resultado.FirstOrDefaultAsync();
         }
-        /**public async Task<Ordenes?> ObtenerOrdenActivaPorUsuario(string userId)
-        {
-            await using var context = await DbFactory.CreateDbContextAsync();
-            return await context.Ordenes
-                .FirstOrDefaultAsync(o => o.Id == userId && !o.Pagada);
-        }**/
     }
+    /**public async Task<Ordenes?> ObtenerOrdenActivaPorUsuario(string userId)
+    {
+        await using var context = await DbFactory.CreateDbContextAsync();
+        return await context.Ordenes
+            .FirstOrDefaultAsync(o => o.Id == userId && !o.Pagada);
+    }**/
 }
+
