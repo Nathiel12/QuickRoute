@@ -85,13 +85,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Direccion</label>
-                            <InputSelect class="form-control" @bind-Value="Pago.Direccion">
-                                <option value="" selected disabled>--- Seleccione una Direccion ---</option>
+                            <InputSelect class="form-control" @bind-Value="Pago.DireccionId">
+                                <option value="0" selected disabled>--- Seleccione una Direccion ---</option>
                                 @foreach(var direccion in ListaDirecciones){
-                                    <option value="@direccion">@direccion.Direccion1 - @direccion.Direccion2</option>
+                                    <option value="@direccion.DireccionId">@direccion.Direccion1 - @direccion.Direccion2</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="@(() => Pago.Direccion)" class="text-danger" />
+                            <ValidationMessage For="@(() => Pago.DireccionId)" class="text-danger" />
                         </div>
 
                         <div class="row">
