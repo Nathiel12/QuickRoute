@@ -61,7 +61,13 @@
                         @* Color *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Color</strong></label>
-                            <InputText class="form-control" @bind-Value="carro.Color" />
+                            <InputSelect class="form-control" @bind-Value="carro.Color">
+                                <option value="" selected disabled>--- Seleccione un Color ---</option>
+                                @foreach (var color in ColoresDisponibles.OrderBy(c => c))
+                                {
+                                    <option value="@color">@color</option>
+                                }
+                            </InputSelect>
                             <ValidationMessage For="@(() => carro.Color)" />
                         </div>
                         
@@ -187,5 +193,23 @@
         "Lamborghini",
         "Mitsubishi",
         "Dodge"
+    };
+    
+    private List<string> ColoresDisponibles = new List<string>
+    {
+        "Azul",
+        "Rojo",
+        "Blanco",
+        "Negro",
+        "Amarillo",
+        "Plateado",
+        "Gris",
+        "Azul Marino",
+        "Verde",
+        "Marrón",
+        "Rojo Carmesí",
+        "Gris Perla",
+        "Azul Oscuro",
+        "Gris Plata"
     };
 }
