@@ -8,6 +8,7 @@
 
 <EditForm Model="carro" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
+    <ValidationSummary />
     
     @* Notificaciones *@
     <div class="alert alert-danger" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</div>
@@ -26,9 +27,9 @@
                         @* ID (solo lectura) *@
                         <div class="mb-3">
                             <label class="form-label"><strong>ID del Vehículo</strong></label>
-                            <InputNumber class="form-control" @bind-Value="carro.CarroId" readonly />
+                            <InputNumber class="form-control" @bind-Value="carro.CarroId" readonly/>
                         </div>
-                        
+
                         @* Marca *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Marca</strong></label>
@@ -39,24 +40,24 @@
                                     <option value="@marca">@marca</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="@(() => carro.Marca)" class="text-danger" />
+                            <ValidationMessage For="@(() => carro.Marca)" class="text-danger d-block"/>
                         </div>
-                        
+
                         @* Modelo *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Modelo</strong></label>
-                            <InputText class="form-control" @bind-Value="carro.Modelo" />
-                            <ValidationMessage For="@(() => carro.Modelo)" />
+                            <InputText class="form-control" @bind-Value="carro.Modelo"/>
+                            <ValidationMessage For="@(() => carro.Modelo)" class="text-danger d-block"/>
                         </div>
-                        
+
                         @* Año de Fabricación *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Año de Fabricación</strong></label>
-                            <InputDate class="form-control" @bind-Value="carro.FechaFabricacion" />
-                            <ValidationMessage For="@(() => carro.FechaFabricacion)" />
+                            <InputDate class="form-control" @bind-Value="carro.FechaFabricacion"/>
+                            <ValidationMessage For="@(() => carro.FechaFabricacion)" class="text-danger d-block"/>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-6">
                         @* Color *@
                         <div class="mb-3">
@@ -68,26 +69,30 @@
                                     <option value="@color">@color</option>
                                 }
                             </InputSelect>
-                            <ValidationMessage For="@(() => carro.Color)" />
+                            <ValidationMessage For="@(() => carro.Color)" class="text-danger d-block"/>
                         </div>
-                        
+
                         @* Precio *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Precio (USD)</strong></label>
-                            <InputNumber class="form-control" @bind-Value="carro.Precio" step="0.01" />
-                            <ValidationMessage For="@(() => carro.Precio)" />
+                            <InputNumber class="form-control" @bind-Value="carro.Precio" step="0.01"/>
+                            <ValidationMessage For="@(() => carro.Precio)" class="text-danger d-block"/>
+                            @if (carro.Precio > 30000000)
+                            {
+                                <div class="text-danger mt-1">El precio no puede exceder los 30 millones</div>
+                            }
                         </div>
-                        
+
                         @* Cantidad en Stock *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Cantidad en Stock</strong></label>
-                            <InputNumber class="form-control" @bind-Value="carro.CantidadStock" />
-                            <ValidationMessage For="@(() => carro.CantidadStock)" />
+                            <InputNumber class="form-control" @bind-Value="carro.CantidadStock"/>
+                            <ValidationMessage For="@(() => carro.CantidadStock)" class="text-danger d-block"/>
                         </div>
-                        
+
                         @* Disponibilidad *@
                         <div class="mb-3 form-check form-switch">
-                            <InputCheckbox class="form-check-input" @bind-Value="carro.Disponibilidad" />
+                            <InputCheckbox class="form-check-input" @bind-Value="carro.Disponibilidad"/>
                             <label class="form-check-label"><strong>Disponible</strong></label>
                         </div>
                     </div>
@@ -109,7 +114,7 @@
                 <a href="/detalle-vehiculo/@CarroId" class="btn btn-outline-secondary me-3">
                     <i class="fas fa-times me-2"></i> Cancelar
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" disabled="@(carro.Precio > 30000000)">
                     <i class="fas fa-save me-2"></i> Guardar Cambios
                 </button>
             </div>
@@ -148,6 +153,13 @@
     private async Task Guardar()
     {
         errorMensaje = string.Empty;
+        
+        // Validación adicional del precio
+        if (carro.Precio > 30000000)
+        {
+            errorMensaje = "El precio no puede exceder los 30 millones";
+            return;
+        }
         
         try
         {
