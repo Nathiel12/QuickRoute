@@ -32,8 +32,14 @@
                         @* Marca *@
                         <div class="mb-3">
                             <label class="form-label"><strong>Marca</strong></label>
-                            <InputText class="form-control" @bind-Value="carro.Marca" />
-                            <ValidationMessage For="@(() => carro.Marca)" />
+                            <InputSelect class="form-control" @bind-Value="carro.Marca">
+                                <option value="" selected disabled>--- Seleccione una Marca ---</option>
+                                @foreach (var marca in MarcasAutos)
+                                {
+                                    <option value="@marca">@marca</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => carro.Marca)" class="text-danger" />
                         </div>
                         
                         @* Modelo *@
@@ -155,4 +161,31 @@
             errorMensaje = $"Error al guardar: {ex.Message}";
         }
     }
+
+    private List<string> MarcasAutos = new List<string>
+    {
+        "Honda",
+        "Toyota",
+        "Audi",
+        "BMW",
+        "Ford",
+        "Chevrolet",
+        "Volkswagen",
+        "Mercedes-Benz",
+        "Nissan",
+        "Hyundai",
+        "Kia",
+        "Subaru",
+        "Mazda",
+        "Jeep",
+        "Tesla",
+        "Lexus",
+        "Porsche",
+        "Land Rover",
+        "Volvo",
+        "Ferrari",
+        "Lamborghini",
+        "Mitsubishi",
+        "Dodge"
+    };
 }
