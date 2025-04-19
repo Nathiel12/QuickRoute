@@ -18,7 +18,7 @@
         <div class="card-header text-center bg-primary text-white">
             <h5 class="card-title">Detalles de la Orden</h5>
         </div>
-        
+
         @if (Orden != null)
         {
             <div class="card-body">
@@ -86,20 +86,24 @@
 
     private Ordenes? Orden { get; set; }
     private string ErrorMensaje { get; set; } = string.Empty;
+    private bool isAdmin { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
 
         var authState = await AuthProvider.GetAuthenticationStateAsync();
-        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var user = authState.User;
+        isAdmin = user.IsInRole("Admin");
 
-        if (string.IsNullOrEmpty(userId))
+        var usuarioId = isAdmin ? string.Empty : user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!isAdmin && string.IsNullOrEmpty(usuarioId))
         {
-            ErrorMensaje = "Usuario no autenticado";
+            ErrorMensaje = "Debes iniciar sesión para ver esta orden";
             return;
         }
 
-        Orden = await ordenService.ObtenerOrdenDetallada(OrdenId, userId);
+        Orden = await ordenService.ObtenerOrdenDetallada(OrdenId, usuarioId ?? string.Empty);
 
         if (Orden == null)
         {
