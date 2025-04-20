@@ -76,7 +76,7 @@
 @code {
 	[Parameter]
 	public int CasoId { get; set; }
-
+	private string userId = string.Empty;
 	public Casos Caso { get; set; } = new Casos();
 	public List<Contactos> ListaContactos { get; set; } = new List<Contactos>();
 	public string errorMensaje { get; set; } = string.Empty;
@@ -91,7 +91,7 @@
 	{
 		errorMensaje = string.Empty;
 
-		var guardo = await casosService.Guardar(this.Caso);
+		var guardo = await casosService.Guardar(this.Caso, userId);
 		if (guardo != null)
 		{
 			navigationManager.NavigateTo("/Casos/Index");
