@@ -26,7 +26,7 @@
 					<label class="form-label"><strong>Fecha</strong></label>
 					<InputDate class="form-control" @bind-Value="Caso.Fecha"></InputDate>
 				</div>
-				
+
 				<div class="mb-3">
 					<label class="form-label"><strong>Asunto</strong></label>
 					<InputText class="form-control" @bind-Value="Caso.Asunto"></InputText>
@@ -59,7 +59,7 @@
 	private string userId = string.Empty;
 	private bool isAdmin { get; set; } = false;
 	private bool IsAuthenticated = false;
-	
+
 	protected override async Task OnInitializedAsync()
 	{
 		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -70,7 +70,7 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
-		Caso.Id = userId
+		Caso.Id = userId;
 		var guardo = await casosService.Guardar(this.Caso, userId);
 		if (guardo != null)
 		{
