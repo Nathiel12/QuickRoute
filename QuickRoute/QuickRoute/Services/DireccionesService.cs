@@ -8,13 +8,12 @@ namespace QuickRoute.Services
 {
     public class DireccionesService(IDbContextFactory<ApplicationDbContext> DbFactory, IHttpContextAccessor httpContextAccessor)
     {
-        public async Task<bool> Guardar(Direccion direccion)
+        public async Task<bool> Guardar(Direccion direccion, string userId)
         {
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!await Existe(direccion.DireccionId))
             {
                 direccion.Id = userId;
-                return await Insertar(direccion);
+                return await Insertar(direccion, userId);
             }
             else
             {
@@ -28,10 +27,9 @@ namespace QuickRoute.Services
             return await contexto.Direcciones.AnyAsync(d => d.DireccionId == direccionId);
         }
 
-        private async Task<bool> Insertar(Direccion direccion)
+        private async Task<bool> Insertar(Direccion direccion, string userId)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             var nuevaDireccion = new Direccion
             {
                 Id = userId,
