@@ -52,9 +52,13 @@
                                 <tbody>
                                     @foreach (var item in itemsCarrito)
                                     {
-                                        <tr>
+                                        <tr class="@(!item.Carro.Disponibilidad ? "table-secondary" : "")">
                                             <td>
                                                 <div class="d-flex align-items-center">
+                                                    @if (!item.Carro.Disponibilidad)
+                                                    {
+                                                        <span class="badge bg-danger me-2">No disponible</span>
+                                                    }
                                                     <img src="/img/carros/@(item.Carro.CarroId).jpg" 
                                                          alt="@item.Carro.Marca @item.Carro.Modelo"
                                                          class="img-thumbnail me-3" 
@@ -73,15 +77,16 @@
                                                 <div class="input-group" style="max-width: 120px; margin: 0 auto;">
                                                     <button class="btn btn-outline-secondary"
                                                         @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad - 1)"
-                                                        disabled="@(item.Cantidad <= 1)">
+                                                        disabled="@(item.Cantidad <= 1 || !item.Carro.Disponibilidad)">
                                                         <i class="fas fa-minus"></i>
                                                     </button>
                                                     <input type="number" class="form-control text-center" 
                                                            value="@item.Cantidad"
-                                                           @onchange="e => CambioCantidad(e, item.CarritoId)">
+                                                           @onchange="e => CambioCantidad(e, item.CarritoId)"
+                                                           disabled="@(!item.Carro.Disponibilidad)">
                                                     <button class="btn btn-outline-secondary" 
                                                             @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad + 1)"
-                                                            disabled="@(item.Cantidad >= item.Carro.CantidadStock)">
+                                                            disabled="@(item.Cantidad >= item.Carro.CantidadStock || !item.Carro.Disponibilidad)">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
                                                 </div>
@@ -130,7 +135,9 @@
                         </dl>
                         
                         <div class="d-grid gap-2 mt-4">
-                            <button class="btn btn-primary btn-lg" @onclick="ProcederAlPago">
+                            <button class="btn btn-primary btn-lg" 
+                                    @onclick="ProcederAlPago"
+                                    disabled="@(HayVehiculosNoDisponibles)">
                                 <i class="fas fa-credit-card me-2"></i>Proceder al Pago
                             </button>
                             <a href="/" class="btn btn-outline-secondary">
@@ -138,7 +145,16 @@
                             </a>
                         </div>
                         
-                        @if (mostrarMensaje)
+                        @if (HayVehiculosNoDisponibles)
+                        {
+                            <div class="alert alert-danger mt-3">
+                                <i class="fas fa-exclamation-circle me-2"></i> 
+                                No puedes proceder al pago mientras tengas vehículos no disponibles en tu carrito.
+                                Por favor elimínalos para continuar.
+                            </div>
+                        }
+                        
+                        @if (mostrarMensaje && !HayVehiculosNoDisponibles)
                         {
                             <div class="alert alert-@(esError ? "danger" : "success") mt-3">
                                 <i class="fas @(esError ? "fa-exclamation-circle" : "fa-check-circle") me-2"></i> 
@@ -162,6 +178,7 @@
     private bool mostrarMensaje = false;
     private string mensaje = string.Empty;
     private bool esError = false;
+    private bool HayVehiculosNoDisponibles => itemsCarrito?.Any(i => !i.Carro.Disponibilidad) ?? false;
 
     // Variable para almacenar el userId obtenido del AuthenticationStateProvider
     private string userId = string.Empty;
@@ -180,7 +197,6 @@
     {
         try
         {
-            // Pasa el userId aquí
             itemsCarrito = await CarritoService.ObtenerCarritoUsuario(userId);
             CalcularTotales();
         }
@@ -197,7 +213,6 @@
     
         try
         {
-            // Pasa el userId aquí
             var resultado = await CarritoService.ActualizarCantidad(carritoId, nuevaCantidad, userId);
             if (resultado)
             {
@@ -220,7 +235,6 @@
     {
         try
         {
-            // Pasa el userId aquí
             var resultado = await CarritoService.EliminarDelCarrito(carritoId, userId);
             if (resultado)
             {
@@ -235,14 +249,22 @@
         }
     }
 
-    private void ProcederAlPago()
+    private async Task ProcederAlPago()
     {
+        if (HayVehiculosNoDisponibles)
+        {
+            return;
+        }
+        
         Navigation.NavigateTo("/CheckOut");
     }
     
     private void CalcularTotales()
     {
-        subtotal = itemsCarrito?.Sum(i => i.Cantidad * (decimal)i.Carro.Precio) ?? 0;
+        // Solo sumar al subtotal los vehículos que están disponibles
+        subtotal = itemsCarrito?
+            .Where(i => i.Carro.Disponibilidad)
+            .Sum(i => i.Cantidad * (decimal)i.Carro.Precio) ?? 0;
         impuestos = subtotal * 0.20m;
         total = subtotal + impuestos + envio;
     }
