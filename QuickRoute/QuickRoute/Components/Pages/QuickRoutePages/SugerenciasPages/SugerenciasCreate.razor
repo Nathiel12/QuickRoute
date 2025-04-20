@@ -74,7 +74,7 @@
         errorMensaje = string.Empty;
         Sugerencia.Id = userId;
 
-        var guardo = await sugerenciasService.Guardar(Sugerencia);
+        var guardo = await sugerenciasService.Guardar(Sugerencia, userId);
         if (guardo)
         {
             navigationManager.NavigateTo("/Sugerencias/Index");
