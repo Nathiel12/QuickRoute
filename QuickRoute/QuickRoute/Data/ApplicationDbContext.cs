@@ -12,8 +12,8 @@ namespace QuickRoute.Data
         public virtual DbSet<Carros> Carros { get; set; }
         public virtual DbSet<Casos> Casos { get; set; }
         public virtual DbSet<Contactos> Contactos { get; set; }
-        public virtual DbSet<Traslados> Traslados { get; set; }
-        public virtual DbSet<TrasladosDetalle> TrasladosDetalles { get; set; }
+        
+        public virtual DbSet<ListaDeseados> ListaDeseados { get; set; }
         public virtual DbSet<Votaciones> Votaciones { get; set; }
         public virtual DbSet<VotacionesDetalles> VotacionesDetalles { get; set; }
         public virtual DbSet<TipoVehiculos> TipoVehiculos { get; set; }
