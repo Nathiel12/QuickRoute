@@ -31,7 +31,17 @@ namespace QuickRoute.Services
         private async Task<bool> Insertar(Direccion direccion)
         {
             await using var contexto = await DbFactory.CreateDbContextAsync();
-            contexto.Direcciones.Add(direccion);
+            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var nuevaDireccion = new Direccion
+            {
+                Id = userId,
+                Direccion1 = direccion.Direccion1,
+                Direccion2 = direccion.Direccion2,
+                Ciudad = direccion.Ciudad,
+                Provincia = direccion.Provincia,
+                CodigoPostal = direccion.CodigoPostal
+            };
+            contexto.Direcciones.Add(nuevaDireccion);
             return await contexto.SaveChangesAsync() > 0;
         }
 
