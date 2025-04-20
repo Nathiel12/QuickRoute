@@ -88,8 +88,9 @@
 		{
 			Direccion.Direccion2 = "N/A";
 		}
+		Direccion.Id = userId;
 
-		var guardo = await direccionService.Guardar(this.Direccion);
+		var guardo = await direccionService.Guardar(this.Direccion, userId);
 		if (guardo != null)
 		{
 			navigationManager.NavigateTo("/Direccion/Index");
