@@ -71,7 +71,7 @@
 	{
 		errorMensaje = string.Empty;
 
-		var guardo = await casosService.Guardar(this.Caso);
+		var guardo = await casosService.Guardar(Caso);
 		if (guardo != null)
 		{
 			navigationManager.NavigateTo("/Casos/Index");
@@ -86,6 +86,6 @@
 
 	public void Nuevo()
 	{
-		this.Caso = new Casos();
+		Caso = new Casos();
 	}
 }
