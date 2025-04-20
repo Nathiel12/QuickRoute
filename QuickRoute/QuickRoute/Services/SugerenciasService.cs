@@ -14,22 +14,29 @@ namespace QuickRoute.Services
 			return await contexto.Sugerencias.AnyAsync(s => s.SugerenciaId == id);
 		}
 
-		public async Task<bool> Guardar(Sugerencias sugerencia)
+		public async Task<bool> Guardar(Sugerencias sugerencia, string userId)
 		{
-            var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!await Existe(sugerencia.SugerenciaId))
 			{
 				sugerencia.Id = userId;
-                return await Insertar(sugerencia);
+                return await Insertar(sugerencia, userId);
             }
 			else
 				return await Modificar(sugerencia);
 		}
 
-		public async Task<bool> Insertar(Sugerencias sugerencia)
+		public async Task<bool> Insertar(Sugerencias sugerencia, string userId)
 		{
 			await using var contexto = await DbFactory.CreateDbContextAsync();
-			contexto.Sugerencias.Add(sugerencia);
+            var nuevaSugerencia = new Sugerencias
+            {
+                Id = userId,
+                Fecha = DateTime.Today,
+                Asunto = sugerencia.Asunto,
+                Descripcion = sugerencia.Descripcion,
+                satisfaccion= sugerencia.satisfaccion,
+            };
+            contexto.Sugerencias.Add(nuevaSugerencia);
 			return await contexto.SaveChangesAsync() > 0;
 		}
 
