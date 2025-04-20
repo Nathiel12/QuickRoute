@@ -57,12 +57,18 @@
             </table>
         </div>
         
-        <div class="card-footer d-flex justify-content-between align-items-center mt-2">
-            <div>
-                <strong>Total de puntos: @Vehiculos.Sum(v => v.PuntuacionTotal).ToString("N2")</strong>
+        <div class="card-footer d-flex justify-content-between align-items-center bg-light py-3">
+            <div class="text-primary">
+                <span class="fw-bold">Total de puntos:</span> 
+                <span class="badge bg-primary rounded-pill ms-2">
+                    @Vehiculos.Sum(v => v.PuntuacionTotal).ToString("N2")
+                </span>
             </div>
-            <div>
-                <strong>Total de votos: @Vehiculos.Sum(v => v.PuntuacionTotal / (v.PuntuacionPromedio > 0 ? v.PuntuacionPromedio : 1))</strong>
+            <div class="text-success">
+                <span class="fw-bold">Total de votantes:</span> 
+                <span class="badge bg-success rounded-pill ms-2">
+                    @totalUsuariosVotantes
+                </span>
             </div>
         </div>
     </div>
@@ -73,6 +79,7 @@
     private bool isAdmin { get; set; } = false;
     private bool usuarioYaVoto = false;
     private string usuarioId;
+    private int totalUsuariosVotantes = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,6 +88,13 @@
         usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         usuarioYaVoto = await votacionesService.UsuarioYaVoto(usuarioId);
         Vehiculos = await votacionesService.ListarConEstadisticas(v => v.TipoVehiculoId > 0);
+
+        // Obtener todas las votaciones y contar usuarios únicos
+        var todasVotaciones = await votacionesService.Listar(v => true);
+        totalUsuariosVotantes = todasVotaciones
+            .Select(v => v.Id)
+            .Distinct()
+            .Count();
     }
 
     private async Task EliminarVotos(int tipoVehiculoId)
