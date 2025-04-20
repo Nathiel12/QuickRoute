@@ -70,8 +70,8 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
-
-		var guardo = await casosService.Guardar(this.Caso);
+		Caso.Id = userId
+		var guardo = await casosService.Guardar(this.Caso, userId);
 		if (guardo != null)
 		{
 			navigationManager.NavigateTo("/Casos/Index");
