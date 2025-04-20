@@ -14,7 +14,7 @@
 
 <div class="container">
     <div class="card shadow-lg">
-        <div class="card-header text-center">
+        <div class="card-header text-center bg-danger text-white">
             <h5 class="card-title">Eliminar Direccion</h5>
         </div>
         @*Datos y botones*@
@@ -50,7 +50,6 @@
             navigationManager.NavigateTo("/Account/AccessDenied");
             return;
         }
-        Pregunta = "Esta seguro de querer eliminar esta Direccion?";
     }
 
     public async Task Eliminar()
