@@ -76,10 +76,11 @@
 
 	public Direccion Direccion { get; set; } = new Direccion();
 	public string errorMensaje { get; set; } = string.Empty;
+	private string userId = string.Empty;
 
 	protected override async Task OnInitializedAsync(){
 		var authState = await authStateProvider.GetAuthenticationStateAsync();
-		var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+		userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 		Direccion = await direccionService.Buscar(DireccionId);
 
 		if (Direccion == null || (Direccion.Id != userId && !authState.User.IsInRole("Admin")))
@@ -93,7 +94,7 @@
 	{
 		errorMensaje = string.Empty;
 
-		var guardo = await direccionService.Guardar(this.Direccion);
+		var guardo = await direccionService.Guardar(this.Direccion, userId);
 		if (guardo != null)
 		{
 			navigationManager.NavigateTo("/Direccion/Index");
