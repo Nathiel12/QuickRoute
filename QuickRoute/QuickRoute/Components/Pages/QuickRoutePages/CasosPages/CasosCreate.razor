@@ -56,14 +56,14 @@
 @code {
 	public Casos Caso { get; set; } = new Casos();
 	public string errorMensaje { get; set; } = string.Empty;
-	private string? UsuarioIdActual { get; set; }
+	private string userId = string.Empty;
 	private bool isAdmin { get; set; } = false;
-
+	private bool IsAuthenticated = false;
+	
 	protected override async Task OnInitializedAsync()
 	{
 		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		var user = authState.User;
-		UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+		userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 		isAdmin = authState.User.IsInRole("Admin");
 	}
 
