@@ -60,16 +60,19 @@
     public Sugerencias Sugerencia { get; set; } = new Sugerencias();
     public string errorMensaje { get; set; } = string.Empty;
     private bool isAdmin { get; set; }
+    private string userId = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authStateProvider.GetAuthenticationStateAsync();
         isAdmin = authState.User.IsInRole("Admin");
+        userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     }
 
     public async Task Guardar()
     {
         errorMensaje = string.Empty;
+        Sugerencia.Id = userId;
 
         var guardo = await sugerenciasService.Guardar(Sugerencia);
         if (guardo)
