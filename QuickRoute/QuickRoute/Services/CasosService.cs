@@ -8,13 +8,12 @@ using System.Security.Claims;
 
 public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHttpContextAccessor httpContextAccessor)
 {
-    public async Task<bool> Guardar(Casos caso)
+    public async Task<bool> Guardar(Casos caso, string userId)
     {
-        var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!await Existe(caso.CasoId))
         {
             caso.Id = userId;
-            return await Insertar(caso);
+            return await Insertar(caso, userId);
         }
         else
         {
@@ -28,10 +27,19 @@ public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHt
         return await Contexto.Casos.AnyAsync(t => t.CasoId == casoId);
     }
 
-    private async Task<bool> Insertar(Casos casos)
+    private async Task<bool> Insertar(Casos casos, string userId)
     {
         await using var Contexto = await DbFactory.CreateDbContextAsync();
-        Contexto.Casos.Add(casos);
+        var nuevoCaso = new Casos
+        {
+            Id = userId,
+            Contacto = casos.Contacto,
+            Fecha = DateTime.Today,
+            Asunto = casos.Asunto,
+            Descripcion = casos.Descripcion,
+            ContactoId = casos.ContactoId
+        };
+        Contexto.Casos.Add(nuevoCaso);
         return await Contexto.SaveChangesAsync() > 0;
     }
 
