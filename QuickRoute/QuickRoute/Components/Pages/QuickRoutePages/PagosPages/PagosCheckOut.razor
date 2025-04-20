@@ -86,7 +86,7 @@
                         <div class="mb-3">
                             <label class="form-label">Direccion</label>
                             <InputSelect class="form-control" @bind-Value="Pago.DireccionId">
-                                <option value="0" selected disabled>--- Seleccione una Direccion ---</option>
+                                <option value="">--- Seleccione una Direccion ---</option>
                                 @foreach(var direccion in ListaDirecciones){
                                     <option value="@direccion.DireccionId">@direccion.Direccion1 - @direccion.Direccion2</option>
                                 }
@@ -131,7 +131,7 @@
 @code {
     private List<Carrito> ItemsCarrito = new();
     private double TotalCarrito = 0;
-    private Pagos Pago = new();
+    private Pagos Pago = new() { DireccionId = null }; 
     private string errorMensaje = string.Empty;
     private bool Procesando = false;
     private string UserId = string.Empty;
@@ -180,7 +180,7 @@
         if (pagoExitoso)
         {
             await carritoService.VaciarCarrito(UserId);
-            navigationManager.NavigateTo("/OrderHistory");
+            navigationManager.NavigateTo($"/Ordenes/View/{ordenId}");
         }
         else
         {
