@@ -25,7 +25,7 @@
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <p><strong>Fecha:</strong> @Orden.FechaOrden.ToString("dd/MM/yyyy")</p>
-                        <p><strong>Email:</strong> @Orden.Usuario?.Email</p>
+                        <p><strong>Email:</strong> @(Orden?.Usuario?.Email ?? UserEmail ?? "No disponible")</p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Estado:</strong> <span class="badge bg-success">Completada</span></p>
@@ -87,6 +87,7 @@
     private Ordenes? Orden { get; set; }
     private string ErrorMensaje { get; set; } = string.Empty;
     private bool isAdmin { get; set; } = false;
+    private string? UserEmail { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -94,6 +95,7 @@
         var authState = await AuthProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         isAdmin = user.IsInRole("Admin");
+        UserEmail = user.FindFirst(ClaimTypes.Email)?.Value;
 
         var usuarioId = isAdmin ? string.Empty : user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
