@@ -1,5 +1,4 @@
-﻿@*Nathiel Taveras*@
-@page "/Votaciones/Index"
+﻿@page "/Votaciones/Index"
 @inject VotacionesService votacionesService
 @attribute [Authorize]
 @inject AuthenticationStateProvider authStateProvider
@@ -11,11 +10,11 @@
 
 <div class="container">
     <div class="card shadow-lg">
-        <div class="card-header space-between">
-            <h5 class="card-title">Registro de Votos</h5>
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <h5 class="card-title mb-0">Registro de Votos</h5>
             @if (!usuarioYaVoto)
             {
-                <a href="/Votaciones/Create" class="btn btn-primary">
+                <a href="/Votaciones/Create" class="btn btn-success border-white border-2">
                     <span class="bi bi-plus-square"></span> Crear
                 </a>
             }
@@ -58,8 +57,13 @@
             </table>
         </div>
         
-        <div class="card-footer mt-2">
-            <label><strong>Total:@Vehiculos.Sum(v => v.PuntuacionTotal)</strong></label>
+        <div class="card-footer d-flex justify-content-between align-items-center mt-2">
+            <div>
+                <strong>Total de puntos: @Vehiculos.Sum(v => v.PuntuacionTotal).ToString("N2")</strong>
+            </div>
+            <div>
+                <strong>Total de votos: @Vehiculos.Sum(v => v.PuntuacionTotal / (v.PuntuacionPromedio > 0 ? v.PuntuacionPromedio : 1))</strong>
+            </div>
         </div>
     </div>
 </div>
