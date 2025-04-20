@@ -8,12 +8,12 @@ using System.Security.Claims;
 
 public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHttpContextAccessor httpContextAccessor)
 {
-    public async Task<bool> Guardar(Casos caso)
+    public async Task<bool> Guardar(Casos caso, string userId)
     {
-        var userId = httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        caso.Id = userId;
+    
         if (!await Existe(caso.CasoId))
         {
-            caso.Id = userId;
             return await Insertar(caso);
         }
         else

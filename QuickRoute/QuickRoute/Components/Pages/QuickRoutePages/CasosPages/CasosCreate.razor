@@ -70,9 +70,10 @@
 	public async Task Guardar()
 	{
 		errorMensaje = string.Empty;
-
-		var guardo = await casosService.Guardar(this.Caso);
-		if (guardo != null)
+    
+		var guardo = await casosService.Guardar(this.Caso, UsuarioIdActual);
+    
+		if (guardo)
 		{
 			navigationManager.NavigateTo("/Casos/Index");
 		}
@@ -80,8 +81,6 @@
 		{
 			errorMensaje = "Error al guardar el Registro";
 		}
-
-
 	}
 
 	public void Nuevo()
