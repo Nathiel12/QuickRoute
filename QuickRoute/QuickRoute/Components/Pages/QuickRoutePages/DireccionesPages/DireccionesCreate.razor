@@ -1,7 +1,8 @@
 ﻿@*Nathiel Taveras*@
 @page "/Direccion/Create"
-@attribute [Authorize]
+@attribute [Authorize(Roles = "User,Admin")]
 @inject DireccionesService direccionService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
@@ -72,6 +73,13 @@
 @code {
 	public Direccion Direccion { get; set; } = new Direccion();
 	public string errorMensaje { get; set; } = string.Empty;
+	private string userId = string.Empty;
+
+	protected override async Task OnInitializedAsync(){
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+		userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+	}
 
 	public async Task Guardar()
 	{
