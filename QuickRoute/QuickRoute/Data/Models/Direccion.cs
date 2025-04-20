@@ -20,6 +20,7 @@ namespace QuickRoute.Data.Models
         [RegularExpression(@"^\d{5}$", ErrorMessage = "Debe tener 5 dígitos numéricos")]
         [StringLength(5, MinimumLength = 5, ErrorMessage = "Debe tener exactamente 5 dígitos")]
         public string CodigoPostal { get; set; }
+        [Required]
         public string Id { get; set; }
         [ForeignKey("Id")]
         public virtual ApplicationUser Usuario { get; set; }
