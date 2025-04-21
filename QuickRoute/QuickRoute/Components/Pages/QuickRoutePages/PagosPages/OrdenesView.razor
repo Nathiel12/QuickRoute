@@ -96,8 +96,7 @@
         var user = authState.User;
         isAdmin = user.IsInRole("Admin");
         UserEmail = user.FindFirst(ClaimTypes.Email)?.Value;
-
-        var usuarioId = isAdmin ? string.Empty : user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (!isAdmin && string.IsNullOrEmpty(usuarioId))
         {
@@ -105,7 +104,7 @@
             return;
         }
 
-        Orden = await ordenService.ObtenerOrdenDetallada(OrdenId, usuarioId ?? string.Empty);
+        Orden = await ordenService.ObtenerOrdenDetallada(OrdenId, isAdmin ? string.Empty : usuarioId ?? string.Empty);
 
         if (Orden == null)
         {

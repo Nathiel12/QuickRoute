@@ -72,12 +72,19 @@ public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHt
             .Include(c => c.Contacto)
             .ToListAsync();
     }
-    private string GetCurrentUserId()
+    public async Task<Casos?> ObtenerCasosDetallado(int casoId, string usuarioId)
     {
-        return httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
-    private bool IsAdmin()
-    {
-        return httpContextAccessor.HttpContext?.User?.IsInRole("Admin") ?? false;
+        await using var context = await DbFactory.CreateDbContextAsync();
+
+        var resultado = context.Casos
+            .Include(c=> c.Contacto)
+            .Where(c => c.CasoId == casoId);
+
+        if (!string.IsNullOrEmpty(usuarioId))
+        {
+            resultado = resultado.Where(o => o.Id == usuarioId);
+        }
+
+        return await resultado.FirstOrDefaultAsync();
     }
 }

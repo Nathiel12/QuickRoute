@@ -77,5 +77,20 @@ namespace QuickRoute.Services
 				.AsNoTracking()
 				.ToListAsync();
 		}
-	}
+
+        public async Task<Sugerencias?> ObtenerSugerenciaDetallada(int sugerenciaId, string usuarioId)
+        {
+            await using var context = await DbFactory.CreateDbContextAsync();
+
+            var resultado = context.Sugerencias
+                .Where(s => s.SugerenciaId == sugerenciaId);
+
+            if (!string.IsNullOrEmpty(usuarioId))
+            {
+                resultado = resultado.Where(o => o.Id == usuarioId);
+            }
+
+            return await resultado.FirstOrDefaultAsync();
+        }
+    }
 }

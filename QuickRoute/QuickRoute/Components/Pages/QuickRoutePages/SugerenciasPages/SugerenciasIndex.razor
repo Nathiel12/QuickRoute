@@ -88,6 +88,7 @@
                     <th>Fecha</th>
                     <th>Asunto</th>
                     <th>Satisfaccion</th>
+                    <th>Ver</th>
                     @if(isAdmin){
                         <th>Eliminar</th>
                     }
@@ -103,6 +104,9 @@
                         <td>@sugerencia.Fecha.ToString("dd/MM/yyyy")</td>
                         <td>@sugerencia.Asunto</td>
                         <td>@sugerencia.satisfaccion</td>
+                        <td>
+                            <a href="/Sugerencias/View/@sugerencia.SugerenciaId" class="btn btn-outline-secondary bi bi-eye"></a>
+                        </td>
                         @if (isAdmin){
                             <td>
                                 <a href="/Sugerencias/Delete/@sugerencia.SugerenciaId" class="btn btn-outline-danger bi bi-trash"></a>

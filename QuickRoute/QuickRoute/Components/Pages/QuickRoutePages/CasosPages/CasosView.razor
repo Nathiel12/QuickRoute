@@ -1,0 +1,95 @@
+﻿@page "/Casos/View/{CasoId:int}"
+@inject CasosService casoService
+@attribute [Authorize]
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+<PageTitle>Detalles de Sugerencia</PageTitle>
+
+@* Notificaciones *@
+@if (!string.IsNullOrEmpty(ErrorMensaje))
+{
+    <div class="alert alert-danger">@ErrorMensaje</div>
+}
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-primary text-white">
+            <h5 class="card-title">Detalles del Caso</h5>
+        </div>
+
+        @if (Caso != null)
+        {
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Fecha:</strong> @Caso.Fecha.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Email:</strong> @(Caso?.Usuario?.Email ?? UserEmail ?? "No disponible")</p>
+                        <p><strong>Contacto:</strong> @(Caso.Contacto?.Nombre ?? "Sin Asignar")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Asunto:</strong> @(Caso.Asunto)</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="mb-3"><strong>Descripción:</strong></h6>
+                    <p class="mb-0 text-muted">@Caso.Descripcion</p>
+                </div>
+
+                <div class="card-footer text-center mt-4">
+                    <a href="/Casos/Index" class="btn btn-outline-primary">
+                        <span class="bi bi-arrow-left"></span> Volver a Casos
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card-body">
+                <p class="text-danger">Sugerencia no encontrada</p>
+                <div class="card-footer text-center mt-2">
+                    <a href="/Casos/Index" class="btn btn-outline-secondary">
+                        <span class="bi bi-arrow-left"></span> Volver
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CasoId { get; set; }
+
+    private Casos? Caso { get; set; }
+    private string ErrorMensaje { get; set; } = string.Empty;
+    private bool isAdmin { get; set; } = false;
+    private string? UserEmail { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAdmin = user.IsInRole("Admin");
+        UserEmail = user.FindFirst(ClaimTypes.Email)?.Value;
+
+        var usuarioId = isAdmin ? string.Empty : user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!isAdmin && string.IsNullOrEmpty(usuarioId))
+        {
+            ErrorMensaje = "Debes iniciar sesión para ver esta sugerencia";
+            return;
+        }
+
+        Caso = await casoService.ObtenerCasosDetallado(CasoId, usuarioId ?? string.Empty);
+
+        if (Caso == null)
+        {
+            ErrorMensaje = "No se encontró la sugerencia o no tienes permiso para verla";
+        }
+
+    }
+}
