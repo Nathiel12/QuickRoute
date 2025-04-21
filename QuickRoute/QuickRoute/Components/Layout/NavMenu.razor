@@ -37,6 +37,23 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end @(centerDropdownOpen ? "show" : "")">
                                 <li>
+                                    <NavLink class="dropdown-item" href="/lista-deseados" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-bag-heart-fill" aria-hidden="true"></span> Lista de deseados
+                                    </NavLink>
+                                </li>
+                               
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Direccion/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-mailbox2-flag" aria-hidden="true"></span> Direcciones
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="/OrderHistory" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-box-seam-fill" aria-hidden="true"></span> Ordenes
+                                    </NavLink>
+                                </li>
+                                
+                                <li>
                                     <NavLink class="dropdown-item" href="/Casos/Index" @onclick="CloseCenterDropdown">
                                         <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
                                     </NavLink>
@@ -59,16 +76,6 @@
                                 <li>
                                     <NavLink class="dropdown-item" href="/Votaciones/Index" @onclick="CloseCenterDropdown">
                                         <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Votos
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink class="dropdown-item" href="/Direccion/Index" @onclick="CloseCenterDropdown">
-                                        <span class="bi bi-mailbox2-flag" aria-hidden="true"></span> Direcciones
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink class="dropdown-item" href="/OrderHistory" @onclick="CloseCenterDropdown">
-                                        <span class="bi bi-box-seam-fill" aria-hidden="true"></span> Ordenes
                                     </NavLink>
                                 </li>
                             </ul>

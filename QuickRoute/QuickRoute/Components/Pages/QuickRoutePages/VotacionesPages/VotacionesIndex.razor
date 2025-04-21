@@ -1,5 +1,4 @@
-﻿@*Nathiel Taveras*@
-@page "/Votaciones/Index"
+﻿@page "/Votaciones/Index"
 @inject VotacionesService votacionesService
 @attribute [Authorize]
 @inject AuthenticationStateProvider authStateProvider
@@ -11,11 +10,11 @@
 
 <div class="container">
     <div class="card shadow-lg">
-        <div class="card-header space-between">
-            <h5 class="card-title">Registro de Votos</h5>
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <h5 class="card-title mb-0">Registro de Votos</h5>
             @if (!usuarioYaVoto)
             {
-                <a href="/Votaciones/Create" class="btn btn-primary">
+                <a href="/Votaciones/Create" class="btn btn-success border-white border-2">
                     <span class="bi bi-plus-square"></span> Crear
                 </a>
             }
@@ -58,8 +57,19 @@
             </table>
         </div>
         
-        <div class="card-footer mt-2">
-            <label><strong>Total:@Vehiculos.Sum(v => v.PuntuacionTotal)</strong></label>
+        <div class="card-footer d-flex justify-content-between align-items-center bg-light py-3">
+            <div class="text-primary">
+                <span class="fw-bold">Total de puntos:</span> 
+                <span class="badge bg-primary rounded-pill ms-2">
+                    @Vehiculos.Sum(v => v.PuntuacionTotal).ToString("N2")
+                </span>
+            </div>
+            <div class="text-success">
+                <span class="fw-bold">Total de votantes:</span> 
+                <span class="badge bg-success rounded-pill ms-2">
+                    @totalUsuariosVotantes
+                </span>
+            </div>
         </div>
     </div>
 </div>
@@ -69,6 +79,7 @@
     private bool isAdmin { get; set; } = false;
     private bool usuarioYaVoto = false;
     private string usuarioId;
+    private int totalUsuariosVotantes = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,6 +88,13 @@
         usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         usuarioYaVoto = await votacionesService.UsuarioYaVoto(usuarioId);
         Vehiculos = await votacionesService.ListarConEstadisticas(v => v.TipoVehiculoId > 0);
+
+        // Obtener todas las votaciones y contar usuarios únicos
+        var todasVotaciones = await votacionesService.Listar(v => true);
+        totalUsuariosVotantes = todasVotaciones
+            .Select(v => v.Id)
+            .Distinct()
+            .Count();
     }
 
     private async Task EliminarVotos(int tipoVehiculoId)

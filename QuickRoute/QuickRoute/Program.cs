@@ -26,6 +26,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<ListaDeseadosService>();
 builder.Services.AddScoped<CarrosService>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<DireccionesService>();

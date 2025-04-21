@@ -18,14 +18,14 @@
 
 <div class="container">
     <div class="card shadow-lg">
-        <div class="card-header text-center">
-            <h5 class="card-title">Eliminar Caso</h5>
+        <div class="card-header bg-danger text-center">
+            <h5 class="card-title text-white">Eliminar Caso</h5>
         </div>
         
         @if (Caso != null)
         {
             <div class="card-body">
-                <p><strong>CasoId:</strong> @Caso.CasoId</p>
+                <p><strong>Caso Id:</strong> @Caso.CasoId</p>
                 <p><strong>Contacto Asignado:</strong> @(Caso.Contacto?.Nombre ?? "N/A")</p>
                 <p><strong>Fecha:</strong> @Caso.Fecha.ToString("dd/MM/yyyy")</p>
                 <p><strong>Asunto:</strong> @Caso.Asunto</p>
