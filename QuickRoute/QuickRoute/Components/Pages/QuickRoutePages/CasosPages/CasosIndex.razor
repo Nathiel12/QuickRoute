@@ -96,6 +96,7 @@
                         <th>Contacto Aduanero</th>
                     }
                     <th>Asunto</th>
+                    <th>Ver</th>
                     @if (isAdmin){
                         <th>Editar</th>
                         <th>Eliminar</th>
@@ -114,6 +115,9 @@
                             <td>@(casos.Contacto?.Nombre ?? "Sin asignar")</td>
                         }
                         <td> @casos.Asunto</td>
+                        <td>
+                            <a href="/Casos/View/@casos.CasoId" class="btn btn-outline-secondary bi bi-eye"></a>
+                        </td>
                         @if (isAdmin){
                             <td>
                                 <a href="/Casos/Edit/@casos.CasoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
