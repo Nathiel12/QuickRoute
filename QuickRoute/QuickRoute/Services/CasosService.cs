@@ -77,6 +77,7 @@ public class CasosService(IDbContextFactory<ApplicationDbContext> DbFactory, IHt
         await using var context = await DbFactory.CreateDbContextAsync();
 
         var resultado = context.Casos
+            .Include(c=> c.Contacto)
             .Where(c => c.CasoId == casoId);
 
         if (!string.IsNullOrEmpty(usuarioId))
