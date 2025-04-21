@@ -1,2 +1,2 @@
-## Link de Azure del proyectyo:
+## Link de Azure del proyecto:
 https://quickrouteinc.azurewebsites.net
