@@ -11,7 +11,7 @@
 <div class="container">
     <div class="card shadow-lg">
         <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
-            <h5 class="card-title mb-0">Registro de Votos</h5>
+            <h5 class="card-title mb-0">Decide que otros tipos de vehículos deberíamos importar</h5>
             @if (!usuarioYaVoto)
             {
                 <a href="/Votaciones/Create" class="btn btn-success border-white border-2">
@@ -21,6 +21,11 @@
         </div>
 
         <div class="card-body">
+            @* Nota para los usuarios *@
+            <div class="alert alert-info mb-4">
+                <strong>¡Tu opinión es importante!</strong> En QuickRoute, valoramos tu opinión y queremos que nos ayudes a mejorar. Por favor, participa en nuestra votación asignándole puntos a cada tipo de vehículo del 1 al 10 dependiendo de cuanto quieras que sea añadido.
+            </div>
+            
             @* Tabla *@
             <table class="table table-hover">
                 <thead class="table  table-striped text-black">

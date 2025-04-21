@@ -31,7 +31,7 @@ namespace QuickRoute.Data
                 new()
                 {
                     TipoVehiculoId = 1,
-                    VehiculoNombre = "Moticicleta",
+                    VehiculoNombre = "Motocicleta",
                     PuntuacionVoto = 0,
                 },
                 new()
