@@ -39,6 +39,9 @@
 
 				<div class="border border-success p-3 mt-3">
                     <h5>Votacion</h5>
+                    <div class="alert alert-warning mb-3">
+                        <strong>Nota:</strong> solo puedes votar una sola vez y no puedes editar después de guardar tu elección.
+                    </div>
                     <hr />
                     <table class="table table-light">
                         <thead class="table table-striped">
@@ -72,59 +75,57 @@
 </EditForm>
 
 @code {
-    @code {
-        private Votaciones Votacion { get; set; } = new Votaciones();
-        private List<TipoVehiculos> Vehiculos { get; set; } = new();
-        private string errorMensaje { get; set; } = string.Empty;
-        private bool usuarioYaVoto = false;
-        private string usuarioId;
+    private Votaciones Votacion { get; set; } = new Votaciones();
+    private List<TipoVehiculos> Vehiculos { get; set; } = new();
+    private string errorMensaje { get; set; } = string.Empty;
+    private bool usuarioYaVoto = false;
+    private string usuarioId;
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        usuarioYaVoto = await votacionesService.UsuarioYaVoto(usuarioId);
+
+        if (!usuarioYaVoto)
         {
-            var authState = await authStateProvider.GetAuthenticationStateAsync();
-            usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Vehiculos = await vehiculosService.Listar(v => v.TipoVehiculoId > 0);
+        }
+     
 
-            usuarioYaVoto = await votacionesService.UsuarioYaVoto(usuarioId);
+        foreach (var v in Vehiculos)
+        {
+            v.PuntuacionVoto = 0; 
+        }
+    }
 
-            if (!usuarioYaVoto)
-            {
-                Vehiculos = await vehiculosService.Listar(v => v.TipoVehiculoId > 0);
-            }
-         
+    public async Task Guardar()
+    {
+        errorMensaje = string.Empty;
+        var vehiculosConVoto = Vehiculos.Where(v => v.PuntuacionVoto > 0).ToList();
 
-            foreach (var v in Vehiculos)
-            {
-                v.PuntuacionVoto = 0; 
-            }
+        if (!vehiculosConVoto.Any())
+        {
+            errorMensaje = "Debe votar al menos un vehículo";
+            return;
         }
 
-        public async Task Guardar()
+        if (vehiculosConVoto.Any(v => v.PuntuacionVoto < 1 || v.PuntuacionVoto > 10))
         {
-            errorMensaje = string.Empty;
-            var vehiculosConVoto = Vehiculos.Where(v => v.PuntuacionVoto > 0).ToList();
+            errorMensaje = "Las puntuaciones deben ser entre 1 y 10";
+            return;
+        }
 
-            if (!vehiculosConVoto.Any())
-            {
-                errorMensaje = "Debe votar al menos un vehículo";
-                return;
-            }
+        var resultado = await votacionesService.GuardarVotacionCompleta(Votacion, vehiculosConVoto, usuarioId);
 
-            if (vehiculosConVoto.Any(v => v.PuntuacionVoto < 1 || v.PuntuacionVoto > 10))
-            {
-                errorMensaje = "Las puntuaciones deben ser entre 1 y 10";
-                return;
-            }
-
-            var resultado = await votacionesService.GuardarVotacionCompleta(Votacion, vehiculosConVoto, usuarioId);
-
-            if (resultado)
-            {
-                navigationManager.NavigateTo("/Votaciones/Index");
-            }
-            else
-            {
-                errorMensaje = "Error al guardar";
-            }
+        if (resultado)
+        {
+            navigationManager.NavigateTo("/Votaciones/Index");
+        }
+        else
+        {
+            errorMensaje = "Error al guardar";
         }
     }
 }
