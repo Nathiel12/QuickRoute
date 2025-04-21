@@ -1,0 +1,183 @@
+@page "/Sugerencias/Index"
+@inject SugerenciasService sugerenciasService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Registro de Sugerencias</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <h5 class="card-title mb-0">Registro de Sugerencias</h5>
+            <a href="/Sugerencias/Create" class="btn btn-success border-white border-2"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+            @*labels*@
+            <div class="row">
+                @*Filtrar por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+
+                @*ValorFiltro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        @if(isAdmin){
+                            <option value="SugerenciaId">SugerenciaId</option>
+                        }
+                        <option value="Fecha">Fecha</option>
+                        <option value="Asunto">Asunto</option>
+                        <option value="satisfaccion">Satisfaccion</option>
+                    </InputSelect>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                @*Restablecer*@
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
+                    @onclick="Restablecer">
+                    </button>
+                </div>
+
+                @*FiltroFecha*@
+                <div class="row mt-3">
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Tabla *@
+        <table class="table table-hover">
+            <thead class="table table-striped text-black">
+                <tr>
+                    @if(isAdmin){
+                        <th>SugerenciaId</th>
+                    }
+                    <th>Fecha</th>
+                    <th>Asunto</th>
+                    <th>Satisfaccion</th>
+                    @if(isAdmin){
+                        <th>Eliminar</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sugerencia in ListaSugerencias)
+                {
+                    <tr>
+                        @if(isAdmin){
+                            <td>@sugerencia.SugerenciaId</td>
+                        }
+                        <td>@sugerencia.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@sugerencia.Asunto</td>
+                        <td>@sugerencia.satisfaccion</td>
+                        @if (isAdmin){
+                            <td>
+                                <a href="/Sugerencias/Delete/@sugerencia.SugerenciaId" class="btn btn-outline-danger bi bi-trash"></a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    public List<Sugerencias> ListaSugerencias { get; set; } = new List<Sugerencias>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
+    private string usuarioId;
+    private bool isAdmin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+        usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (isAdmin)
+        {
+            ListaSugerencias = await sugerenciasService.Listar(s => s.SugerenciaId > 0);
+        }
+        else
+        {
+            ListaSugerencias = await sugerenciasService.Listar(c => c.Id == usuarioId);
+        }
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "SugerenciaId")
+        {
+            if (int.TryParse(ValorFiltro, out var sugerenciaId))
+            {
+                ListaSugerencias = await sugerenciasService
+                    .Listar(s => s.SugerenciaId == sugerenciaId);
+            }
+        }
+        else if (Filtro == "Asunto" && !string.IsNullOrWhiteSpace(ValorFiltro))
+        {
+            ListaSugerencias = await sugerenciasService
+                .Listar(s => s.Asunto.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if (Filtro == "satisfaccion")
+        {
+            if (int.TryParse(ValorFiltro, out var satisfaccion) && satisfaccion >= 1 && satisfaccion <= 5)
+            {
+                ListaSugerencias = await sugerenciasService
+                    .Listar(s => s.satisfaccion == satisfaccion);
+            }
+        }
+        else if (Filtro == "Fecha")
+        {
+            ListaSugerencias = await sugerenciasService
+                .Listar(s => s.Fecha >= Desde && s.Fecha <= Hasta);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task Restablecer()
+    {
+        ListaSugerencias = await sugerenciasService.Listar(s => s.SugerenciaId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+        Desde = null;
+        Hasta = null;
+        StateHasChanged();
+    }
+}

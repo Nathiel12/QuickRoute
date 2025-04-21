@@ -1,0 +1,465 @@
+/* Agrega esto al inicio de tu CSS */
+:root {
+    --main-bg-color: #f8f9fa; /* Color de fondo principal */
+}
+
+/* Actualiza la sección del catálogo */
+#catalogo {
+    background-color: var(--main-bg-color);
+    padding: 2rem 0;
+}
+
+/* Asegura que las tarjetas tengan fondo blanco */
+.carro-card {
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Actualiza el contenedor principal */
+.main-content {
+    background-color: var(--main-bg-color);
+}
+
+.content-container {
+    background-color: var(--main-bg-color);
+    min-height: calc(100vh - 120px); /* Ajusta según tu header/footer */
+}
+
+/* Asegura consistencia en el layout */
+.page {
+    background-color: var(--main-bg-color);
+}
+
+/* General Styles */
+.page {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden;
+}
+
+/* Estilo de gradiente botón */
+.btn-primary {
+    background: linear-gradient(135deg, #0066ff, #00ccff) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, #0055dd, #00bbee) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    color: white !important;
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto de brillo al pasar el mouse */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.btn-primary:hover::after {
+    transform: translateX(100%);
+}
+
+/* Estilo específico para el botón "Únete a nosotros" */
+.btn-lg.px-4.py-3 {
+    font-size: 1.25rem;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+}
+
+/* Header Styles - Versión Compacta */
+.masthead {
+    position: relative;
+    background: url('img/header-bg.jpg') no-repeat center center;
+    background-size: cover;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 4rem 0 6rem 0; /* Reducido en 65% */
+    display: flex;
+    align-items: center;
+    min-height: auto; /* Eliminado 100vh */
+}
+
+.masthead .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.masthead-subheading {
+    font-size: 1.8rem; /* Reducido desde 2rem */
+    font-style: italic;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    margin-bottom: 0.8rem; /* Reducido */
+    color: white !important;
+}
+
+.masthead-heading {
+    font-size: 2.8rem; /* Reducido desde 3.5rem */
+    font-weight: 700;
+    margin: 1rem 0; /* Reducido */
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.2;
+    color: white !important;
+}
+
+/* Catálogo Styles */
+.carro-card {
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.carro-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.carro-img-container {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.carro-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.carro-card:hover .carro-img-container img {
+    transform: scale(1.05);
+}
+
+.card-footer {
+    pointer-events: none;
+}
+
+/* Footer Styles - Versión ajustada */
+footer.footer {
+    position: relative;
+    width: 100vw;
+    left: calc(-50vw + 50%);
+    right: calc(-50vw + 50%);
+    background-color: transparent !important;
+    color: #343a40;
+    padding: 1rem 0; /* Reducido el padding vertical */
+    margin: 0;
+    border-top: 1px solid #343a40;
+    border-bottom: none;
+}
+
+.footer .container-fluid {
+    padding: 0 15px;
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+.footer .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -15px;
+}
+
+.footer .col-lg-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding: 0.25rem 15px; /* Reducido el padding vertical */
+    text-align: center;
+}
+
+/* Estilos para los botones sociales */
+.btn-outline-light.btn-social {
+    color: #343a40 !important;
+    border-color: #343a40 !important;
+    margin: 0 0.25rem; /* Espaciado reducido entre botones */
+}
+
+.btn-outline-light.btn-social:hover {
+    color: white !important;
+    background-color: #343a40 !important;
+}
+
+/* Estilo para el enlace "Volver arriba" */
+.link-light {
+    color: #343a40 !important;
+    display: inline-block;
+    padding: 0.25rem 0;
+}
+
+.link-light:hover {
+    color: #212529 !important;
+    text-decoration: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .masthead {
+        padding: 2.5rem 0 4rem 0 !important;
+    }
+
+    .masthead-subheading {
+        font-size: 1.4rem !important;
+    }
+
+    .masthead-heading {
+        font-size: 2rem !important;
+    }
+
+    .carro-img-container {
+        height: 150px;
+    }
+
+    .btn-lg.px-4.py-3 {
+        font-size: 1rem;
+        padding: 0.5rem 1.25rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .footer .col-lg-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        padding: 0 15px;
+    }
+
+    .footer .text-lg-start {
+        text-align: left !important;
+    }
+
+    .footer .text-lg-end {
+        text-align: right !important;
+    }
+
+    /* Ajuste fino para alinear verticalmente los elementos */
+    .footer .row {
+        align-items: baseline;
+    }
+}
+
+/* Scroll Behavior */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 50px; /* Ajustado para header compacto */
+}
+
+/* Eliminar completamente las flechas y sus estilos */
+.scroll-hint, .arrow-stack, .arrow-down {
+    display: none !important;
+}
+
+/* Estilos para el enlace de la tarjeta */
+.card-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none !important;
+}
+
+.card-link:hover {
+    text-decoration: none !important;
+}
+
+/* Sección de catálogo */
+.section-heading {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+}
+
+/* Asegurar que no haya overflow horizontal */
+body {
+    overflow-x: hidden;
+}
+
+/* Estilos mejorados para la barra de búsqueda */
+.search-container {
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.search-container:focus-within {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.search-container .input-group-prepend {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-container .vr {
+    height: 1.5rem;
+    opacity: 0.5;
+    background-color: currentColor;
+}
+
+.search-container .form-select {
+    cursor: pointer;
+    background-image: none;
+    padding-right: 2rem;
+    border-right: none !important;
+    min-width: 100px;
+}
+
+.search-container .input-group-text {
+    padding-left: 0.25rem;
+    padding-right: 0.75rem;
+}
+
+.search-container .form-control {
+    padding-left: 0.5rem;
+}
+
+/* Ajustes para el dropdown */
+.search-container .bi-chevron-down {
+    font-size: 0.75rem;
+    pointer-events: none;
+}
+
+/* Efecto hover para el selector */
+.search-container .input-group-prepend:hover .bi-chevron-down {
+    color: var(--bs-primary);
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .search-container .form-select {
+        min-width: 80px;
+        font-size: 0.875rem;
+        padding-left: 0.75rem;
+        padding-right: 1.5rem;
+    }
+
+    .search-container .form-control::placeholder {
+        font-size: 0.875rem;
+    }
+
+    .search-container .vr {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+    }
+}
+
+/* Estilos para el selector con flecha integrada */
+.search-container .form-select {
+    cursor: pointer;
+    background-image: none;
+    padding-right: 2.5rem; /* Más espacio para la flecha */
+    min-width: 100px;
+    background-position: right 0.75rem center; /* Posición del icono nativo (oculto) */
+}
+
+/* La flecha personalizada */
+.search-container .bi-chevron-down {
+    font-size: 0.75rem;
+    transition: color 0.2s ease;
+}
+
+.search-container select:focus ~ .bi-chevron-down {
+    color: var(--bs-primary);
+}
+
+/* Ajuste para móviles */
+@media (max-width: 768px) {
+    .search-container .form-select {
+        min-width: 80px;
+        font-size: 0.875rem;
+        padding-right: 2rem;
+    }
+}
+
+/* Estilos para vehículos agotados (pero activos) */
+.carro-no-disponible {
+    opacity: 0.7;
+    filter: grayscale(70%);
+    position: relative;
+}
+
+.carro-no-disponible::after {
+    content: "AGOTADO";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.carro-no-disponible:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.carro-no-disponible .carro-img-container img {
+    transform: none !important;
+}
+
+.carro-no-disponible .card-title,
+.carro-no-disponible .card-text,
+.carro-no-disponible .text-primary {
+    color: #6c757d !important;
+}
+
+/* Estilos específicos para carros desactivados (solo visible para admin) */
+.carro-desactivado-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(100, 100, 100, 0.5);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Ajustes para la imagen cuando está desactivada */
+.carro-img-container:has(.carro-desactivado-overlay) img {
+    filter: grayscale(100%);
+    opacity: 0.7;
+}

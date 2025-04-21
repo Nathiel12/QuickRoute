@@ -1,0 +1,70 @@
+﻿@page "/Direccion/Delete/{DireccionId:int}"
+@inject DireccionesService direccionService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Eliminar</PageTitle>
+
+@*Labels para notificaciones*@
+<label style="color:red;" hidden="@string.IsNullOrEmpty(Confirmacion)">@Confirmacion</label>
+<label style="color:darkred">@Pregunta</label>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-danger text-white">
+            <h5 class="card-title">Eliminar Direccion</h5>
+        </div>
+        @*Datos y botones*@
+        <div class="card-body">
+            <p><strong>Provincia:</strong> @Direccion.Provincia</p>
+            <p><strong>Ciudad:</strong> @Direccion.Ciudad</p>
+            <p><strong>Direccion:</strong> @Direccion.Direccion1 - @Direccion.Direccion2</p>
+            <p><strong>CodigoPostal</strong>@Direccion.CodigoPostal</p>
+
+            <div class="card-footer text-center mt-2">
+                <a href="/Direccion/Index" class="btn btn-outline-secondary"><span class="bi bi-arrow-left"></span>Cancelar</a>
+                <button class="btn btn-outline-danger" @onclick="Eliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int DireccionId { get; set; }
+
+    private Direccion Direccion { get; set; } = new Direccion();
+    private string Confirmacion { get; set; } = string.Empty;
+    private string Pregunta { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Direccion = await direccionService.Buscar(DireccionId);
+        if (Direccion == null || (Direccion.Id != userId && !authState.User.IsInRole("Admin")))
+        {
+            navigationManager.NavigateTo("/Account/AccessDenied");
+            return;
+        }
+    }
+
+    public async Task Eliminar()
+    {
+        bool eliminado = await direccionService.Eliminar(Direccion.DireccionId);
+
+        if (eliminado)
+        {
+            Confirmacion = "Sugerencia eliminada exitosamente.";
+            await Task.Delay(2000);
+            navigationManager.NavigateTo("/Direccion/Index");
+        }
+        else
+        {
+            Confirmacion = "Error al eliminar la direccion.";
+        }
+    }
+}

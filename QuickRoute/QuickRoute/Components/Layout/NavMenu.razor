@@ -1,92 +1,222 @@
 ﻿@implements IDisposable
-
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject CarritoService CarritoService
 
-<div class="top-row ps-3 navbar navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-dark custom-gradient">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">QuickRoute</a>
+        <!-- Logo a la izquierda -->
+        <NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">
+            QuickRoute
+        </NavLink>
+
+        <button class="navbar-toggler" type="button" @onclick="ToggleNavbar" aria-expanded="@navbarCollapsed">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse @(navbarCollapsed ? "show" : "")" id="navbarContent">
+            <!-- Elementos a la derecha (Menú, Carrito y Login/Logout) -->
+            <ul class="navbar-nav ms-auto">
+                <AuthorizeView>
+                    <Authorized>
+                        <!-- Ícono del Carrito -->
+                        <li class="nav-item cart-icon-container">
+                            <NavLink class="nav-link" href="/carrito">
+                                <span class="bi @(tieneItems ? "bi-cart-fill" : "bi-cart")" aria-hidden="true"></span>
+                                @if (tieneItems)
+                                {
+                                    <span class="cart-badge">@totalItems</span>
+                                }
+                            </NavLink>
+                        </li>
+                        
+                        <!-- Dropdown del Menú -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" @onclick="ToggleCenterDropdown" @onblur="CloseCenterDropdown" role="button" aria-expanded="@centerDropdownOpen">
+                                <span class="bi bi-list" aria-hidden="true"></span> Menú
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end @(centerDropdownOpen ? "show" : "")">
+                                <li>
+                                    <NavLink class="dropdown-item" href="/lista-deseados" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-bag-heart-fill" aria-hidden="true"></span> Lista de deseados
+                                    </NavLink>
+                                </li>
+                               
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Direccion/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-mailbox2-flag" aria-hidden="true"></span> Direcciones
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="/OrderHistory" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-box-seam-fill" aria-hidden="true"></span> Ordenes
+                                    </NavLink>
+                                </li>
+                                
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Casos/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-info-square-fill" aria-hidden="true"></span> Casos
+                                    </NavLink>
+                                </li>
+                                @if(isAdmin){
+                                    <li>
+
+                                        <NavLink class="dropdown-item" href="/Contactos/Index" @onclick="CloseCenterDropdown">
+                                            <span class="bi bi-journal-bookmark-fill" aria-hidden="true"></span> Contactos
+                                        </NavLink>
+
+                                    </li>
+                                }
+
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Sugerencias/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-archive" aria-hidden="true"></span> Sugerencias
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink class="dropdown-item" href="/Votaciones/Index" @onclick="CloseCenterDropdown">
+                                        <span class="bi bi-bar-chart-fill" aria-hidden="true"></span> Votos
+                                    </NavLink>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Dropdown del Usuario -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" @onclick="ToggleDropdown" @onblur="CloseDropdown" role="button" aria-expanded="@dropdownOpen">
+                                <span class="bi bi-person-fill" aria-hidden="true"></span> @context.User.Identity?.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end @(dropdownOpen ? "show" : "")">
+                                <li>
+                                    <NavLink class="dropdown-item" href="Account/Manage" @onclick="CloseDropdown">
+                                        <span class="bi bi-person-fill" aria-hidden="true"></span> Mi cuenta
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <form action="Account/Logout" method="post">
+                                        <AntiforgeryToken/>
+                                        <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
+                                        <button type="submit" class="dropdown-item">
+                                            <span class="bi bi-arrow-bar-left" aria-hidden="true"></span> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    </Authorized>
+
+                    <NotAuthorized>
+                        @if (!isLoginPage)
+                        {
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="Account/Login" ActiveClass="">
+                                    <span class="bi bi-person-circle" aria-hidden="true"></span> Iniciar Sesión
+                                </NavLink>
+                            </li>
+                        }
+                    </NotAuthorized>
+                </AuthorizeView>
+            </ul>
+        </div>
     </div>
-</div>
-
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
-
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>
-
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
+</nav>
 
 @code {
     private string? currentUrl;
+    private bool isAdmin = false;
+    private bool isLoginPage = false;
+    private bool dropdownOpen = false;
+    private bool centerDropdownOpen = false;
+    private bool navbarCollapsed = true;
+    private bool tieneItems = false;
+    private int totalItems = 0;
+    private string userId = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        isLoginPage = currentUrl.Contains("Account/Login", StringComparison.OrdinalIgnoreCase);
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+        
+        // Obtener el userId
+        var user = authState.User;
+        userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        
+        // Cargar el carrito si el usuario está autenticado
+        if (!string.IsNullOrEmpty(userId))
+        {
+            await CargarCarrito();
+        }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(userId))
+        {
+            CarritoService.OnCarritoChanged += async () => 
+            {
+                await CargarCarrito();
+                await InvokeAsync(StateHasChanged);
+            };
+        }
+    }
+
+    private async Task CargarCarrito()
+    {
+        try
+        {
+            var items = await CarritoService.ObtenerCarritoUsuario(userId);
+            totalItems = items?.Sum(i => i.Cantidad) ?? 0;
+            tieneItems = totalItems > 0;
+            StateHasChanged();
+        }
+        catch
+        {
+            // Manejar error si es necesario
+        }
+    }
+
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        isLoginPage = currentUrl.Contains("Account/Login", StringComparison.OrdinalIgnoreCase);
         StateHasChanged();
+    }
+
+    private void ToggleDropdown()
+    {
+        dropdownOpen = !dropdownOpen;
+        centerDropdownOpen = false; // Cerrar el otro dropdown si está abierto
+    }
+
+    private void CloseDropdown()
+    {
+        dropdownOpen = false;
+    }
+
+    private void ToggleCenterDropdown()
+    {
+        centerDropdownOpen = !centerDropdownOpen;
+        dropdownOpen = false; // Cerrar el otro dropdown si está abierto
+    }
+
+    private void CloseCenterDropdown()
+    {
+        centerDropdownOpen = false;
+    }
+
+    private void ToggleNavbar()
+    {
+        navbarCollapsed = !navbarCollapsed;
     }
 
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+        CarritoService.OnCarritoChanged -= async () => await CargarCarrito();
     }
 }
-

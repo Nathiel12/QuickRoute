@@ -1,0 +1,116 @@
+﻿@page "/Ordenes/View/{OrdenId:int}"
+@inject OrdenesService ordenService
+@attribute [Authorize]
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthProvider
+@rendermode InteractiveServer
+
+<PageTitle>Detalles de Orden</PageTitle>
+
+@* Notificaciones *@
+@if (!string.IsNullOrEmpty(ErrorMensaje))
+{
+    <div class="alert alert-danger">@ErrorMensaje</div>
+}
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-primary text-white">
+            <h5 class="card-title">Detalles de la Orden</h5>
+        </div>
+
+        @if (Orden != null)
+        {
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <p><strong>Fecha:</strong> @Orden.FechaOrden.ToString("dd/MM/yyyy")</p>
+                        <p><strong>Email:</strong> @(Orden?.Usuario?.Email ?? UserEmail ?? "No disponible")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Estado:</strong> <span class="badge bg-success">Completada</span></p>
+                        <p><strong>Subtotal:</strong> @(Orden.Detalles.Sum(d => d.PrecioUnitario * d.Cantidad).ToString("C"))</p>
+                        <p><strong>Total:</strong> @((Orden.Detalles.Sum(d => d.PrecioUnitario * d.Cantidad) * 1.20 + 1500).ToString("C"))</p>
+                    </div>
+                </div>
+
+                <h6 class="mb-3">Productos:</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Orden.Detalles)
+                            {
+                                <tr>
+                                    <td>@item.Carro?.Marca @item.Carro?.Modelo</td>
+                                    <td>@item.Cantidad</td>
+                                    <td>@item.PrecioUnitario.ToString("N2")</td>
+                                    <td>@((item.PrecioUnitario * item.Cantidad).ToString("N2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer text-center mt-4">
+                    <a href="/OrderHistory" class="btn btn-outline-primary">
+                        <span class="bi bi-arrow-left"></span> Volver a Mis Órdenes
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card-body">
+                <p class="text-danger">Orden no encontrada</p>
+                <div class="card-footer text-center mt-2">
+                    <a href="/OrderHistory" class="btn btn-outline-secondary">
+                        <span class="bi bi-arrow-left"></span> Volver
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int OrdenId { get; set; }
+
+    private Ordenes? Orden { get; set; }
+    private string ErrorMensaje { get; set; } = string.Empty;
+    private bool isAdmin { get; set; } = false;
+    private string? UserEmail { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAdmin = user.IsInRole("Admin");
+        UserEmail = user.FindFirst(ClaimTypes.Email)?.Value;
+
+        var usuarioId = isAdmin ? string.Empty : user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!isAdmin && string.IsNullOrEmpty(usuarioId))
+        {
+            ErrorMensaje = "Debes iniciar sesión para ver esta orden";
+            return;
+        }
+
+        Orden = await ordenService.ObtenerOrdenDetallada(OrdenId, usuarioId ?? string.Empty);
+
+        if (Orden == null)
+        {
+            ErrorMensaje = "No se encontró la orden o no tienes permiso para verla";
+        }
+        
+    }
+}

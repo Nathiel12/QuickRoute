@@ -1,0 +1,144 @@
+﻿@* Nathiel Taveras *@
+@page "/OrderHistory"
+@inject OrdenesService ordenesService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Historial de Órdenes</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header space-between text-center bg-primary text-white">
+            <h5 class="card-title">Tus Órdenes</h5>
+        </div>
+
+        <div class="card-body">
+            @* Filtros *@
+            <div class="row">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Búsqueda</strong></label>
+                </div>
+            </div>
+
+            <div class="row align-items-center">
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opción</option>
+                        <option value="OrdenId">Número de Orden</option>
+                        <option value="FechaOrden">Fecha de la Orden</option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
+                            @onclick="Restablecer">
+                    </button>
+                </div>
+            </div>
+
+            @* Filtro por fecha *@
+            <div class="row mt-3">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Desde</strong></label>
+                    <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                </div>
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Hasta</strong></label>
+                    <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                </div>
+            </div>
+        </div>
+
+        @* Tabla de órdenes *@
+        <table class="table table-hover">
+            <thead class="table table-striped text-black">
+                <tr>
+                    <th>N° Orden</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Ver</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var orden in ListaOrdenes)
+                {
+                    <tr>
+                        <td>@orden.OrdenId</td>
+                        <td>@orden.FechaOrden.ToString("dd/MM/yyyy")</td>
+                        <td>@((orden.Detalles.Sum(d => d.PrecioUnitario * d.Cantidad) * 1.20 + 2500).ToString("N2"))</td>
+                        <td>
+                            <a href="/Ordenes/View/@orden.OrdenId" class="btn btn-outline-secondary bi bi-eye"></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+
+    public List<Ordenes> ListaOrdenes { get; set; } = new List<Ordenes>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    private string usuarioId;
+    private bool isAdmin { get; set; } = false;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        isAdmin = authState.User.IsInRole("Admin");
+        usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (isAdmin)
+        {
+            ListaOrdenes = await ordenesService.Listar(o=> o.OrdenId > 0);
+        }
+        else
+        {
+            ListaOrdenes = await ordenesService.Listar(c => c.Id == usuarioId);
+        }
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "OrdenId")
+        {
+            if (int.TryParse(ValorFiltro, out var ordenId))
+            {
+                ListaOrdenes = await ordenesService
+                    .Listar(c => c.OrdenId == ordenId);
+            }
+
+        }
+        else if (Filtro == "FechaRegistro")
+        {
+            ListaOrdenes = await ordenesService
+                .Listar(o => o.FechaOrden >= Desde && o.FechaOrden <= Hasta);
+        }
+
+        StateHasChanged();
+
+    }
+    private async Task Restablecer()
+    {
+        ListaOrdenes = await ordenesService.Listar(o => o.OrdenId > 0);
+        Filtro = string.Empty;
+        Hasta = null;
+        Desde = null;
+        ValorFiltro = string.Empty;
+    }
+}

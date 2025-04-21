@@ -1,0 +1,290 @@
+@page "/carrito"
+@using QuickRoute.Data.Models
+@using System.Security.Claims
+@inject CarritoService CarritoService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "User,Admin")]
+@rendermode InteractiveServer
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>Tu Carrito de Compras
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (itemsCarrito == null)
+                    {
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                    }
+                    else if (!itemsCarrito.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-cart-arrow-down fa-4x text-muted mb-3"></i>
+                            <h4>Tu carrito está vacío</h4>
+                            <p class="text-muted">Agrega vehículos desde nuestro catálogo</p>
+                            <a href="/" class="btn btn-primary mt-3">
+                                <i class="fas fa-car me-2"></i>Explorar Catálogo
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Vehículo</th>
+                                        <th class="text-center">Precio Unitario</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-center">Subtotal</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in itemsCarrito)
+                                    {
+                                        <tr class="@(!item.Carro.Disponibilidad ? "table-secondary" : "")">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if (!item.Carro.Disponibilidad)
+                                                    {
+                                                        <span class="badge bg-danger me-2">No disponible</span>
+                                                    }
+                                                    <img src="/img/carros/@(item.Carro.CarroId).jpg" 
+                                                         alt="@item.Carro.Marca @item.Carro.Modelo"
+                                                         class="img-thumbnail me-3" 
+                                                         style="width: 100px; height: auto;"
+                                                         onerror="this.onerror=null;this.src='/img/carros/default.jpg';">
+                                                    <div>
+                                                        <h5 class="mb-1">@item.Carro.Marca @item.Carro.Modelo</h5>
+                                                        <small class="text-muted">@item.Carro.Color, @item.Carro.FechaFabricacion.Year</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @item.Carro.Precio.ToString("N2")
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <div class="input-group" style="max-width: 120px; margin: 0 auto;">
+                                                    <button class="btn btn-outline-secondary"
+                                                        @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad - 1)"
+                                                        disabled="@(item.Cantidad <= 1 || !item.Carro.Disponibilidad)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <input type="number" class="form-control text-center" 
+                                                           value="@item.Cantidad"
+                                                           @onchange="e => CambioCantidad(e, item.CarritoId)"
+                                                           disabled="@(!item.Carro.Disponibilidad)">
+                                                    <button class="btn btn-outline-secondary" 
+                                                            @onclick="async () => await ActualizarCantidad(item.CarritoId, item.Cantidad + 1)"
+                                                            disabled="@(item.Cantidad >= item.Carro.CantidadStock || !item.Carro.Disponibilidad)">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                @((item.Cantidad * item.Carro.Precio).ToString("N2"))
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <button class="btn btn-outline-danger" 
+                                                        @onclick="async () => await EliminarDelCarrito(item.CarritoId)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+        @if (itemsCarrito != null && itemsCarrito.Any())
+        {
+            <div class="col-lg-4">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header bg-light">
+                        <h4 class="mb-0">Resumen de Compra</h4>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-6">Subtotal:</dt>
+                            <dd class="col-6 text-end">@subtotal.ToString("N2")</dd>
+                            
+                            <dt class="col-6">Impuestos:</dt>
+                            <dd class="col-6 text-end">@impuestos.ToString("N2")</dd>
+                            
+                            <dt class="col-6">Envío:</dt>
+                            <dd class="col-6 text-end">@envio.ToString("N2")</dd>
+                            
+                            <hr class="my-2">
+                            
+                            <dt class="col-6 fw-bold">Total:</dt>
+                            <dd class="col-6 text-end fw-bold">@total.ToString("N2")</dd>
+                        </dl>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-primary btn-lg" 
+                                    @onclick="ProcederAlPago"
+                                    disabled="@(HayVehiculosNoDisponibles)">
+                                <i class="fas fa-credit-card me-2"></i>Proceder al Pago
+                            </button>
+                            <a href="/" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Seguir Comprando
+                            </a>
+                        </div>
+                        
+                        @if (HayVehiculosNoDisponibles)
+                        {
+                            <div class="alert alert-danger mt-3">
+                                <i class="fas fa-exclamation-circle me-2"></i> 
+                                No puedes proceder al pago mientras tengas vehículos no disponibles en tu carrito.
+                                Por favor elimínalos para continuar.
+                            </div>
+                        }
+                        
+                        @if (mostrarMensaje && !HayVehiculosNoDisponibles)
+                        {
+                            <div class="alert alert-@(esError ? "danger" : "success") mt-3">
+                                <i class="fas @(esError ? "fa-exclamation-circle" : "fa-check-circle") me-2"></i> 
+                                @mensaje
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Data.Models.Carrito> itemsCarrito;
+    private decimal subtotal = 0;
+    private decimal impuestos = 0;
+    private decimal envio = 2500; 
+    private decimal total = 0;
+    
+    private bool mostrarMensaje = false;
+    private string mensaje = string.Empty;
+    private bool esError = false;
+    private bool HayVehiculosNoDisponibles => itemsCarrito?.Any(i => !i.Carro.Disponibilidad) ?? false;
+
+    // Variable para almacenar el userId obtenido del AuthenticationStateProvider
+    private string userId = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Obtener el userId desde el AuthenticationStateProvider
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        await CargarCarrito();
+    }
+    
+    private async Task CargarCarrito()
+    {
+        try
+        {
+            itemsCarrito = await CarritoService.ObtenerCarritoUsuario(userId);
+            CalcularTotales();
+        }
+        catch (Exception ex)
+        {
+            MostrarMensaje("Error al cargar el carrito", true);
+            Console.WriteLine($"Error al cargar carrito: {ex.Message}");
+        }
+    }
+
+    private async Task ActualizarCantidad(int carritoId, int nuevaCantidad)
+    {
+        if (nuevaCantidad < 1) nuevaCantidad = 1;
+    
+        try
+        {
+            var resultado = await CarritoService.ActualizarCantidad(carritoId, nuevaCantidad, userId);
+            if (resultado)
+            {
+                await CargarCarrito();
+                MostrarMensaje("Cantidad actualizada correctamente");
+            }
+            else
+            {
+                MostrarMensaje("No se pudo actualizar la cantidad", true);
+            }
+        }
+        catch (Exception ex)
+        {
+            MostrarMensaje("Error al actualizar la cantidad", true);
+            Console.WriteLine($"Error al actualizar cantidad: {ex.Message}");
+        }
+    }
+
+    private async Task EliminarDelCarrito(int carritoId)
+    {
+        try
+        {
+            var resultado = await CarritoService.EliminarDelCarrito(carritoId, userId);
+            if (resultado)
+            {
+                await CargarCarrito();
+                MostrarMensaje("Vehículo eliminado del carrito");
+            }
+        }
+        catch (Exception ex)
+        {
+            MostrarMensaje("Error al eliminar del carrito", true);
+            Console.WriteLine($"Error al eliminar del carrito: {ex.Message}");
+        }
+    }
+
+    private async Task ProcederAlPago()
+    {
+        if (HayVehiculosNoDisponibles)
+        {
+            return;
+        }
+        
+        Navigation.NavigateTo("/CheckOut");
+    }
+    
+    private void CalcularTotales()
+    {
+        // Solo sumar al subtotal los vehículos que están disponibles
+        subtotal = itemsCarrito?
+            .Where(i => i.Carro.Disponibilidad)
+            .Sum(i => i.Cantidad * (decimal)i.Carro.Precio) ?? 0;
+        impuestos = subtotal * 0.20m;
+        total = subtotal + impuestos + envio;
+    }
+    
+    private async Task CambioCantidad(ChangeEventArgs e, int carritoId)
+    {
+        var value = e.Value?.ToString();
+        var cantidad = string.IsNullOrEmpty(value) ? 1 : int.Parse(value);
+        await ActualizarCantidad(carritoId, cantidad);
+    }
+    
+    private void MostrarMensaje(string msg, bool error = false)
+    {
+        mensaje = msg;
+        esError = error;
+        mostrarMensaje = true;
+        
+        Task.Delay(3000).ContinueWith(t => {
+            mostrarMensaje = false;
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}

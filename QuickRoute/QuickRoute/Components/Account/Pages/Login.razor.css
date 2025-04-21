@@ -1,0 +1,159 @@
+/* Reset y ajustes base */
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+/* Se establece el fondo general para el body (para navegadores que no gestionen .bg) */
+body {
+    background: linear-gradient(to right, #0072ff, #00c6ff);
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fondo con patrones y gradiente de fondo deseado en la capa inferior */
+.bg {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: radial-gradient(circle at 30% 86%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 8%, transparent 8%, transparent 92%), radial-gradient(circle at 55% 100%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 8%, transparent 8%, transparent 92%), radial-gradient(circle at 40% 75%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 6%, transparent 6%, transparent 94%), radial-gradient(circle at 7% 99%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 6%, transparent 6%, transparent 94%), radial-gradient(circle at 69% 76%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 6%, transparent 6%, transparent 94%), radial-gradient(circle at 2% 35%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 6%, transparent 6%, transparent 94%), radial-gradient(circle at 14% 48%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 6%, transparent 6%, transparent 94%), radial-gradient(circle at 28% 87%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 4%, transparent 4%, transparent 96%), radial-gradient(circle at 65% 14%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 4%, transparent 4%, transparent 96%), radial-gradient(circle at 51% 36%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 4%, transparent 4%, transparent 96%), radial-gradient(circle at 6% 93%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 4%, transparent 4%, transparent 96%),
+        /* Capa base: gradiente deseado */
+    linear-gradient(to right, #0072ff, #00c6ff);
+}
+
+/* Estilo del formulario (cuadro de login) */
+.form-signin {
+    width: 100%;
+    max-width: 400px; /* Se aumenta el ancho */
+    margin: auto;
+    padding: 30px; /* Mayor padding interno para dar "respiro" a los campos */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* T�tulo del formulario */
+.form-signin h1 {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2);
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    border-bottom: none;
+}
+
+/* Espaciado adicional entre cada campo del formulario */
+.form-floating {
+    margin-bottom: 15px;
+}
+
+/* Espaciado interno en el contenido del formulario */
+.form-signin form {
+    padding: 15px;
+}
+
+/* Botones */
+.form-signin .btn {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    margin-top: 10px;
+    padding: 10px 0;
+}
+
+.form-signin .btn:hover,
+.form-signin .btn:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+    color: #fff;
+}
+
+/* Inputs */
+.form-signin .form-control {
+    background: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.form-signin .form-control:focus {
+    border-color: #ced4da;
+    box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Checkbox personalizado */
+.form-signin .form-check {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 15px 0;
+}
+
+.form-signin .form-check-label {
+    font-size: 0.9em;
+}
+
+.form-signin .form-check-input {
+    margin-right: 0.5em;
+}
+
+.form-signin .form-check-input:checked {
+    background-color: #9ce060;
+    border-color: #81c63f;
+}
+
+/* Enlaces */
+.form-signin a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+}
+
+.form-signin a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Mensajes de error */
+.text-danger {
+    color: #ff6b6b !important;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+.validation-summary-errors {
+    color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    padding: 10px;
+    border-radius: 3px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+}
+
+/* Copyright */
+.copyright {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 1.2em;
+    margin-top: 20px;
+    padding-bottom: 15px;
+}

@@ -1,0 +1,130 @@
+﻿@page "/Votaciones/Create"
+@inject VotacionesService votacionesService
+@inject TipoVehiculosService vehiculosService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Create</PageTitle>
+<EditForm Model="Votacion" OnValidSubmit="Guardar">
+	<DataAnnotationsValidator />
+
+	@* Label para notificaciones *@
+	<label style="color:red;" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</label>
+
+    @if (usuarioYaVoto)
+    {
+        <div class="alert alert-danger text-center mt-5">
+            <h4>Acceso restringido</h4>
+            <p>Ya has realizado tu votación.</p>
+            <a href="/Votaciones/Index" class="btn btn-primary">
+                Ver resultados
+            </a>
+        </div>
+    }
+
+	<div class="container">
+		<div class="card shadow-lg">
+			<div class="card-header text-center bg-primary">
+				<h5 class="card-title text-white">Ayudenos a mejorar!</h5>
+			</div>
+
+			<div class="card-body">
+				<div class="mb-3">
+					<label class="form-label"><strong>Fecha de Registro</strong></label>
+					<InputDate class="form-control" @bind-Value="Votacion.FechaEncuesta" readonly></InputDate>
+				</div>
+
+				<div class="border border-success p-3 mt-3">
+                    <h5>Votacion</h5>
+                    <hr />
+                    <table class="table table-light">
+                        <thead class="table table-striped">
+                            <tr class="Text-center">
+                                <th>Vehiculo</th>
+                                <th>Puntuacion (1-10)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tipo in Vehiculos)
+							{
+								<tr>
+									<td>@tipo.VehiculoNombre</td>
+									<td><InputNumber class="form-control form-control-sm" style="width: 80px;" min="1" max="10" @bind-Value="tipo.PuntuacionVoto"></InputNumber></td>
+								</tr>
+							}
+						</tbody>
+					</table>
+					<hr />
+				</div>
+
+			</div>
+
+			@* Footer *@
+			<div class="card-footer text-center mt-2">
+				<a href="/Votaciones/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-left"></span>Volver</a>
+				<button type="submit" class="btn btn-outline-success bi bi-floppy">Guardar</button>
+			</div>
+		</div>
+	</div>
+</EditForm>
+
+@code {
+    @code {
+        private Votaciones Votacion { get; set; } = new Votaciones();
+        private List<TipoVehiculos> Vehiculos { get; set; } = new();
+        private string errorMensaje { get; set; } = string.Empty;
+        private bool usuarioYaVoto = false;
+        private string usuarioId;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var authState = await authStateProvider.GetAuthenticationStateAsync();
+            usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            usuarioYaVoto = await votacionesService.UsuarioYaVoto(usuarioId);
+
+            if (!usuarioYaVoto)
+            {
+                Vehiculos = await vehiculosService.Listar(v => v.TipoVehiculoId > 0);
+            }
+         
+
+            foreach (var v in Vehiculos)
+            {
+                v.PuntuacionVoto = 0; 
+            }
+        }
+
+        public async Task Guardar()
+        {
+            errorMensaje = string.Empty;
+            var vehiculosConVoto = Vehiculos.Where(v => v.PuntuacionVoto > 0).ToList();
+
+            if (!vehiculosConVoto.Any())
+            {
+                errorMensaje = "Debe votar al menos un vehículo";
+                return;
+            }
+
+            if (vehiculosConVoto.Any(v => v.PuntuacionVoto < 1 || v.PuntuacionVoto > 10))
+            {
+                errorMensaje = "Las puntuaciones deben ser entre 1 y 10";
+                return;
+            }
+
+            var resultado = await votacionesService.GuardarVotacionCompleta(Votacion, vehiculosConVoto, usuarioId);
+
+            if (resultado)
+            {
+                navigationManager.NavigateTo("/Votaciones/Index");
+            }
+            else
+            {
+                errorMensaje = "Error al guardar";
+            }
+        }
+    }
+}

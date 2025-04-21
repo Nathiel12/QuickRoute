@@ -1,0 +1,124 @@
+@page "/lista-deseados"
+@using QuickRoute.Data.Models
+@inject ListaDeseadosService ListaDeseadosService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<div class="container py-5">
+    <h2 class="mb-4 text-white"><i class="fas fa-heart me-2 text-danger"></i>Mi Lista de Deseados</h2>
+    
+    @if (!IsAuthenticated)
+    {
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i> 
+            Debes <a href="/Account/Login?returnUrl=/lista-deseados">iniciar sesión</a> para ver tu lista de deseados.
+        </div>
+    }
+    else if (items == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    }
+    else if (!items.Any())
+    {
+        <div class="alert alert-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-info-circle me-2"></i> 
+                    Tu lista de deseados está vacía. Agrega vehículos desde la página de detalles.
+                </div>
+                <button class="btn btn-outline-primary" @onclick="VolverAlCatalogo">
+                    <i class="fas fa-arrow-left me-1"></i> Volver al catálogo
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in items)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <img src="/img/carros/@(item.Carro.CarroId).jpg" 
+                             class="card-img-top" 
+                             alt="@item.Carro.Marca @item.Carro.Modelo"
+                             onerror="this.onerror=null;this.src='/img/carros/default.jpg';">
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Carro.Marca @item.Carro.Modelo</h5>
+                            <p class="card-text text-primary">@item.Carro.Precio.ToString("C")</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Agregado el @item.FechaAgregado.ToLocalTime().ToString("d")
+                                </small>
+                            </p>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-outline-primary btn-sm" 
+                                        @onclick="() => VerDetalle(item.Carro.CarroId)">
+                                    <i class="fas fa-eye me-1"></i> Ver Detalle
+                                </button>
+                                
+                                <button class="btn btn-outline-danger btn-sm" 
+                                        @onclick="() => EliminarDeLista(item.Carro.CarroId)">
+                                    <i class="fas fa-trash-alt me-1"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<QuickRoute.Data.Models.ListaDeseados> items = new();
+    private bool IsAuthenticated = false;
+    private string userId = string.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+        IsAuthenticated = user.Identity?.IsAuthenticated ?? false;
+        
+        if (IsAuthenticated)
+        {
+            userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            await CargarListaDeseados();
+        }
+    }
+    
+    private async Task CargarListaDeseados()
+    {
+        items = await ListaDeseadosService.ObtenerListaPorUsuario(userId);
+    }
+    
+    private void VerDetalle(int carroId)
+    {
+        Navigation.NavigateTo($"/detalle-vehiculo/{carroId}");
+    }
+    
+    private async Task EliminarDeLista(int carroId)
+    {
+        var resultado = await ListaDeseadosService.EliminarDeLista(userId, carroId);
+        if (resultado)
+        {
+            await CargarListaDeseados();
+        }
+    }
+    
+    private void VolverAlCatalogo()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

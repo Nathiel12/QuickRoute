@@ -1,0 +1,227 @@
+@page "/admin/editar-carro/{CarroId:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject CarrosService CarrosService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Editar Vehículo</PageTitle>
+
+<EditForm Model="carro" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    @* Notificaciones *@
+    <div class="alert alert-danger" hidden="@string.IsNullOrEmpty(errorMensaje)">@errorMensaje</div>
+
+    <div class="container py-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="card-title">
+                    <i class="fas fa-car me-2"></i> Editar Vehículo
+                </h3>
+            </div>
+            
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        @* ID (solo lectura) *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>ID del Vehículo</strong></label>
+                            <InputNumber class="form-control" @bind-Value="carro.CarroId" readonly/>
+                        </div>
+
+                        @* Marca *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Marca</strong></label>
+                            <InputSelect class="form-control" @bind-Value="carro.Marca">
+                                <option value="" selected disabled>--- Seleccione una Marca ---</option>
+                                @foreach (var marca in MarcasAutos)
+                                {
+                                    <option value="@marca">@marca</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => carro.Marca)" class="text-danger d-block"/>
+                        </div>
+
+                        @* Modelo *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Modelo</strong></label>
+                            <InputText class="form-control" @bind-Value="carro.Modelo"/>
+                            <ValidationMessage For="@(() => carro.Modelo)" class="text-danger d-block"/>
+                        </div>
+
+                        @* Año de Fabricación *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Año de Fabricación</strong></label>
+                            <InputDate class="form-control" @bind-Value="carro.FechaFabricacion"/>
+                            <ValidationMessage For="@(() => carro.FechaFabricacion)" class="text-danger d-block"/>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        @* Color *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Color</strong></label>
+                            <InputSelect class="form-control" @bind-Value="carro.Color">
+                                <option value="" selected disabled>--- Seleccione un Color ---</option>
+                                @foreach (var color in ColoresDisponibles.OrderBy(c => c))
+                                {
+                                    <option value="@color">@color</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => carro.Color)" class="text-danger d-block"/>
+                        </div>
+
+                        @* Precio *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Precio (USD)</strong></label>
+                            <InputNumber class="form-control" @bind-Value="carro.Precio" step="0.01"/>
+                            <ValidationMessage For="@(() => carro.Precio)" class="text-danger d-block"/>
+                            @if (carro.Precio > 30000000)
+                            {
+                                <div class="text-danger mt-1">El precio no puede exceder los 30 millones</div>
+                            }
+                        </div>
+
+                        @* Cantidad en Stock *@
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Cantidad en Stock</strong></label>
+                            <InputNumber class="form-control" @bind-Value="carro.CantidadStock"/>
+                            <ValidationMessage For="@(() => carro.CantidadStock)" class="text-danger d-block"/>
+                        </div>
+
+                        @* Disponibilidad *@
+                        <div class="mb-3 form-check form-switch">
+                            <InputCheckbox class="form-check-input" @bind-Value="carro.Disponibilidad"/>
+                            <label class="form-check-label"><strong>Disponible</strong></label>
+                        </div>
+                    </div>
+                </div>
+                
+                @* Vista previa de la imagen *@
+                <div class="mb-3 text-center">
+                    <label class="form-label"><strong>Vista previa</strong></label>
+                    <div class="border p-2">
+                        <img class="img-fluid rounded" src="/img/carros/@(carro.CarroId).jpg"
+                             alt="@carro.Marca @carro.Modelo"
+                             onerror="this.onerror=null;this.src='/img/carros/default.jpg';">
+                        <p class="text-muted mt-2">Nota: Para cambiar la imagen, suba un nuevo archivo con nombre "@(carro.CarroId).jpg" al servidor.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-footer text-center">
+                <a href="/detalle-vehiculo/@CarroId" class="btn btn-outline-secondary me-3">
+                    <i class="fas fa-times me-2"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary" disabled="@(carro.Precio > 30000000)">
+                    <i class="fas fa-save me-2"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int CarroId { get; set; }
+    
+    private Carros carro = new Carros();
+    private string errorMensaje = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var carroExistente = await CarrosService.Buscar(CarroId);
+            
+            if (carroExistente != null)
+            {
+                carro = carroExistente;
+            }
+            else
+            {
+                errorMensaje = "No se encontró el vehículo especificado";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMensaje = $"Error al cargar el vehículo: {ex.Message}";
+        }
+    }
+
+    private async Task Guardar()
+    {
+        errorMensaje = string.Empty;
+        
+        // Validación adicional del precio
+        if (carro.Precio > 30000000)
+        {
+            errorMensaje = "El precio no puede exceder los 30 millones";
+            return;
+        }
+        
+        try
+        {
+            var resultado = await CarrosService.Guardar(carro);
+            
+            if (resultado)
+            {
+                NavigationManager.NavigateTo($"/detalle-vehiculo/{carro.CarroId}");
+            }
+            else
+            {
+                errorMensaje = "Error al guardar los cambios";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMensaje = $"Error al guardar: {ex.Message}";
+        }
+    }
+
+    private List<string> MarcasAutos = new List<string>
+    {
+        "Honda",
+        "Toyota",
+        "Audi",
+        "BMW",
+        "Ford",
+        "Chevrolet",
+        "Volkswagen",
+        "Mercedes-Benz",
+        "Nissan",
+        "Hyundai",
+        "Kia",
+        "Subaru",
+        "Mazda",
+        "Jeep",
+        "Tesla",
+        "Lexus",
+        "Porsche",
+        "Land Rover",
+        "Volvo",
+        "Ferrari",
+        "Lamborghini",
+        "Mitsubishi",
+        "Dodge"
+    };
+    
+    private List<string> ColoresDisponibles = new List<string>
+    {
+        "Azul",
+        "Rojo",
+        "Blanco",
+        "Negro",
+        "Amarillo",
+        "Plateado",
+        "Gris",
+        "Azul Marino",
+        "Verde",
+        "Marrón",
+        "Rojo Carmesí",
+        "Gris Perla",
+        "Azul Oscuro",
+        "Gris Plata"
+    };
+}

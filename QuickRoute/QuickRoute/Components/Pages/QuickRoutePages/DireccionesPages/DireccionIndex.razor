@@ -1,0 +1,156 @@
+﻿@page "/Direccion/Index"
+@inject DireccionesService direccionService
+@attribute [Authorize]
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Registro de Sugerencias</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <h5 class="card-title mb-0">Registro de Direcciones</h5>
+            <a href="/Direccion/Create" class="btn btn-success border-white border-2"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+            @*labels*@
+            <div class="row">
+                @*Filtrar por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+
+                @*ValorFiltro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        @if(isAdmin){
+                            <option value="DireccionId">DireccionId</option>
+                        }
+                        <option value="Ciudad">Ciudad</option>
+                        <option value="Provincia">Provincia</option>
+                    </InputSelect>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                @*Restablecer*@
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
+                            @onclick="Restablecer">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @* Tabla *@
+        <table class="table table-hover">
+            <thead class="table table-striped text-black">
+                <tr>
+                    @if(isAdmin){
+                        <th>DireccionId</th>
+                    }
+                    <th>Ciudad</th>
+                    <th>Provincia</th>
+                    <th>Codigo Postal</th>
+                    <th>Email</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var direccion in ListaDirecciones)
+                {
+
+                    <tr>
+                        @if(isAdmin){
+                            <td>@direccion.DireccionId</td>
+                        }
+                        <td>@direccion.Ciudad</td>
+                        <td>@direccion.Provincia</td>
+                        <td>@direccion.CodigoPostal</td>
+                        <td>@direccion.Usuario.Email</td>
+                        <td>
+                            <a href="/Direccion/Edit/@direccion.DireccionId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        </td>
+                        <td>
+                            <a href="/Direccion/Delete/@direccion.DireccionId" class="btn btn-outline-danger bi bi-trash"></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    public List<Direccion> ListaDirecciones { get; set; } = new List<Direccion>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    private string usuarioId;
+    private bool isAdmin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        usuarioId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        isAdmin = authState.User.IsInRole("Admin");
+        if (isAdmin)
+        {
+            ListaDirecciones = await direccionService.Listar(d => d.DireccionId > 0);
+        }
+        else
+        {
+            ListaDirecciones = await direccionService.Listar(d => d.Id == usuarioId);
+        }
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "DireccionId")
+        {
+            if (int.TryParse(ValorFiltro, out var direccionId))
+            {
+                ListaDirecciones = await direccionService
+                    .Listar(d => d.DireccionId == direccionId);
+            }
+        }
+        else if (Filtro == "Ciudad" && !string.IsNullOrWhiteSpace(ValorFiltro))
+        {
+            ListaDirecciones = await direccionService
+                .Listar(d => d.Ciudad.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        else if (Filtro == "Provincia" && !string.IsNullOrWhiteSpace(ValorFiltro))
+        {
+            ListaDirecciones = await direccionService
+                .Listar(d => d.Provincia.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task Restablecer()
+    {
+        ListaDirecciones = await direccionService.Listar(d => d.DireccionId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+        StateHasChanged();
+    }
+}

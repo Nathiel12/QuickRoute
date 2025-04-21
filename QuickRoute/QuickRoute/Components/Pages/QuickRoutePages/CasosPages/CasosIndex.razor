@@ -1,0 +1,190 @@
+﻿@*Nathiel Taveras*@
+@page "/Casos/Index"
+@inject CasosService casosService
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+@* HTML *@
+<PageTitle>Registro de Casos</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <h5 class="card-title mb-0">Registro de Casos</h5>
+            <a href="/Casos/Create" class="btn btn-success border-white border-2"> <span class="bi bi-plus-square mt-3"></span> Crear</a>
+        </div>
+
+        <div class="card-body">
+
+            @*labels*@
+            <div class="row">
+
+                @*Filtrar por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+
+                @*ValorFiltro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Elija una opcion</option>
+                        @if(isAdmin){
+                            <option value="CasoId">CasoId</option>
+                        }
+                        <option value="Fecha">Fecha</option>
+                        <option value="Asunto">Asunto</option>
+                    </InputSelect>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                @*Restablecer*@
+                <div class="col-3">
+                    <button type="button" class="btn btn-outline-secondary bi bi-arrow-counterclockwise"
+                    @onclick="Restablecer">
+                    </button>
+                </div>
+
+                @*FiltroFecha*@
+                <div class="row mt-3">
+
+                    @*Desde*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Desde</strong></label>
+                        <InputDate class="form-control" @bind-Value="Desde"></InputDate>
+                    </div>
+
+                    @*Hasta*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Hasta</strong></label>
+                        <div class="input-group">
+                            <InputDate class="form-control" @bind-Value="Hasta"></InputDate>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        @* Tabla *@
+        <table class="table table-hover">
+            <thead class="table  table-striped text-black">
+                <tr>
+                    @if(isAdmin){
+                        <th>CasoId</th>
+                    }
+                    <th>Fecha</th>
+                    @if (isAdmin){
+                        <th>Contacto Aduanero</th>
+                    }
+                    <th>Asunto</th>
+                    @if (isAdmin){
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var casos in ListaCasos)
+                {
+                    <tr>
+                        @if(isAdmin){
+                            <td> @casos.CasoId</td>
+                        }
+                        <td> @casos.Fecha.ToString("dd/MM/yyyy")</td>
+                        @if (isAdmin){
+                            <td>@(casos.Contacto?.Nombre ?? "Sin asignar")</td>
+                        }
+                        <td> @casos.Asunto</td>
+                        @if (isAdmin){
+                            <td>
+                                <a href="/Casos/Edit/@casos.CasoId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                            <td>
+                                <a href="/Casos/Delete/@casos.CasoId" class="btn btn-outline-danger bi bi-trash"></a>
+                            </td>
+                        }
+                      
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+
+    public List<Casos> ListaCasos { get; set; } = new List<Casos>();
+
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    public DateTime? Desde { get; set; }
+    public DateTime? Hasta { get; set; }
+    private string? UsuarioIdActual { get; set; }
+    private bool isAdmin { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        UsuarioIdActual = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        isAdmin = authState.User.IsInRole("Admin");
+
+        if (user.IsInRole("Admin"))
+        {
+            ListaCasos = await casosService.Listar(c => c.CasoId > 0);
+        }
+        else if (!string.IsNullOrEmpty(UsuarioIdActual))
+        {
+            ListaCasos = await casosService.Listar(c => c.Id == UsuarioIdActual);
+        }
+    }
+
+    private async Task Buscar()
+    {
+        if (Filtro == "CasoId")
+        {
+            if (int.TryParse(ValorFiltro, out var casoId))
+            {
+                ListaCasos = await casosService
+                    .Listar(c => c.CasoId == casoId);
+            }
+
+        }
+        else if (ValorFiltro.Trim() != "" && Filtro == "Asunto")
+        {
+            ListaCasos = await casosService
+                .Listar(c => c.Asunto.ToLower().Contains(ValorFiltro.ToLower()));
+        }
+        if (Filtro == "Fecha")
+            ListaCasos = await casosService
+            .Listar(f => f.Fecha >= Desde && f.Fecha <= Hasta);
+
+        StateHasChanged();
+
+    }
+    private async Task Restablecer()
+    {
+        ListaCasos = await casosService.Listar(c => c.CasoId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+}
